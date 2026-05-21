@@ -1,0 +1,1807 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Muhammad Ahmed — AI Weather, Climate &amp; Geospatial Research</title>
+  <meta name="description" content="Muhammad Ahmed — KAIST undergraduate researcher building lightweight AI systems for global weather forecasting, climate downscaling, and graph-based geospatial intelligence." />
+
+  <!-- ============================================================
+       FONTS
+       Display:  Instrument Serif  (editorial, research-journal feel)
+       Body:     Geist              (modern, technical, clean)
+       Mono:     JetBrains Mono     (metrics, code, technical labels)
+       ============================================================ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       DESIGN TOKENS
+       Edit these to retheme the whole site at once.
+       ============================================================ */
+    :root {
+      /* surface palette — deep ink with a faint blue cast */
+      --bg-deep:        #0a0b10;
+      --bg-surface:     #11131b;
+      --bg-elevated:    #161924;
+      --bg-glass:       rgba(22, 25, 36, 0.55);
+
+      /* type */
+      --text-primary:   #e9ebf0;
+      --text-secondary: #a3a8b5;
+      --text-muted:     #6a6f7d;
+
+      /* borders & lines */
+      --border:         rgba(255, 255, 255, 0.07);
+      --border-strong:  rgba(255, 255, 255, 0.14);
+      --grid-line:      rgba(255, 255, 255, 0.025);
+
+      /* accents — atmospheric teal + warm amber */
+      --accent:         #5eead4;
+      --accent-soft:    rgba(94, 234, 212, 0.12);
+      --accent-glow:    rgba(94, 234, 212, 0.22);
+      --warm:           #f5b544;
+      --warm-soft:      rgba(245, 181, 68, 0.10);
+
+      /* status colors for publication badges */
+      --status-published: #5eead4;
+      --status-preprint:  #f5b544;
+      --status-progress:  #a78bfa;
+
+      /* spacing scale (8pt-ish) */
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.5rem;
+      --space-6: 2rem;
+      --space-7: 3rem;
+      --space-8: 4rem;
+      --space-9: 6rem;
+
+      /* radii */
+      --r-sm: 8px;
+      --r-md: 14px;
+      --r-lg: 20px;
+      --r-xl: 28px;
+
+      /* shadows */
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+      --shadow-md: 0 8px 30px rgba(0,0,0,0.35);
+      --shadow-lg: 0 24px 60px rgba(0,0,0,0.55);
+
+      /* typography */
+      --font-display: 'Instrument Serif', 'Times New Roman', serif;
+      --font-body:    'Geist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+
+      /* layout */
+      --sidebar-w: 304px;
+      --content-max: 980px;
+    }
+
+    /* Light theme overrides. Toggle via data-theme="light" on <html>. */
+    html[data-theme="light"] {
+      --bg-deep:        #f6f5f1;
+      --bg-surface:     #ffffff;
+      --bg-elevated:    #fbfaf6;
+      --bg-glass:       rgba(255, 255, 255, 0.7);
+
+      --text-primary:   #14161c;
+      --text-secondary: #4a505d;
+      --text-muted:     #8a8f9c;
+
+      --border:         rgba(20, 22, 28, 0.10);
+      --border-strong:  rgba(20, 22, 28, 0.20);
+      --grid-line:      rgba(20, 22, 28, 0.04);
+
+      --accent:         #0f766e;
+      --accent-soft:    rgba(15, 118, 110, 0.10);
+      --accent-glow:    rgba(15, 118, 110, 0.18);
+      --warm:           #b45309;
+      --warm-soft:      rgba(180, 83, 9, 0.10);
+
+      --shadow-sm: 0 1px 2px rgba(20,22,28,0.06);
+      --shadow-md: 0 8px 24px rgba(20,22,28,0.08);
+      --shadow-lg: 0 18px 50px rgba(20,22,28,0.10);
+    }
+
+    /* ============================================================
+       BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      font-size: 15.5px;
+      line-height: 1.65;
+      color: var(--text-primary);
+      background: var(--bg-deep);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      transition: background-color 0.4s ease, color 0.4s ease;
+    }
+
+    /* Ambient atmospheric backdrop — fixed, behind everything.
+       Two faint gradient blobs evoke satellite/aurora imagery. */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(900px 600px at 85% -10%, rgba(94, 234, 212, 0.08), transparent 60%),
+        radial-gradient(700px 500px at 10% 110%, rgba(245, 181, 68, 0.05), transparent 60%),
+        linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.15) 100%);
+      transition: opacity 0.4s ease;
+    }
+    /* Thin technical grid overlay for that "model output" feel */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 40%, transparent 90%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 40%, transparent 90%);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; }
+
+    h1, h2, h3, h4 { margin: 0; font-weight: 400; letter-spacing: -0.01em; }
+
+    /* ============================================================
+       READING PROGRESS BAR (top of viewport)
+       ============================================================ */
+    .progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--warm));
+      z-index: 100;
+      transition: width 0.1s linear;
+    }
+
+    /* ============================================================
+       SIDEBAR (desktop)
+       ============================================================ */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: var(--sidebar-w);
+      height: 100vh;
+      padding: var(--space-6) var(--space-5);
+      border-right: 1px solid var(--border);
+      background: var(--bg-surface);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+      overflow-y: auto;
+    }
+    /* Subtle gradient header inside the sidebar so the profile card feels lifted */
+    .sidebar::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 220px;
+      background: radial-gradient(circle at 50% 0%, var(--accent-soft), transparent 70%);
+      pointer-events: none;
+    }
+
+    .profile {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: var(--space-3);
+    }
+    .profile-img {
+      /* REPLACE: swap the src below with your real photo URL */
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1e2433, #0f1421);
+      border: 1px solid var(--border-strong);
+      box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.08), var(--shadow-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 38px;
+      color: var(--accent);
+      overflow: hidden;
+    }
+    .profile-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    .profile h1 {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      line-height: 1.15;
+      color: var(--text-primary);
+    }
+    .profile .role {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+    .profile .location {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .profile .location::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+    .profile .tagline {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 220px;
+      margin-top: var(--space-1);
+    }
+
+    /* contact / social row */
+    .contact-row {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+    .icon-btn {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .icon-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px var(--accent-glow);
+    }
+    .icon-btn svg { width: 16px; height: 16px; }
+
+    /* nav */
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-top: var(--space-3);
+      padding-top: var(--space-5);
+      border-top: 1px solid var(--border);
+    }
+    .nav a {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      border-radius: var(--r-sm);
+      border-left: 2px solid transparent;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .nav a .num {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      width: 24px;
+    }
+    .nav a:hover {
+      color: var(--text-primary);
+      background: var(--bg-elevated);
+    }
+    .nav a.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-left-color: var(--accent);
+    }
+    .nav a.active .num { color: var(--accent); }
+
+    /* sidebar footer */
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: var(--space-5);
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .theme-toggle {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.05em;
+      transition: all 0.2s ease;
+    }
+    .theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* ============================================================
+       MOBILE HEADER (shown only on small screens)
+       ============================================================ */
+    .mobile-header {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 60;
+      padding: 14px 18px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mobile-header .brand {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+    }
+    .menu-toggle {
+      width: 38px; height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-primary);
+    }
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 65px; left: 0; right: 0;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      padding: var(--space-4);
+      z-index: 55;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      padding: 12px 14px;
+      border-radius: var(--r-sm);
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+    .mobile-nav a:hover { background: var(--bg-elevated); color: var(--text-primary); }
+
+    /* ============================================================
+       MAIN CONTENT
+       ============================================================ */
+    main {
+      margin-left: var(--sidebar-w);
+      padding: var(--space-7) var(--space-7) var(--space-9);
+      max-width: calc(var(--sidebar-w) + var(--content-max) + 200px);
+      position: relative;
+      z-index: 1;
+    }
+    section {
+      max-width: var(--content-max);
+      margin: 0 auto;
+      padding: var(--space-8) 0;
+      scroll-margin-top: 40px;
+    }
+
+    /* Universal section header */
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-4);
+      border-bottom: 1px solid var(--border);
+    }
+    .section-head .index {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+    .section-head h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      color: var(--text-primary);
+    }
+    .section-head h2 em {
+      font-style: italic;
+      color: var(--text-secondary);
+    }
+
+    /* ============================================================
+       HERO
+       ============================================================ */
+    #home { padding-top: var(--space-6); }
+    .hero {
+      position: relative;
+    }
+    .hero .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(94, 234, 212, 0.25);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: var(--space-5);
+    }
+    .hero .status-pill .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(0.8); }
+    }
+    .hero h2 {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      margin-bottom: var(--space-5);
+    }
+    .hero h2 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .hero p.lede {
+      font-size: 1.08rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin-bottom: var(--space-6);
+    }
+
+    .cta-row {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-8);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 22px;
+      border-radius: var(--r-md);
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      border: 1px solid transparent;
+      transition: all 0.25s ease;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #0a0b10;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px var(--accent-glow);
+    }
+    .btn-ghost {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+    }
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    /* Hero metric cards — animated counters */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3);
+      margin-top: var(--space-5);
+    }
+    .metric-card {
+      padding: var(--space-4);
+      background: var(--bg-glass);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+    .metric-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .metric-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-strong);
+    }
+    .metric-card:hover::after { opacity: 0.6; }
+    .metric-card .value {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.1;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+    .metric-card .value .unit {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      color: var(--accent);
+      margin-left: 2px;
+    }
+    .metric-card .label {
+      margin-top: 6px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* ============================================================
+       ABOUT
+       ============================================================ */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--space-6);
+      align-items: start;
+    }
+    .about-text p {
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin: 0 0 var(--space-4);
+    }
+    .about-text p strong { color: var(--text-primary); font-weight: 500; }
+    .about-card {
+      padding: var(--space-5);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+    .about-card .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border);
+      color: var(--text-secondary);
+    }
+    .about-card .row:last-child { border-bottom: none; }
+    .about-card .row .k { color: var(--text-muted); }
+    .about-card .row .v { color: var(--text-primary); }
+
+    /* ============================================================
+       EXPERIENCE — vertical timeline
+       ============================================================ */
+    .timeline {
+      position: relative;
+      padding-left: 32px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 8px;
+      bottom: 8px;
+      width: 1px;
+      background: linear-gradient(180deg, var(--accent), transparent);
+    }
+    .tl-item {
+      position: relative;
+      padding-bottom: var(--space-7);
+    }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -29px;
+      top: 6px;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--bg-deep);
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.08);
+    }
+    .tl-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: var(--space-2);
+      margin-bottom: var(--space-1);
+    }
+    .tl-role {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      color: var(--text-primary);
+    }
+    .tl-org {
+      color: var(--accent);
+      font-size: 0.92rem;
+      margin-top: 2px;
+    }
+    .tl-meta {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      text-align: right;
+    }
+    .tl-body {
+      margin-top: var(--space-3);
+      color: var(--text-secondary);
+      line-height: 1.7;
+      font-size: 0.94rem;
+    }
+    .tl-body ul { list-style: none; padding: 0; margin: 0; }
+    .tl-body li {
+      position: relative;
+      padding-left: 18px;
+      margin-bottom: 10px;
+    }
+    .tl-body li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+    .tl-tags {
+      margin-top: var(--space-3);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      letter-spacing: 0.02em;
+    }
+    .tag.accent { color: var(--accent); border-color: rgba(94, 234, 212, 0.25); background: var(--accent-soft); }
+    .tag.warm   { color: var(--warm);   border-color: rgba(245, 181, 68, 0.25); background: var(--warm-soft); }
+
+    /* ============================================================
+       PROJECTS — bento grid (asymmetric)
+       ============================================================ */
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: var(--space-4);
+    }
+    .project {
+      grid-column: span 3;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: var(--space-5);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .project.feature { grid-column: span 6; }
+    .project.wide    { grid-column: span 6; }
+    /* Aurora wash on hover — atmospheric reveal */
+    .project::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -30%;
+      width: 80%; height: 200%;
+      background: radial-gradient(circle, var(--accent-soft), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+    .project:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-md);
+    }
+    .project:hover::before { opacity: 1; }
+    .project-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: var(--space-3);
+    }
+    .project-num {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+    .project h3 {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      line-height: 1.2;
+      color: var(--text-primary);
+      margin-top: var(--space-2);
+      position: relative;
+      z-index: 1;
+    }
+    .project p.desc {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      line-height: 1.65;
+      margin: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .project .results {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: var(--space-2);
+      padding: var(--space-3);
+      background: var(--bg-deep);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      position: relative;
+      z-index: 1;
+    }
+    html[data-theme="light"] .project .results { background: var(--bg-elevated); }
+    .result {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+    }
+    .result .num {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      color: var(--accent);
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+    }
+    .result .desc-label { color: var(--text-muted); line-height: 1.4; }
+
+    .project .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      position: relative;
+      z-index: 1;
+    }
+    .project-actions {
+      display: flex;
+      gap: var(--space-2);
+      margin-top: auto;
+      padding-top: var(--space-3);
+      border-top: 1px solid var(--border);
+      position: relative;
+      z-index: 1;
+    }
+    .project-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--r-sm);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      background: transparent;
+      transition: all 0.2s ease;
+    }
+    .project-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .project-btn svg { width: 12px; height: 12px; }
+
+    /* ============================================================
+       RESEARCH & PUBLICATIONS
+       ============================================================ */
+    .pub-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .pub {
+      padding: var(--space-5);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      transition: all 0.25s ease;
+    }
+    .pub:hover {
+      border-color: var(--border-strong);
+      transform: translateX(4px);
+    }
+    .pub-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: var(--space-4);
+      margin-bottom: var(--space-2);
+    }
+    .pub-status {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .pub-status.published { background: rgba(94, 234, 212, 0.10); color: var(--status-published); border: 1px solid rgba(94, 234, 212, 0.25); }
+    .pub-status.preprint  { background: rgba(245, 181, 68, 0.10); color: var(--status-preprint);  border: 1px solid rgba(245, 181, 68, 0.25); }
+    .pub-status.progress  { background: rgba(167, 139, 250, 0.10); color: var(--status-progress); border: 1px solid rgba(167, 139, 250, 0.25); }
+
+    .pub h3 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .pub .authors {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: var(--space-2);
+    }
+    .pub .authors .me { color: var(--accent); font-weight: 500; }
+    .pub .venue {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .pub .abstract {
+      margin-top: var(--space-3);
+      padding-top: var(--space-3);
+      border-top: 1px dashed var(--border);
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      line-height: 1.65;
+    }
+    .pub-actions {
+      display: flex;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    /* ============================================================
+       SKILLS
+       ============================================================ */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+    .skill-card {
+      padding: var(--space-5);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .skill-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    .skill-card .skill-head {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+    }
+    .skill-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .skill-icon svg { width: 16px; height: 16px; }
+    .skill-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      color: var(--text-primary);
+    }
+    .skill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .skill-pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      transition: all 0.15s ease;
+    }
+    .skill-pill:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    /* ============================================================
+       CONTACT
+       ============================================================ */
+    .contact-card {
+      padding: var(--space-7);
+      background:
+        radial-gradient(circle at 80% 20%, var(--accent-soft), transparent 70%),
+        var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-card h3 {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      line-height: 1.15;
+      margin-bottom: var(--space-3);
+    }
+    .contact-card h3 em { font-style: italic; color: var(--accent); }
+    .contact-card p {
+      color: var(--text-secondary);
+      max-width: 540px;
+      margin: 0 auto var(--space-5);
+      line-height: 1.7;
+    }
+    .contact-actions {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    footer {
+      max-width: var(--content-max);
+      margin: var(--space-7) auto 0;
+      padding: var(--space-5) 0;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    /* ============================================================
+       SCROLL REVEAL
+       ============================================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 1024px) {
+      .metric-grid { grid-template-columns: repeat(2, 1fr); }
+      .skills-grid { grid-template-columns: repeat(2, 1fr); }
+      .about-grid  { grid-template-columns: 1fr; }
+      .project, .project.feature, .project.wide { grid-column: span 6; }
+    }
+
+    @media (max-width: 768px) {
+      :root { --sidebar-w: 0px; }
+      .sidebar { display: none; }
+      .mobile-header { display: flex; }
+      main {
+        margin-left: 0;
+        padding: 84px var(--space-4) var(--space-7);
+      }
+      section { padding: var(--space-6) 0; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .hero h2 { font-size: 2.2rem; }
+      .tl-head { flex-direction: column; align-items: flex-start; }
+      .tl-meta { text-align: left; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Reading progress bar across the top of the viewport -->
+  <div class="progress-bar" id="progressBar"></div>
+
+  <!-- ============================================================
+       MOBILE HEADER + DRAWER (shown only ≤768px)
+       ============================================================ -->
+  <header class="mobile-header">
+    <div class="brand">Muhammad Ahmed</div>
+    <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <line x1="4" y1="7"  x2="20" y2="7"/>
+        <line x1="4" y1="12" x2="20" y2="12"/>
+        <line x1="4" y1="17" x2="20" y2="17"/>
+      </svg>
+    </button>
+  </header>
+  <nav class="mobile-nav" id="mobileNav">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#experience">Experience</a>
+    <a href="#projects">Projects</a>
+    <a href="#research">Research</a>
+    <a href="#skills">Skills</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <!-- ============================================================
+       SIDEBAR (desktop)
+       ============================================================ -->
+  <aside class="sidebar">
+    <div class="profile">
+      <!-- REPLACE: drop your photo into the src below.
+           The initials fallback "MA" stays as a placeholder. -->
+      <div class="profile-img">
+        <!-- <img src="profile.jpg" alt="Muhammad Ahmed" /> -->
+        MA
+      </div>
+      <h1>Muhammad Ahmed</h1>
+      <div class="role">Researcher · KAIST</div>
+      <div class="location">Daejeon, South Korea</div>
+      <p class="tagline">AI Weather Forecasting · Climate Downscaling · Geospatial ML</p>
+
+      <div class="contact-row">
+        <!-- GitHub -->
+        <a class="icon-btn" href="https://github.com/ahmedkr71" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2c-3.34.72-4.04-1.42-4.04-1.42-.54-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.17 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.65 1.65.24 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .5Z"/></svg>
+        </a>
+        <!-- Email -->
+        <a class="icon-btn" href="mailto:mahmed@kaist.ac.kr" aria-label="Email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="5" width="18" height="14" rx="2"/>
+            <path d="m3 7 9 6 9-6"/>
+          </svg>
+        </a>
+        <!-- LinkedIn (REPLACE href with your real LinkedIn URL) -->
+        <a class="icon-btn" href="#" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.04 0 4.78 2.66 4.78 6.12V21h-4v-5.4c0-1.29-.02-2.94-1.8-2.94-1.8 0-2.08 1.4-2.08 2.85V21h-4V9Z"/></svg>
+        </a>
+        <!-- CV download (REPLACE href with your real CV path, e.g. /assets/cv.pdf) -->
+        <a class="icon-btn" href="#" aria-label="Download CV" download>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M12 3v12"/>
+            <path d="m7 10 5 5 5-5"/>
+            <path d="M5 21h14"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <nav class="nav" id="sidebarNav">
+      <a href="#home"       class="active"><span class="num">01</span>Home</a>
+      <a href="#about"><span class="num">02</span>About</a>
+      <a href="#experience"><span class="num">03</span>Experience</a>
+      <a href="#projects"><span class="num">04</span>Projects</a>
+      <a href="#research"><span class="num">05</span>Research</a>
+      <a href="#skills"><span class="num">06</span>Skills</a>
+      <a href="#contact"><span class="num">07</span>Contact</a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <span>v1.0 · 2026</span>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <span id="themeLabel">Light</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============================================================
+       MAIN CONTENT
+       ============================================================ -->
+  <main>
+
+    <!-- ---------- HERO ---------- -->
+    <section id="home" class="hero">
+      <div class="status-pill reveal">
+        <span class="dot"></span>
+        <span>Open to research collaborations · Spring 2026</span>
+      </div>
+      <h2 class="reveal">
+        Building <em>efficient AI systems</em> for weather, climate, and geospatial intelligence.
+      </h2>
+      <p class="lede reveal">
+        I'm a KAIST undergraduate researcher working on lightweight neural models for global weather
+        forecasting, physics-informed climate downscaling, and graph-based geospatial reasoning. My focus
+        is making climate AI smaller, faster, and physically consistent — so it actually runs at the scale
+        the science demands.
+      </p>
+      <div class="cta-row reveal">
+        <a class="btn btn-primary" href="#projects">
+          View Projects
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M13 5l7 7-7 7"/>
+          </svg>
+        </a>
+        <!-- REPLACE href with your real CV PDF path -->
+        <a class="btn btn-ghost" href="#" download>
+          Download CV
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3v12"/>
+            <path d="m7 10 5 5 5-5"/>
+            <path d="M5 21h14"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Animated metric cards — values are pulled from the resume.
+           data-target = end number, data-suffix = unit text after the number. -->
+      <div class="metric-grid">
+        <div class="metric-card reveal">
+          <div class="value"><span class="counter" data-target="8">0</span><span class="unit">×</span></div>
+          <div class="label">Fewer parameters than major weather models (vs GraphCast, FourCastNet)</div>
+        </div>
+        <div class="metric-card reveal">
+          <div class="value">2°<span class="unit"> → </span>0.25°</div>
+          <div class="label">Climate downscaling resolution enhancement (PcMAN-DS)</div>
+        </div>
+        <div class="metric-card reveal">
+          <div class="value"><span class="counter" data-target="85">0</span><span class="unit">%</span></div>
+          <div class="label">RMSE reduction in graph-based ERA5 downscaling (60–85% range)</div>
+        </div>
+        <div class="metric-card reveal">
+          <div class="value"><span class="counter" data-target="70">0</span><span class="unit">%</span></div>
+          <div class="label">Drought classification accuracy (up from 40% baseline)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- ABOUT ---------- -->
+    <section id="about">
+      <div class="section-head reveal">
+        <span class="index">02 / About</span>
+        <h2>A bit <em>about me</em></h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p>
+            I study <strong>Civil and Environmental Engineering</strong> at KAIST, with additional coursework
+            in <strong>Computer Science</strong> and a minor in <strong>Business and Technology Management</strong>.
+            That combination — earth systems thinking next to deep learning and applied data work — shapes
+            most of what I do.
+          </p>
+          <p>
+            My research lives at the intersection of <strong>deep learning</strong>, <strong>climate science</strong>,
+            <strong>geospatial data</strong>, and <strong>graph neural networks</strong>. I'm especially
+            interested in models that respect physical structure: ultralight forecasters that match much
+            larger systems in skill, downscalers that preserve spectral properties, and graph architectures
+            that learn over the irregular geometries of real-world climate fields.
+          </p>
+          <p>
+            On the engineering side, I build <strong>scalable training and inference pipelines</strong>,
+            modular evaluation frameworks, and the tooling that turns research code into something benchmark-able.
+          </p>
+        </div>
+
+        <!-- Quick-facts card. Edit values freely; this is a glance, not a CV dump. -->
+        <div class="about-card reveal">
+          <div class="row"><span class="k">Affiliation</span><span class="v">KAIST</span></div>
+          <div class="row"><span class="k">Program</span><span class="v">BS, CEE + CS</span></div>
+          <div class="row"><span class="k">Minor</span><span class="v">B&amp;TM</span></div>
+          <div class="row"><span class="k">Lab</span><span class="v">MetaEarth</span></div>
+          <div class="row"><span class="k">Since</span><span class="v">2021</span></div>
+          <div class="row"><span class="k">Based in</span><span class="v">Daejeon, KR</span></div>
+          <div class="row"><span class="k">Status</span><span class="v" style="color: var(--accent)">Available</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- EXPERIENCE ---------- -->
+    <section id="experience">
+      <div class="section-head reveal">
+        <span class="index">03 / Experience</span>
+        <h2>Where I've <em>worked</em></h2>
+      </div>
+
+      <div class="timeline">
+        <!-- MetaEarth -->
+        <div class="tl-item reveal">
+          <div class="tl-head">
+            <div>
+              <div class="tl-role">Research Intern</div>
+              <div class="tl-org">KAIST MetaEarth Research Center</div>
+            </div>
+            <div class="tl-meta">May 2024 — Present<br><span style="color:var(--accent)">Vice Lead · Data-Driven Team, Spring 2025</span></div>
+          </div>
+          <div class="tl-body">
+            <ul>
+              <li>Co-developed <strong>KAI-α</strong>, an ultralight CNN for global weather forecasting reaching competitive skill with roughly <strong>8× fewer parameters</strong> than GraphCast and FourCastNet.</li>
+              <li>Built end-to-end <strong>training and inference pipelines from scratch</strong>, including a modular evaluation framework for benchmarking across model architectures.</li>
+              <li>Contributed to <strong>PcMAN-DS</strong>, a multi-scale, constraint-aware physics-informed model for statistical downscaling of surface climate variables from 2° to 0.25°.</li>
+              <li>Continuing research on lightweight, physics-respecting AI forecasters and downscaling methods.</li>
+            </ul>
+            <div class="tl-tags">
+              <span class="tag accent">Weather Forecasting</span>
+              <span class="tag accent">Climate Downscaling</span>
+              <span class="tag">PyTorch</span>
+              <span class="tag">ERA5</span>
+              <span class="tag">Physics-Informed ML</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- AIxMobility -->
+        <div class="tl-item reveal">
+          <div class="tl-head">
+            <div>
+              <div class="tl-role">Undergraduate Research Assistant</div>
+              <div class="tl-org">KAIST AIxMobility Lab</div>
+            </div>
+            <div class="tl-meta">Mar 2023 — Feb 2024</div>
+          </div>
+          <div class="tl-body">
+            <ul>
+              <li>Generated and validated <strong>high-resolution orthophotos</strong> to support urban mapping and large-scale dataset development (contributed to Haechan 2024).</li>
+              <li>Developed <strong>computer-vision methods for automated road condition monitoring</strong>, enabling scalable detection and analysis of roadway features.</li>
+              <li>Contributed to the design and implementation of an <strong>AI-driven traffic simulation system</strong>, supporting data-informed analysis of urban mobility.</li>
+            </ul>
+            <div class="tl-tags">
+              <span class="tag warm">Geospatial</span>
+              <span class="tag warm">Computer Vision</span>
+              <span class="tag">OpenCV</span>
+              <span class="tag">MetaShape</span>
+              <span class="tag">Traffic Sim</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- PROJECTS ---------- -->
+    <section id="projects">
+      <div class="section-head reveal">
+        <span class="index">04 / Projects</span>
+        <h2>Featured <em>projects</em></h2>
+      </div>
+
+      <div class="bento">
+
+        <!-- FEATURE: Graph-based climate downscaling (wide, top) -->
+        <div class="project feature reveal">
+          <div class="project-head">
+            <span class="project-num">// 01 — Featured</span>
+            <span class="tag accent">Graph Neural Networks</span>
+          </div>
+          <h3>Graph Neural Network Based Climate Downscaling</h3>
+          <p class="desc">
+            Graph-based climate downscaling of ERA5 over South Asia. Built a multi-scale graph reasoning
+            setup paired with a spectral–structural loss that preserves high-frequency atmospheric features
+            traditional MSE losses smooth away.
+          </p>
+          <div class="results">
+            <div class="result"><span class="num">60–85<span style="font-size:0.9rem">%</span></span><span class="desc-label">RMSE reduction (winds, temp, humidity, fluxes)</span></div>
+            <div class="result"><span class="num">84<span style="font-size:0.9rem">%</span></span><span class="desc-label">RMSE reduction on surface pressure</span></div>
+            <div class="result"><span class="num">±0.2<span style="font-size:0.9rem">%</span></span><span class="desc-label">spectral error across 90% of wavenumbers</span></div>
+            <div class="result"><span class="num">ERA5</span><span class="desc-label">over South Asia</span></div>
+          </div>
+          <div class="tags">
+            <span class="tag">PyTorch</span>
+            <span class="tag">GNN</span>
+            <span class="tag">ERA5</span>
+            <span class="tag">Xarray</span>
+            <span class="tag">Spectral Analysis</span>
+          </div>
+          <div class="project-actions">
+            <!-- REPLACE href with your GitHub repo URL -->
+            <a class="project-btn" href="#" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2c-3.34.72-4.04-1.42-4.04-1.42-.54-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.17 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.65 1.65.24 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .5Z"/></svg>
+              GitHub
+            </a>
+            <a class="project-btn" href="#">
+              Details →
+            </a>
+          </div>
+        </div>
+
+        <!-- Drought GNN (half) -->
+        <div class="project reveal">
+          <div class="project-head">
+            <span class="project-num">// 02</span>
+            <span class="tag accent">GNN</span>
+          </div>
+          <h3>Spatio-Temporal Drought Prediction</h3>
+          <p class="desc">
+            Two-stage spatio-temporal architecture: GRU temporal encoder over T=6 steps feeding shared
+            GraphSAGE layers for next-state climate prediction, then a GraphSAGE classifier over severity
+            classes 0–4.
+          </p>
+          <div class="results">
+            <div class="result"><span class="num">40<span style="font-size:0.9rem">%</span> → 70<span style="font-size:0.9rem">%</span></span><span class="desc-label">classification accuracy (vs bilinear & CNN)</span></div>
+            <div class="result"><span class="num">T=6</span><span class="desc-label">temporal steps</span></div>
+          </div>
+          <div class="tags">
+            <span class="tag">GraphSAGE</span>
+            <span class="tag">GRU</span>
+            <span class="tag">PyTorch Geometric</span>
+          </div>
+          <div class="project-actions">
+            <!-- REPLACE with the real GitHub link from the resume -->
+            <a class="project-btn" href="#" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2c-3.34.72-4.04-1.42-4.04-1.42-.54-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.17 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.65 1.65.24 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .5Z"/></svg>
+              GitHub
+            </a>
+            <a class="project-btn" href="#">Details →</a>
+          </div>
+        </div>
+
+        <!-- US Northeast (half) -->
+        <div class="project reveal">
+          <div class="project-head">
+            <span class="project-num">// 03</span>
+            <span class="tag warm">Geospatial</span>
+          </div>
+          <h3>US Northeast Megaregion Accessibility</h3>
+          <p class="desc">
+            Analyzed public transit accessibility and interstate emissions across major Northeast cities.
+            Evaluated 30-minute job access, modal travel times, and CO₂ implications of mode-shift policy
+            scenarios.
+          </p>
+          <div class="results">
+            <div class="result"><span class="num">29.5<span style="font-size:0.9rem"> kg</span></span><span class="desc-label">CO₂ saved per trip (car → rail)</span></div>
+            <div class="result"><span class="num">4 cities</span><span class="desc-label">NYC, DC, Baltimore, Philly</span></div>
+          </div>
+          <div class="tags">
+            <span class="tag">QGIS</span>
+            <span class="tag">Spatial Analysis</span>
+            <span class="tag">Network Mapping</span>
+          </div>
+          <div class="project-actions">
+            <a class="project-btn" href="#">Details →</a>
+          </div>
+        </div>
+
+        <!-- Customs Fraud (wide bottom) -->
+        <div class="project wide reveal">
+          <div class="project-head">
+            <span class="project-num">// 04</span>
+            <span class="tag">Classical ML</span>
+          </div>
+          <h3>Detecting Fraud in Korean Customs Declarations</h3>
+          <p class="desc">
+            Applied statistical analysis and a KNN classifier to historical customs records to surface
+            likely-fraudulent declarations. Early-undergraduate work, but the eval discipline carried
+            forward into everything since.
+          </p>
+          <div class="results">
+            <div class="result"><span class="num">88<span style="font-size:0.9rem">%</span></span><span class="desc-label">classification accuracy</span></div>
+            <div class="result"><span class="num">KNN</span><span class="desc-label">+ statistical methods</span></div>
+            <div class="result"><span class="num">Real-world</span><span class="desc-label">customs dataset</span></div>
+          </div>
+          <div class="tags">
+            <span class="tag">Python</span>
+            <span class="tag">scikit-learn</span>
+            <span class="tag">Pandas</span>
+            <span class="tag">EDA</span>
+          </div>
+          <div class="project-actions">
+            <!-- REPLACE with the real GitHub link from the resume -->
+            <a class="project-btn" href="#" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2c-3.34.72-4.04-1.42-4.04-1.42-.54-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.17 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.65 1.65.24 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .5Z"/></svg>
+              GitHub
+            </a>
+            <a class="project-btn" href="#">Details →</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ---------- RESEARCH & PUBLICATIONS ---------- -->
+    <section id="research">
+      <div class="section-head reveal">
+        <span class="index">05 / Research</span>
+        <h2>Research &amp; <em>publications</em></h2>
+      </div>
+
+      <!-- Each .pub card is a template. Statuses available:
+           .pub-status.published   .pub-status.preprint   .pub-status.progress
+           Add PDF / Code / BibTeX buttons inside .pub-actions as needed. -->
+      <div class="pub-list">
+
+        <!-- KAI-α -->
+        <div class="pub reveal">
+          <div class="pub-head">
+            <h3>KAI-α: Ultralight Convolutional Architectures for Global Weather Forecasting</h3>
+            <span class="pub-status progress">In Progress</span>
+          </div>
+          <div class="authors">
+            <span class="me">Muhammad Ahmed</span>, MetaEarth Research Team
+          </div>
+          <div class="venue">KAIST MetaEarth Research Center · 2024–Present</div>
+          <div class="abstract">
+            An ultralight CNN architecture for global medium-range weather forecasting that reaches
+            competitive skill with roughly 8× fewer parameters than GraphCast and FourCastNet. Includes
+            a scalable training and modular evaluation framework built from scratch to benchmark across
+            architectures on equal footing.
+          </div>
+          <div class="pub-actions">
+            <a class="project-btn" href="#">Code (private)</a>
+            <a class="project-btn" href="#">Details →</a>
+          </div>
+        </div>
+
+        <!-- PcMAN-DS -->
+        <div class="pub reveal">
+          <div class="pub-head">
+            <h3>PcMAN-DS: Physics-Constrained Multi-Scale Attention for Surface Climate Downscaling</h3>
+            <span class="pub-status progress">In Progress</span>
+          </div>
+          <div class="authors">
+            <span class="me">Muhammad Ahmed</span>, MetaEarth Research Team
+          </div>
+          <div class="venue">KAIST MetaEarth Research Center · 2024–Present</div>
+          <div class="abstract">
+            A multi-scale, constraint-aware statistical downscaling model for surface climate variables.
+            Enables reliable resolution enhancement from 2° to 0.25° while preserving physical consistency
+            across scales.
+          </div>
+          <div class="pub-actions">
+            <a class="project-btn" href="#">Code (private)</a>
+            <a class="project-btn" href="#">Details →</a>
+          </div>
+        </div>
+
+        <!-- Graph-based downscaling -->
+        <div class="pub reveal">
+          <div class="pub-head">
+            <h3>Development and Evaluation of Graph Neural Network Based Climate Downscaling Methods</h3>
+            <span class="pub-status preprint">Preprint · Draft</span>
+          </div>
+          <div class="authors">
+            <span class="me">Muhammad Ahmed</span>
+          </div>
+          <div class="venue">Undergraduate Research Program · Spring 2025</div>
+          <div class="abstract">
+            Implements graph-based climate downscaling for ERA5 over South Asia with a multi-scale graph
+            reasoning module and a spectral–structural loss. Achieves 60–85% RMSE reduction across winds,
+            temperature, humidity, and radiative fluxes, with spectral errors within ±0.2% over 90% of
+            wavenumbers.
+          </div>
+          <div class="pub-actions">
+            <a class="project-btn" href="#">PDF</a>
+            <a class="project-btn" href="#">Code</a>
+            <a class="project-btn" href="#">Cite</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ---------- SKILLS ---------- -->
+    <section id="skills">
+      <div class="section-head reveal">
+        <span class="index">06 / Skills</span>
+        <h2>Skills &amp; <em>tooling</em></h2>
+      </div>
+
+      <div class="skills-grid">
+
+        <div class="skill-card reveal">
+          <div class="skill-head">
+            <div class="skill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+            </div>
+            <h3>Programming</h3>
+          </div>
+          <div class="skill-list">
+            <span class="skill-pill">Python</span>
+            <span class="skill-pill">C++</span>
+            <span class="skill-pill">Java</span>
+            <span class="skill-pill">Rust</span>
+            <span class="skill-pill">MATLAB</span>
+          </div>
+        </div>
+
+        <div class="skill-card reveal">
+          <div class="skill-head">
+            <div class="skill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 10v6M4.22 4.22l4.24 4.24m7.08 7.08 4.24 4.24M1 12h6m10 0h6M4.22 19.78l4.24-4.24m7.08-7.08 4.24-4.24"/></svg>
+            </div>
+            <h3>Machine Learning</h3>
+          </div>
+          <div class="skill-list">
+            <span class="skill-pill">PyTorch</span>
+            <span class="skill-pill">TensorFlow</span>
+            <span class="skill-pill">Super-Resolution</span>
+            <span class="skill-pill">Spatio-Temporal</span>
+            <span class="skill-pill">GNNs</span>
+          </div>
+        </div>
+
+        <div class="skill-card reveal">
+          <div class="skill-head">
+            <div class="skill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+            </div>
+            <h3>Data Processing</h3>
+          </div>
+          <div class="skill-list">
+            <span class="skill-pill">NumPy</span>
+            <span class="skill-pill">Pandas</span>
+            <span class="skill-pill">SQL</span>
+            <span class="skill-pill">Xarray</span>
+            <span class="skill-pill">Cartopy</span>
+            <span class="skill-pill">xESMF</span>
+            <span class="skill-pill">Model Eval</span>
+          </div>
+        </div>
+
+        <div class="skill-card reveal">
+          <div class="skill-head">
+            <div class="skill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V6l-8-4Z"/></svg>
+            </div>
+            <h3>Geospatial &amp; Vision</h3>
+          </div>
+          <div class="skill-list">
+            <span class="skill-pill">QGIS</span>
+            <span class="skill-pill">MetaShape</span>
+            <span class="skill-pill">OpenCV</span>
+            <span class="skill-pill">ERA5</span>
+            <span class="skill-pill">Orthophotos</span>
+          </div>
+        </div>
+
+        <div class="skill-card reveal">
+          <div class="skill-head">
+            <div class="skill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <h3>Systems</h3>
+          </div>
+          <div class="skill-list">
+            <span class="skill-pill">ROS</span>
+            <span class="skill-pill">Training Pipelines</span>
+            <span class="skill-pill">Inference Pipelines</span>
+            <span class="skill-pill">Distributed Training</span>
+          </div>
+        </div>
+
+        <div class="skill-card reveal">
+          <div class="skill-head">
+            <div class="skill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <h3>Languages</h3>
+          </div>
+          <div class="skill-list">
+            <span class="skill-pill">English · Fluent</span>
+            <span class="skill-pill">Urdu · Native</span>
+            <span class="skill-pill">Punjabi · Native</span>
+            <span class="skill-pill">Korean · Intermediate</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ---------- CONTACT ---------- -->
+    <section id="contact">
+      <div class="section-head reveal">
+        <span class="index">07 / Contact</span>
+        <h2>Get in <em>touch</em></h2>
+      </div>
+
+      <div class="contact-card reveal">
+        <h3>Open to <em>research collaborations</em>,<br>internships, and graduate opportunities.</h3>
+        <p>
+          If you work on AI for weather and climate, downscaling, geospatial ML, graph methods, or
+          efficient training systems — I'd love to talk. Reach me at the email below, or via GitHub.
+        </p>
+        <div class="contact-actions">
+          <a class="btn btn-primary" href="mailto:mahmed@kaist.ac.kr">
+            mahmed@kaist.ac.kr
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M13 5l7 7-7 7"/>
+            </svg>
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/ahmedkr71" target="_blank" rel="noopener">
+            @ahmedkr71
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2026 Muhammad Ahmed · Built with HTML, CSS &amp; care</span>
+      <span>KAIST · Daejeon, South Korea</span>
+    </footer>
+  </main>
+
+  <!-- ============================================================
+       JAVASCRIPT
+       Kept dependency-free. Comments explain each piece.
+       ============================================================ -->
+  <script>
+    /* ---- 1. Reading progress bar ---- */
+    const progressBar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const height = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = height > 0 ? (scrolled / height) * 100 : 0;
+      progressBar.style.width = pct + '%';
+    }, { passive: true });
+
+    /* ---- 2. Active section highlighting in the sidebar nav ----
+       Uses IntersectionObserver: whichever section is most in view
+       gets the .active class on its matching nav link. */
+    const navLinks = document.querySelectorAll('#sidebarNav a');
+    const sections = document.querySelectorAll('main section');
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          navLinks.forEach(a => {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+    sections.forEach(s => sectionObserver.observe(s));
+
+    /* ---- 3. Scroll-reveal animation ----
+       Each .reveal element fades + lifts in the first time it enters the viewport. */
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    /* ---- 4. Animated metric counters ----
+       Counts from 0 → data-target once the metric card first becomes visible. */
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const target = parseFloat(el.dataset.target);
+          const duration = 1400; // ms
+          const start = performance.now();
+          const tick = (now) => {
+            const t = Math.min((now - start) / duration, 1);
+            // ease-out cubic for a nice deceleration
+            const eased = 1 - Math.pow(1 - t, 3);
+            const value = target * eased;
+            // show whole numbers if target is integer, else one decimal
+            el.textContent = Number.isInteger(target)
+              ? Math.floor(value)
+              : value.toFixed(1);
+            if (t < 1) requestAnimationFrame(tick);
+            else el.textContent = target;
+          };
+          requestAnimationFrame(tick);
+          counterObserver.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+
+    /* ---- 5. Mobile menu toggle ---- */
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileNav = document.getElementById('mobileNav');
+    menuToggle.addEventListener('click', () => {
+      mobileNav.classList.toggle('open');
+    });
+    // close the drawer when a link is tapped
+    mobileNav.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => mobileNav.classList.remove('open'));
+    });
+
+    /* ---- 6. Theme toggle (dark ↔ light) ----
+       Persists choice in localStorage so it survives reloads. */
+    const themeToggle = document.getElementById('themeToggle');
+    const themeLabel = document.getElementById('themeLabel');
+    const root = document.documentElement;
+
+    // initialize from saved preference (defaults to dark)
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') {
+      root.setAttribute('data-theme', 'light');
+      themeLabel.textContent = 'Dark';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const current = root.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      themeLabel.textContent = next === 'dark' ? 'Light' : 'Dark';
+    });
+
+    /* ---- 7. Subtle parallax on the hero gradient ----
+       Cheap effect: shift the body::before backdrop slightly with the cursor.
+       Disabled on touch devices to save battery. */
+    if (window.matchMedia('(hover: hover)').matches) {
+      window.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 8;
+        const y = (e.clientY / window.innerHeight - 0.5) * 8;
+        document.body.style.setProperty('background-position', `${x}px ${y}px`);
+      }, { passive: true });
+    }
+  </script>
+</body>
+</html>
