@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,14 +8,13 @@
 
   <!-- ============================================================
        FONTS
-       Display:  Instrument Serif  (editorial, research-journal feel)
-       Body:     Geist              (modern, technical, clean)
-       Mono:     JetBrains Mono     (metrics, code, technical labels)
+       Display:  Space Grotesk     (geometric, confident, design-forward)
+       Body:     Inter             (refined, humanist, typographically rich)
+       Mono:     JetBrains Mono    (metrics, code, technical labels)
        ============================================================ -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <style>
     /* ============================================================
@@ -23,33 +22,33 @@
        Edit these to retheme the whole site at once.
        ============================================================ */
     :root {
-      /* surface palette — deep ink with a faint blue cast */
-      --bg-deep:        #0a0b10;
-      --bg-surface:     #11131b;
-      --bg-elevated:    #161924;
-      --bg-glass:       rgba(22, 25, 36, 0.55);
+      /* surface palette — light green glassmorphism, airy and atmospheric */
+      --bg-deep:        #eaf2ec;
+      --bg-surface:     rgba(255, 255, 255, 0.60);
+      --bg-elevated:    rgba(255, 255, 255, 0.82);
+      --bg-glass:       rgba(245, 252, 247, 0.50);
 
       /* type */
-      --text-primary:   #e9ebf0;
-      --text-secondary: #a3a8b5;
-      --text-muted:     #6a6f7d;
+      --text-primary:   #1b2b22;
+      --text-secondary: #3f5848;
+      --text-muted:     #7a9a86;
 
       /* borders & lines */
-      --border:         rgba(255, 255, 255, 0.07);
-      --border-strong:  rgba(255, 255, 255, 0.14);
-      --grid-line:      rgba(255, 255, 255, 0.025);
+      --border:         rgba(100, 170, 120, 0.18);
+      --border-strong:  rgba(80, 150, 100, 0.38);
+      --grid-line:      rgba(80, 150, 100, 0.055);
 
-      /* accents — atmospheric teal + warm amber */
-      --accent:         #5eead4;
-      --accent-soft:    rgba(94, 234, 212, 0.12);
-      --accent-glow:    rgba(94, 234, 212, 0.22);
-      --warm:           #f5b544;
-      --warm-soft:      rgba(245, 181, 68, 0.10);
+      /* accents — sea green + warm amber-brown */
+      --accent:         #2e8b57;
+      --accent-soft:    rgba(46, 139, 87, 0.10);
+      --accent-glow:    rgba(46, 139, 87, 0.22);
+      --warm:           #8a6e3e;
+      --warm-soft:      rgba(138, 110, 62, 0.10);
 
       /* status colors for publication badges */
-      --status-published: #5eead4;
-      --status-preprint:  #f5b544;
-      --status-progress:  #a78bfa;
+      --status-published: #2e8b57;
+      --status-preprint:  #8a6e3e;
+      --status-progress:  #6b5fa0;
 
       /* spacing scale (8pt-ish) */
       --space-1: 0.25rem;
@@ -69,13 +68,13 @@
       --r-xl: 28px;
 
       /* shadows */
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
-      --shadow-md: 0 8px 30px rgba(0,0,0,0.35);
-      --shadow-lg: 0 24px 60px rgba(0,0,0,0.55);
+      --shadow-sm: 0 1px 3px rgba(30, 80, 50, 0.08);
+      --shadow-md: 0 8px 28px rgba(30, 80, 50, 0.12);
+      --shadow-lg: 0 20px 56px rgba(30, 80, 50, 0.16);
 
       /* typography */
-      --font-display: 'Instrument Serif', 'Times New Roman', serif;
-      --font-body:    'Geist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --font-body:    'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
       --font-mono:    'JetBrains Mono', ui-monospace, monospace;
 
       /* layout */
@@ -83,30 +82,34 @@
       --content-max: 980px;
     }
 
-    /* Light theme overrides. Toggle via data-theme="light" on <html>. */
-    html[data-theme="light"] {
-      --bg-deep:        #f6f5f1;
-      --bg-surface:     #ffffff;
-      --bg-elevated:    #fbfaf6;
-      --bg-glass:       rgba(255, 255, 255, 0.7);
+    /* Dark theme overrides — green-tinted glass. Toggle via data-theme="dark" on <html>. */
+    html[data-theme="dark"] {
+      --bg-deep:        #0d1711;
+      --bg-surface:     rgba(18, 32, 22, 0.72);
+      --bg-elevated:    rgba(24, 42, 30, 0.80);
+      --bg-glass:       rgba(16, 28, 20, 0.55);
 
-      --text-primary:   #14161c;
-      --text-secondary: #4a505d;
-      --text-muted:     #8a8f9c;
+      --text-primary:   #dff0e6;
+      --text-secondary: #8fb89e;
+      --text-muted:     #567062;
 
-      --border:         rgba(20, 22, 28, 0.10);
-      --border-strong:  rgba(20, 22, 28, 0.20);
-      --grid-line:      rgba(20, 22, 28, 0.04);
+      --border:         rgba(80, 160, 100, 0.12);
+      --border-strong:  rgba(80, 160, 100, 0.28);
+      --grid-line:      rgba(80, 160, 100, 0.05);
 
-      --accent:         #0f766e;
-      --accent-soft:    rgba(15, 118, 110, 0.10);
-      --accent-glow:    rgba(15, 118, 110, 0.18);
-      --warm:           #b45309;
-      --warm-soft:      rgba(180, 83, 9, 0.10);
+      --accent:         #5eba8a;
+      --accent-soft:    rgba(94, 186, 138, 0.12);
+      --accent-glow:    rgba(94, 186, 138, 0.24);
+      --warm:           #c49a52;
+      --warm-soft:      rgba(196, 154, 82, 0.12);
 
-      --shadow-sm: 0 1px 2px rgba(20,22,28,0.06);
-      --shadow-md: 0 8px 24px rgba(20,22,28,0.08);
-      --shadow-lg: 0 18px 50px rgba(20,22,28,0.10);
+      --status-published: #5eba8a;
+      --status-preprint:  #c49a52;
+      --status-progress:  #9b8fd4;
+
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.30);
+      --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.40);
+      --shadow-lg: 0 20px 56px rgba(0, 0, 0, 0.55);
     }
 
     /* ============================================================
@@ -117,8 +120,9 @@
     body {
       margin: 0;
       font-family: var(--font-body);
-      font-size: 15.5px;
+      font-size: 16px;
       line-height: 1.65;
+      font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
       color: var(--text-primary);
       background: var(--bg-deep);
       -webkit-font-smoothing: antialiased;
@@ -128,7 +132,7 @@
     }
 
     /* Ambient atmospheric backdrop — fixed, behind everything.
-       Two faint gradient blobs evoke satellite/aurora imagery. */
+       Soft gradient blobs evoke satellite imagery / weather field data. */
     body::before {
       content: '';
       position: fixed;
@@ -136,10 +140,15 @@
       pointer-events: none;
       z-index: 0;
       background:
-        radial-gradient(900px 600px at 85% -10%, rgba(94, 234, 212, 0.08), transparent 60%),
-        radial-gradient(700px 500px at 10% 110%, rgba(245, 181, 68, 0.05), transparent 60%),
-        linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.15) 100%);
+        radial-gradient(900px 600px at 85% -10%, rgba(100, 190, 140, 0.18), transparent 60%),
+        radial-gradient(700px 500px at 10% 110%, rgba(140, 200, 180, 0.12), transparent 60%),
+        radial-gradient(500px 400px at 50% 55%, rgba(160, 220, 190, 0.07), transparent 70%);
       transition: opacity 0.4s ease;
+    }
+    html[data-theme="dark"] body::before {
+      background:
+        radial-gradient(900px 600px at 85% -10%, rgba(94, 186, 138, 0.06), transparent 60%),
+        radial-gradient(700px 500px at 10% 110%, rgba(80, 160, 120, 0.04), transparent 60%);
     }
     /* Thin technical grid overlay for that "model output" feel */
     body::after {
@@ -159,7 +168,7 @@
     a { color: inherit; text-decoration: none; }
     button { font-family: inherit; cursor: pointer; }
 
-    h1, h2, h3, h4 { margin: 0; font-weight: 400; letter-spacing: -0.01em; }
+    h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; }
 
     /* ============================================================
        READING PROGRESS BAR (top of viewport)
@@ -184,12 +193,15 @@
       height: 100vh;
       padding: var(--space-6) var(--space-5);
       border-right: 1px solid var(--border);
-      background: var(--bg-surface);
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
       z-index: 50;
       display: flex;
       flex-direction: column;
       gap: var(--space-5);
       overflow-y: auto;
+      box-shadow: var(--shadow-md);
     }
     /* Subtle gradient header inside the sidebar so the profile card feels lifted */
     .sidebar::before {
@@ -214,9 +226,9 @@
       width: 96px;
       height: 96px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #1e2433, #0f1421);
+      background: linear-gradient(135deg, #cde8d6, #a8d4be);
       border: 1px solid var(--border-strong);
-      box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.08), var(--shadow-md);
+      box-shadow: 0 0 0 4px var(--accent-soft), var(--shadow-md);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -229,8 +241,10 @@
 
     .profile h1 {
       font-family: var(--font-display);
-      font-size: 1.6rem;
-      line-height: 1.15;
+      font-size: 1.75rem;
+      font-weight: 700;
+      line-height: 1.0;
+      letter-spacing: -0.035em;
       color: var(--text-primary);
     }
     .profile .role {
@@ -364,15 +378,18 @@
       z-index: 60;
       padding: 14px 18px;
       background: var(--bg-glass);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
       border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
       align-items: center;
       justify-content: space-between;
     }
     .mobile-header .brand {
       font-family: var(--font-display);
       font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
     }
     .menu-toggle {
       width: 38px; height: 38px;
@@ -388,12 +405,15 @@
       display: none;
       position: fixed;
       top: 65px; left: 0; right: 0;
-      background: var(--bg-surface);
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
       border-bottom: 1px solid var(--border);
       padding: var(--space-4);
       z-index: 55;
       flex-direction: column;
       gap: 2px;
+      box-shadow: var(--shadow-md);
     }
     .mobile-nav.open { display: flex; }
     .mobile-nav a {
@@ -438,11 +458,15 @@
     }
     .section-head h2 {
       font-family: var(--font-display);
-      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      font-size: clamp(2rem, 3.5vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 0.97;
       color: var(--text-primary);
     }
     .section-head h2 em {
-      font-style: italic;
+      font-style: normal;
+      font-weight: 300;
       color: var(--text-secondary);
     }
 
@@ -460,7 +484,7 @@
       padding: 6px 14px;
       border-radius: 999px;
       background: var(--accent-soft);
-      border: 1px solid rgba(94, 234, 212, 0.25);
+      border: 1px solid var(--border-strong);
       font-family: var(--font-mono);
       font-size: 0.7rem;
       color: var(--accent);
@@ -481,21 +505,25 @@
     }
     .hero h2 {
       font-family: var(--font-display);
-      font-size: clamp(2.4rem, 5.5vw, 4.2rem);
-      line-height: 1.05;
-      letter-spacing: -0.02em;
+      font-size: clamp(2.8rem, 6vw, 5.2rem);
+      font-weight: 700;
+      line-height: 0.97;
+      letter-spacing: -0.04em;
       color: var(--text-primary);
       margin-bottom: var(--space-5);
     }
     .hero h2 em {
-      font-style: italic;
+      font-style: normal;
+      font-weight: 300;
       color: var(--accent);
     }
     .hero p.lede {
-      font-size: 1.08rem;
-      line-height: 1.7;
+      font-size: 1.1rem;
+      font-weight: 400;
+      line-height: 1.72;
+      letter-spacing: -0.005em;
       color: var(--text-secondary);
-      max-width: 640px;
+      max-width: 600px;
       margin-bottom: var(--space-6);
     }
 
@@ -519,7 +547,8 @@
     }
     .btn-primary {
       background: var(--accent);
-      color: #0a0b10;
+      color: #ffffff;
+      font-weight: 600;
     }
     .btn-primary:hover {
       transform: translateY(-2px);
@@ -545,14 +574,15 @@
     }
     .metric-card {
       padding: var(--space-4);
-      background: var(--bg-glass);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background: var(--bg-surface);
+      backdrop-filter: blur(12px) saturate(150%);
+      -webkit-backdrop-filter: blur(12px) saturate(150%);
       border: 1px solid var(--border);
       border-radius: var(--r-md);
       position: relative;
       overflow: hidden;
-      transition: transform 0.25s ease, border-color 0.25s ease;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
     }
     .metric-card::after {
       content: '';
@@ -566,14 +596,16 @@
     .metric-card:hover {
       transform: translateY(-3px);
       border-color: var(--border-strong);
+      box-shadow: 0 12px 32px var(--accent-glow), var(--shadow-md);
     }
     .metric-card:hover::after { opacity: 0.6; }
     .metric-card .value {
       font-family: var(--font-display);
-      font-size: 2rem;
-      line-height: 1.1;
+      font-size: 2.2rem;
+      font-weight: 700;
+      line-height: 1.0;
       color: var(--text-primary);
-      letter-spacing: -0.02em;
+      letter-spacing: -0.04em;
     }
     .metric-card .value .unit {
       font-family: var(--font-mono);
@@ -606,8 +638,11 @@
     .about-card {
       padding: var(--space-5);
       background: var(--bg-surface);
+      backdrop-filter: blur(12px) saturate(150%);
+      -webkit-backdrop-filter: blur(12px) saturate(150%);
       border: 1px solid var(--border);
       border-radius: var(--r-lg);
+      box-shadow: var(--shadow-sm);
       font-family: var(--font-mono);
       font-size: 0.78rem;
     }
@@ -652,7 +687,7 @@
       border-radius: 50%;
       background: var(--bg-deep);
       border: 2px solid var(--accent);
-      box-shadow: 0 0 0 4px rgba(94, 234, 212, 0.08);
+      box-shadow: 0 0 0 4px var(--accent-soft);
     }
     .tl-head {
       display: flex;
@@ -663,7 +698,10 @@
     }
     .tl-role {
       font-family: var(--font-display);
-      font-size: 1.3rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.05;
       color: var(--text-primary);
     }
     .tl-org {
@@ -715,8 +753,8 @@
       color: var(--text-secondary);
       letter-spacing: 0.02em;
     }
-    .tag.accent { color: var(--accent); border-color: rgba(94, 234, 212, 0.25); background: var(--accent-soft); }
-    .tag.warm   { color: var(--warm);   border-color: rgba(245, 181, 68, 0.25); background: var(--warm-soft); }
+    .tag.accent { color: var(--accent); border-color: rgba(46, 139, 87, 0.30); background: var(--accent-soft); }
+    .tag.warm   { color: var(--warm);   border-color: rgba(138, 110, 62, 0.30); background: var(--warm-soft); }
 
     /* ============================================================
        PROJECTS — bento grid (asymmetric)
@@ -729,12 +767,15 @@
     .project {
       grid-column: span 3;
       background: var(--bg-surface);
+      backdrop-filter: blur(12px) saturate(150%);
+      -webkit-backdrop-filter: blur(12px) saturate(150%);
       border: 1px solid var(--border);
       border-radius: var(--r-lg);
       padding: var(--space-5);
       position: relative;
       overflow: hidden;
-      transition: transform 0.3s ease, border-color 0.3s ease;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
       display: flex;
       flex-direction: column;
       gap: var(--space-3);
@@ -755,7 +796,7 @@
     .project:hover {
       transform: translateY(-4px);
       border-color: var(--border-strong);
-      box-shadow: var(--shadow-md);
+      box-shadow: 0 12px 40px var(--accent-glow), var(--shadow-md);
     }
     .project:hover::before { opacity: 1; }
     .project-head {
@@ -772,8 +813,10 @@
     }
     .project h3 {
       font-family: var(--font-display);
-      font-size: 1.4rem;
-      line-height: 1.2;
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
       color: var(--text-primary);
       margin-top: var(--space-2);
       position: relative;
@@ -798,7 +841,7 @@
       position: relative;
       z-index: 1;
     }
-    html[data-theme="light"] .project .results { background: var(--bg-elevated); }
+    html[data-theme="dark"] .project .results { background: rgba(0, 0, 0, 0.25); }
     .result {
       font-family: var(--font-mono);
       font-size: 0.7rem;
@@ -806,10 +849,11 @@
     .result .num {
       display: block;
       font-family: var(--font-display);
-      font-size: 1.3rem;
+      font-size: 1.35rem;
+      font-weight: 700;
       color: var(--accent);
-      letter-spacing: -0.01em;
-      line-height: 1.1;
+      letter-spacing: -0.035em;
+      line-height: 1.0;
     }
     .result .desc-label { color: var(--text-muted); line-height: 1.4; }
 
@@ -860,13 +904,17 @@
     .pub {
       padding: var(--space-5);
       background: var(--bg-surface);
+      backdrop-filter: blur(12px) saturate(150%);
+      -webkit-backdrop-filter: blur(12px) saturate(150%);
       border: 1px solid var(--border);
       border-radius: var(--r-lg);
+      box-shadow: var(--shadow-sm);
       transition: all 0.25s ease;
     }
     .pub:hover {
       border-color: var(--border-strong);
       transform: translateX(4px);
+      box-shadow: 0 8px 28px var(--accent-glow), var(--shadow-md);
     }
     .pub-head {
       display: flex;
@@ -885,15 +933,17 @@
       white-space: nowrap;
       flex-shrink: 0;
     }
-    .pub-status.published { background: rgba(94, 234, 212, 0.10); color: var(--status-published); border: 1px solid rgba(94, 234, 212, 0.25); }
-    .pub-status.preprint  { background: rgba(245, 181, 68, 0.10); color: var(--status-preprint);  border: 1px solid rgba(245, 181, 68, 0.25); }
-    .pub-status.progress  { background: rgba(167, 139, 250, 0.10); color: var(--status-progress); border: 1px solid rgba(167, 139, 250, 0.25); }
+    .pub-status.published { background: rgba(46, 139, 87, 0.10);  color: var(--status-published); border: 1px solid rgba(46, 139, 87, 0.28); }
+    .pub-status.preprint  { background: rgba(138, 110, 62, 0.10); color: var(--status-preprint);  border: 1px solid rgba(138, 110, 62, 0.28); }
+    .pub-status.progress  { background: rgba(107, 95, 160, 0.10); color: var(--status-progress);  border: 1px solid rgba(107, 95, 160, 0.28); }
 
     .pub h3 {
       font-family: var(--font-display);
-      font-size: 1.25rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: -0.022em;
+      line-height: 1.22;
       color: var(--text-primary);
-      line-height: 1.3;
     }
     .pub .authors {
       font-size: 0.85rem;
@@ -933,8 +983,11 @@
     .skill-card {
       padding: var(--space-5);
       background: var(--bg-surface);
+      backdrop-filter: blur(12px) saturate(150%);
+      -webkit-backdrop-filter: blur(12px) saturate(150%);
       border: 1px solid var(--border);
       border-radius: var(--r-lg);
+      box-shadow: var(--shadow-sm);
       transition: all 0.25s ease;
       position: relative;
       overflow: hidden;
@@ -942,6 +995,7 @@
     .skill-card:hover {
       border-color: var(--accent);
       transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--accent-glow), var(--shadow-md);
     }
     .skill-card .skill-head {
       display: flex;
@@ -962,6 +1016,8 @@
     .skill-card h3 {
       font-family: var(--font-display);
       font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
       color: var(--text-primary);
     }
     .skill-list {
@@ -991,21 +1047,26 @@
     .contact-card {
       padding: var(--space-7);
       background:
-        radial-gradient(circle at 80% 20%, var(--accent-soft), transparent 70%),
+        radial-gradient(circle at 75% 15%, var(--accent-soft), transparent 65%),
         var(--bg-surface);
+      backdrop-filter: blur(16px) saturate(160%);
+      -webkit-backdrop-filter: blur(16px) saturate(160%);
       border: 1px solid var(--border);
       border-radius: var(--r-xl);
+      box-shadow: var(--shadow-md);
       text-align: center;
       position: relative;
       overflow: hidden;
     }
     .contact-card h3 {
       font-family: var(--font-display);
-      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
-      line-height: 1.15;
+      font-size: clamp(2rem, 3.5vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1.0;
       margin-bottom: var(--space-3);
     }
-    .contact-card h3 em { font-style: italic; color: var(--accent); }
+    .contact-card h3 em { font-style: normal; font-weight: 300; color: var(--accent); }
     .contact-card p {
       color: var(--text-secondary);
       max-width: 540px;
@@ -1071,7 +1132,7 @@
       }
       section { padding: var(--space-6) 0; }
       .skills-grid { grid-template-columns: 1fr; }
-      .hero h2 { font-size: 2.2rem; }
+      .hero h2 { font-size: 2.4rem; letter-spacing: -0.03em; }
       .tl-head { flex-direction: column; align-items: flex-start; }
       .tl-meta { text-align: left; }
     }
@@ -1162,7 +1223,7 @@
     <div class="sidebar-footer">
       <span>v1.0 · 2026</span>
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-        <span id="themeLabel">Light</span>
+        <span id="themeLabel">Dark</span>
       </button>
     </div>
   </aside>
@@ -1777,11 +1838,11 @@
     const themeLabel = document.getElementById('themeLabel');
     const root = document.documentElement;
 
-    // initialize from saved preference (defaults to dark)
+    // initialize from saved preference (defaults to light)
     const saved = localStorage.getItem('theme');
-    if (saved === 'light') {
-      root.setAttribute('data-theme', 'light');
-      themeLabel.textContent = 'Dark';
+    if (saved === 'dark') {
+      root.setAttribute('data-theme', 'dark');
+      themeLabel.textContent = 'Light';
     }
 
     themeToggle.addEventListener('click', () => {
