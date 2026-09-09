@@ -1,1327 +1,173 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Muhammad Ahmed — AI weather forecasting, climate downscaling, geospatial ML</title>
-<meta name="description" content="Muhammad Ahmed is an undergraduate researcher at KAIST MetaEarth working on ultralight models for global weather forecasting, physics-informed climate downscaling, and graph methods for climate fields.">
-<link rel="canonical" href="https://homelessamy.github.io/">
-
-<meta property="og:type" content="profile">
-<meta property="og:site_name" content="Muhammad Ahmed">
-<meta property="og:title" content="Muhammad Ahmed — AI weather forecasting, climate downscaling, geospatial ML">
-<meta property="og:description" content="Undergraduate researcher at KAIST MetaEarth. Ultralight global weather forecasting, physics-informed climate downscaling, graph methods for climate fields.">
-<meta property="og:url" content="https://homelessamy.github.io/">
-<meta property="og:image" content="https://homelessamy.github.io/assets/og-card.jpg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Muhammad Ahmed, KAIST — AI weather forecasting, climate downscaling, geospatial ML.">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Muhammad Ahmed — AI weather forecasting, climate downscaling, geospatial ML">
-<meta name="twitter:description" content="Undergraduate researcher at KAIST MetaEarth. Ultralight global weather forecasting, physics-informed climate downscaling, graph methods for climate fields.">
-<meta name="twitter:image" content="https://homelessamy.github.io/assets/og-card.jpg">
-
-<link rel="icon" href="assets/favicon.ico" sizes="any">
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<meta name="theme-color" content="#06161C" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#EFF3F2" media="(prefers-color-scheme: light)">
-
-<link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/source-serif.woff2" as="font" type="font/woff2" crossorigin>
-
-<style>
-/* ============================================================
-   FONTS — self-hosted, subset to the glyphs this page uses
-   ============================================================ */
-@font-face{font-family:Archivo;src:url(fonts/archivo.woff2) format('woff2');
-  font-weight:400 700;font-stretch:100% 112%;font-style:normal;font-display:swap}
-@font-face{font-family:'Source Serif 4';src:url(fonts/source-serif.woff2) format('woff2');
-  font-weight:400 700;font-style:normal;font-display:swap}
-@font-face{font-family:'Plex Mono';src:url(fonts/plex-mono-400.woff2) format('woff2');
-  font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Plex Mono';src:url(fonts/plex-mono-500.woff2) format('woff2');
-  font-weight:500;font-style:normal;font-display:swap}
-
-/* ============================================================
-   TOKENS
-   Palette derived from the cmocean ice / deep ramps: a teal-hued
-   water column (192deg), pale firn for type, one cool primary,
-   one warm anomaly used only where something is signalling.
-   ============================================================ */
-:root{
-  --abyss:#EFF3F2; --basin:#FFFFFF; --shelf:#DEE9E8;
-  --firn:#0A1D24;  --drift:#4A6068;
-  --glacier:#0E6E77; --ember:#9A5A05;
-  --line:rgba(10,29,36,.14); --line-strong:rgba(10,29,36,.26);
-  --glow:rgba(14,110,119,.13); --sel:rgba(14,110,119,.18);
-  --f0:#E4EDEC; --f1:#B9D4D5; --f2:#5FA6AC; --f3:#0E6E77; --f4:#C87A0A;
-  --h0:#DFE9E8; --h1:#A8CBCE; --h2:#4E9AA1; --h3:#0E6E77; --h4:#C87A0A;
-  color-scheme:light;
-}
-@media (prefers-color-scheme:dark){
-  :root{
-    --abyss:#06161C; --basin:#0D2028; --shelf:#16323C;
-    --firn:#E7E9E3;  --drift:#9FB3B4;
-    --glacier:#5FD3D8; --ember:#F2A93B;
-    --line:rgba(95,211,216,.15); --line-strong:rgba(95,211,216,.34);
-    --glow:rgba(95,211,216,.16); --sel:rgba(95,211,216,.22);
-    --f0:#0D2028; --f1:#16323C; --f2:#2A8690; --f3:#5FD3D8; --f4:#F2A93B;
-    --h0:#16323C; --h1:#1F5A64; --h2:#2E8F99; --h3:#5FD3D8; --h4:#F2A93B;
-    color-scheme:dark;
-  }
-}
-:root[data-theme=light]{
-  --abyss:#EFF3F2; --basin:#FFFFFF; --shelf:#DEE9E8;
-  --firn:#0A1D24;  --drift:#4A6068;
-  --glacier:#0E6E77; --ember:#9A5A05;
-  --line:rgba(10,29,36,.14); --line-strong:rgba(10,29,36,.26);
-  --glow:rgba(14,110,119,.13); --sel:rgba(14,110,119,.18);
-  --f0:#E4EDEC; --f1:#B9D4D5; --f2:#5FA6AC; --f3:#0E6E77; --f4:#C87A0A;
-  --h0:#DFE9E8; --h1:#A8CBCE; --h2:#4E9AA1; --h3:#0E6E77; --h4:#C87A0A;
-  color-scheme:light;
-}
-:root[data-theme=dark]{
-  --abyss:#06161C; --basin:#0D2028; --shelf:#16323C;
-  --firn:#E7E9E3;  --drift:#9FB3B4;
-  --glacier:#5FD3D8; --ember:#F2A93B;
-  --line:rgba(95,211,216,.15); --line-strong:rgba(95,211,216,.34);
-  --glow:rgba(95,211,216,.16); --sel:rgba(95,211,216,.22);
-  --f0:#0D2028; --f1:#16323C; --f2:#2A8690; --f3:#5FD3D8; --f4:#F2A93B;
-  --h0:#16323C; --h1:#1F5A64; --h2:#2E8F99; --h3:#5FD3D8; --h4:#F2A93B;
-  color-scheme:dark;
-}
-:root{
-  /* radius — three steps, applied by element role, never ad hoc */
-  --r1:8px; --r2:16px; --r3:28px;
-  /* space */
-  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px;
-  --s6:32px; --s7:48px; --s8:72px; --s9:112px;
-  /* type */
-  --display:Archivo,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
-  --body:'Source Serif 4',ui-serif,Georgia,'Times New Roman',serif;
-  --mono:'Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
-  --rail:300px; --measure:960px;
-}
-
-/* ============================================================
-   BASE
-   ============================================================ */
-*,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{
-  margin:0; background:var(--abyss); color:var(--firn);
-  font-family:var(--body); font-size:17px; line-height:1.62;
-  font-synthesis-weight:none; -webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility;
-}
-::selection{background:var(--sel)}
-img,svg,canvas{display:block; max-width:100%}
-a{color:var(--glacier); text-underline-offset:3px; text-decoration-thickness:1px}
-a:hover{color:var(--ember)}
-:focus-visible{outline:2px solid var(--glacier); outline-offset:3px; border-radius:var(--r1)}
-h1,h2,h3{font-family:var(--display); font-weight:600; margin:0; text-wrap:balance}
-p{margin:0}
-ul{margin:0; padding:0; list-style:none}
-
-.skip{
-  position:absolute; left:var(--s4); top:-100px; z-index:99;
-  background:var(--glacier); color:var(--abyss); padding:10px 18px;
-  border-radius:var(--r1); font-family:var(--mono); font-size:.8rem;
-  text-decoration:none; transition:top .18s ease;
-}
-.skip:focus{top:var(--s4); color:var(--abyss)}
-
-.sprite{position:absolute; width:0; height:0; overflow:hidden}
-.ic{display:inline-block; width:1em; height:1em; flex:none; vertical-align:-.125em}
-.ic-line{fill:none; stroke:currentColor; stroke-width:1.75;
-  stroke-linecap:round; stroke-linejoin:round}
-.ic-solid{fill:currentColor; stroke:none}
-
-/* ============================================================
-   RAIL (desktop sidebar)
-   ============================================================ */
-.rail{
-  position:fixed; inset:0 auto 0 0; width:var(--rail); z-index:20;
-  display:flex; flex-direction:column; padding:var(--s7) var(--s5) var(--s5);
-  border-right:1px solid var(--line); background:var(--abyss);
-}
-.rail-id{display:flex; flex-direction:column; gap:var(--s3)}
-.portrait{
-  display:block; width:104px; height:104px; border-radius:var(--r2); object-fit:cover;
-  border:1px solid var(--line-strong); background:var(--shelf);
-  font-family:var(--display); font-weight:600; font-size:2rem; letter-spacing:.02em;
-  color:var(--drift); text-align:center; line-height:104px;
-}
-.rail-name{font-family:var(--display); font-weight:600; font-size:1.28rem;
-  font-stretch:106%; letter-spacing:-.018em; line-height:1.2}
-.rail-meta{font-family:var(--mono); font-size:.74rem; line-height:1.6; color:var(--drift)}
-.rail-meta span{display:block}
-
-.social{display:flex; gap:var(--s2); margin-top:var(--s4)}
-.sq{
-  display:grid; place-items:center; width:36px; height:36px;
-  border:1px solid var(--line); border-radius:var(--r1);
-  color:var(--drift); font-size:16px; text-decoration:none;
-  transition:color .18s ease, border-color .18s ease, background-color .18s ease;
-}
-.sq:hover{color:var(--abyss); background:var(--glacier); border-color:var(--glacier)}
-
-.nav{display:flex; flex-direction:column; gap:1px; margin-top:var(--s8)}
-.nav a{
-  font-family:var(--mono); font-size:.8rem; letter-spacing:.02em;
-  color:var(--drift); text-decoration:none; padding:7px 10px;
-  border-radius:var(--r1); border-left:2px solid transparent;
-  transition:color .18s ease, background-color .18s ease, border-color .18s ease;
-}
-.nav a:hover{color:var(--firn); background:var(--basin)}
-.nav a[aria-current=true]{color:var(--firn); border-left-color:var(--ember)}
-
-.rail-end{margin-top:auto; padding-top:var(--s5)}
-.theme{
-  display:inline-flex; align-items:center; gap:8px; cursor:pointer;
-  background:none; border:1px solid var(--line); border-radius:var(--r1);
-  color:var(--drift); font-family:var(--mono); font-size:.72rem;
-  padding:7px 12px; transition:color .18s ease, border-color .18s ease;
-}
-.theme:hover{color:var(--firn); border-color:var(--line-strong)}
-.theme .ic{font-size:14px}
-/* the toggle shows the theme you would switch TO */
-.theme-sun{display:none} .theme-moon{display:block}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme=light]) .theme-sun{display:block}
-  :root:not([data-theme=light]) .theme-moon{display:none}
-}
-:root[data-theme=dark] .theme-sun{display:block}
-:root[data-theme=dark] .theme-moon{display:none}
-:root[data-theme=light] .theme-sun{display:none}
-:root[data-theme=light] .theme-moon{display:block}
-
-/* ============================================================
-   TOP BAR (mobile)
-   ============================================================ */
-.bar{
-  display:none; position:sticky; top:0; z-index:30;
-  align-items:center; justify-content:space-between;
-  padding:var(--s3) var(--s4); background:var(--abyss);
-  border-bottom:1px solid var(--line);
-}
-.bar-id{display:flex; align-items:center; gap:10px; min-width:0}
-.bar-avatar{width:30px; height:30px; flex:none; border-radius:var(--r1);
-  object-fit:cover; border:1px solid var(--line)}
-.bar-name{font-family:var(--display); font-weight:600; font-size:1rem;
-  font-stretch:106%; letter-spacing:-.015em}
-.bar-tools{display:flex; gap:var(--s2); align-items:center}
-.burger{
-  display:grid; place-items:center; width:38px; height:38px; font-size:18px;
-  background:none; border:1px solid var(--line); border-radius:var(--r1);
-  color:var(--firn); cursor:pointer;
-}
-.drawer{display:none; flex-direction:column; padding:var(--s2) var(--s4) var(--s5);
-  border-bottom:1px solid var(--line); background:var(--abyss)}
-.drawer.open{display:flex}
-.drawer a{font-family:var(--mono); font-size:.86rem; color:var(--drift);
-  text-decoration:none; padding:10px 0; border-bottom:1px solid var(--line)}
-.drawer a:last-child{border-bottom:0}
-
-/* ============================================================
-   PAGE SHELL
-   ============================================================ */
-.page{margin-left:var(--rail); padding:0 var(--s7)}
-.wrap{max-width:var(--measure); margin:0 auto}
-.sec{padding:88px 0; border-top:1px solid var(--line)}
-.sec:first-child{padding-top:var(--s7); border-top:0}
-.sec-head{margin-bottom:var(--s7)}
-.sec-head h2{
-  font-size:clamp(1.7rem,3.4vw,2.05rem); font-stretch:104%;
-  letter-spacing:-.026em; line-height:1.1;
-}
-.sec-note{font-family:var(--mono); font-size:.76rem; color:var(--drift); margin-top:var(--s2)}
-
-/* ============================================================
-   HERO + SIGNATURE FIELD
-   ============================================================ */
-.field-wrap{position:relative; margin-bottom:var(--s7)}
-.field{
-  width:100%; height:132px; display:block; border-radius:var(--r3);
-  border:1px solid var(--line); background:var(--f0);
-  image-rendering:pixelated; image-rendering:crisp-edges;
-}
-.field-key{
-  display:flex; justify-content:space-between; margin-top:10px;
-  font-family:var(--mono); font-size:.68rem; letter-spacing:.06em; color:var(--drift);
-}
-.pill{
-  display:inline-flex; align-items:center; gap:8px;
-  font-family:var(--mono); font-size:.73rem; letter-spacing:.02em;
-  color:var(--drift); border:1px solid var(--line);
-  border-radius:999px; padding:6px 14px;
-}
-.dot{width:6px; height:6px; border-radius:50%; background:var(--ember); flex:none}
-h1{
-  font-size:clamp(2.6rem,6vw,3.9rem); font-stretch:108%; font-weight:600;
-  letter-spacing:-.038em; line-height:1.02; margin:var(--s5) 0 0;
-}
-.thesis{
-  font-family:var(--display); font-weight:400; font-stretch:102%;
-  font-size:clamp(1.25rem,2.6vw,1.6rem); letter-spacing:-.02em;
-  line-height:1.28; margin-top:var(--s4); max-width:30ch; text-wrap:balance;
-}
-.thesis em{font-style:italic; color:var(--glacier)}
-.lede{margin-top:var(--s5); max-width:62ch; color:var(--drift); font-size:1.06rem}
-.cta{display:flex; flex-wrap:wrap; gap:var(--s3); margin-top:var(--s6)}
-
-.btn{
-  display:inline-flex; align-items:center; gap:9px; text-decoration:none;
-  font-family:var(--mono); font-size:.82rem; letter-spacing:.01em;
-  padding:11px 18px; border-radius:var(--r1); border:1px solid transparent;
-  transition:transform .18s ease, background-color .18s ease,
-             border-color .18s ease, color .18s ease;
-}
-.btn-solid{background:var(--glacier); color:var(--abyss)}
-.btn-solid:hover{background:var(--ember); color:var(--abyss); transform:translateY(-1px)}
-.btn-line{border-color:var(--line-strong); color:var(--firn)}
-.btn-line:hover{border-color:var(--glacier); color:var(--glacier); transform:translateY(-1px)}
-
-.metrics{
-  display:grid; grid-template-columns:repeat(3,1fr); gap:var(--s3);
-  margin-top:var(--s8);
-}
-.metric{
-  padding:var(--s5) var(--s5) var(--s4);
-  border:1px solid var(--line); border-radius:var(--r3); background:var(--basin);
-  transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease;
-}
-.metric:hover{border-color:var(--line-strong); transform:translateY(-2px);
-  box-shadow:0 10px 30px var(--glow)}
-.metric b{
-  display:block; font-family:var(--display); font-weight:600; font-stretch:106%;
-  font-size:2.1rem; letter-spacing:-.035em; line-height:1; font-variant-numeric:tabular-nums;
-}
-/* direct child only — the counter lives inside <b> and must not inherit this */
-.metric>span{display:block; margin-top:10px; font-family:var(--mono);
-  font-size:.72rem; line-height:1.5; color:var(--drift)}
-
-/* ============================================================
-   ABOUT — type on the page, no card
-   ============================================================ */
-.about{display:grid; grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);
-  gap:var(--s8) var(--s8); align-items:start}
-.prose p+p{margin-top:var(--s5)}
-.prose strong{font-weight:600}
-.facts{display:grid; gap:0; font-family:var(--mono); font-size:.78rem}
-.facts div{display:flex; justify-content:space-between; gap:var(--s4);
-  padding:10px 0; border-bottom:1px solid var(--line)}
-.facts div:first-child{border-top:1px solid var(--line)}
-.facts dt{color:var(--drift); flex:none}
-.facts dd{margin:0; text-align:right; color:var(--firn)}
-
-/* ============================================================
-   RESEARCH
-   ============================================================ */
-.papers{display:grid; gap:var(--s4)}
-.paper{
-  padding:var(--s6); border:1px solid var(--line); border-radius:var(--r3);
-  background:var(--basin); transition:border-color .2s ease, box-shadow .2s ease;
-}
-.paper:hover{border-color:var(--line-strong); box-shadow:0 10px 30px var(--glow)}
-.paper-top{display:flex; gap:var(--s4); align-items:flex-start;
-  justify-content:space-between; flex-wrap:wrap}
-.paper h3{
-  font-family:var(--body); font-weight:600; font-size:1.18rem;
-  line-height:1.34; letter-spacing:-.005em; flex:1 1 22ch;
-}
-.status{
-  font-family:var(--mono); font-size:.68rem; letter-spacing:.06em;
-  text-transform:uppercase; padding:5px 11px; border-radius:var(--r1);
-  border:1px solid currentColor; flex:none;
-}
-.status-draft{color:var(--glacier)}
-.status-wip{color:var(--drift)}
-.byline{margin-top:var(--s3); font-size:.94rem; color:var(--drift)}
-.byline b{color:var(--firn); font-weight:600}
-.venue{margin-top:4px; font-family:var(--mono); font-size:.72rem; color:var(--drift)}
-.paper .abs{margin-top:var(--s4); max-width:74ch; color:var(--drift); font-size:.98rem}
-.paper-foot{display:flex; flex-wrap:wrap; gap:var(--s2); margin-top:var(--s5)}
-
-.chip{
-  display:inline-flex; align-items:center; gap:7px;
-  font-family:var(--mono); font-size:.72rem;
-  padding:7px 12px; border-radius:var(--r1);
-  border:1px solid var(--line); color:var(--drift); text-decoration:none;
-  transition:color .18s ease, border-color .18s ease;
-}
-a.chip:hover{color:var(--glacier); border-color:var(--glacier)}
-.chip-static{border-style:dashed; cursor:default}
-
-.cite{display:inline-block}
-.cite>summary{
-  display:inline-flex; align-items:center; gap:7px; cursor:pointer; list-style:none;
-  font-family:var(--mono); font-size:.72rem; padding:7px 12px;
-  border-radius:var(--r1); border:1px solid var(--line); color:var(--drift);
-  transition:color .18s ease, border-color .18s ease;
-}
-.cite>summary::-webkit-details-marker{display:none}
-.cite>summary:hover{color:var(--glacier); border-color:var(--glacier)}
-.cite[open]>summary{color:var(--firn); border-color:var(--line-strong)}
-.cite-body{
-  margin-top:var(--s3); padding:var(--s4); border-radius:var(--r2);
-  background:var(--shelf); border:1px solid var(--line);
-}
-.cite-body pre{
-  margin:0; font-family:var(--mono); font-size:.72rem; line-height:1.7;
-  color:var(--firn); white-space:pre; overflow-x:auto;
-}
-.copy{
-  margin-top:var(--s3); font-family:var(--mono); font-size:.7rem; cursor:pointer;
-  display:inline-flex; align-items:center; gap:7px;
-  background:none; color:var(--drift); border:1px solid var(--line);
-  border-radius:var(--r1); padding:6px 11px; transition:color .18s ease, border-color .18s ease;
-}
-.copy:hover{color:var(--glacier); border-color:var(--glacier)}
-
-/* ============================================================
-   EXPERIENCE — type on the page, hairline spine
-   ============================================================ */
-.roles{display:grid; gap:var(--s8); padding-left:var(--s5);
-  border-left:1px solid var(--line)}
-.role{position:relative}
-.role::before{
-  content:''; position:absolute; left:calc(var(--s5) * -1 - 4px); top:9px;
-  width:7px; height:7px; border-radius:50%;
-  background:var(--abyss); border:1.5px solid var(--line-strong);
-}
-.role-live::before{background:var(--ember); border-color:var(--ember)}
-.role-top{display:flex; justify-content:space-between; gap:var(--s4);
-  flex-wrap:wrap; max-width:74ch}
-.role h3{font-size:1.12rem; font-stretch:102%; letter-spacing:-.012em}
-.role-org{margin-top:3px; font-size:.96rem; color:var(--drift)}
-.role-org a{text-decoration:none}
-.role-org a:hover{text-decoration:underline}
-.role-when{font-family:var(--mono); font-size:.72rem; color:var(--drift);
-  text-align:right; flex:none; line-height:1.7}
-.role-when b{display:block; color:var(--ember); font-weight:400}
-.role ul{margin-top:var(--s4); display:grid; gap:var(--s3);
-  max-width:74ch; color:var(--drift); font-size:.98rem}
-.role li{position:relative; padding-left:var(--s4)}
-.role li::before{content:''; position:absolute; left:0; top:.66em;
-  width:6px; height:1px; background:var(--line-strong)}
-.role li strong{color:var(--firn); font-weight:600}
-.tags{display:flex; flex-wrap:wrap; gap:var(--s2); margin-top:var(--s4)}
-.tag{font-family:var(--mono); font-size:.7rem; color:var(--drift);
-  padding:4px 10px; border-radius:var(--r1); background:var(--basin);
-  border:1px solid var(--line)}
-.tag-key{color:var(--glacier); border-color:color-mix(in srgb,var(--glacier) 34%,transparent)}
-
-/* ============================================================
-   PROJECTS — bento; the grid states the ranking
-   ============================================================ */
-/* row 1: headline, full width.  row 2: two peers.  row 3: footnote strip.
-   Two columns rather than three — with four unequal projects it is the only
-   arrangement that carries the ranking without leaving a hole in the grid. */
-.bento{display:grid; grid-template-columns:repeat(2,1fr); gap:var(--s4)}
-.tile{
-  display:flex; flex-direction:column; padding:var(--s6);
-  border:1px solid var(--line); border-radius:var(--r3); background:var(--basin);
-  transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease;
-}
-.tile:hover{border-color:var(--line-strong); transform:translateY(-2px);
-  box-shadow:0 14px 36px var(--glow)}
-.tile-lead{grid-column:1 / -1}
-.tile-foot-strip{grid-column:1 / -1; padding:var(--s5) var(--s6)}
-.tile-kind{font-family:var(--mono); font-size:.7rem; letter-spacing:.01em; color:var(--drift)}
-.tile h3{margin-top:var(--s3); font-size:1.14rem; font-stretch:104%;
-  letter-spacing:-.018em; line-height:1.22}
-.tile-lead h3{font-size:1.72rem; letter-spacing:-.03em; max-width:20ch}
-.tile p{margin-top:var(--s3); color:var(--drift); font-size:.96rem; max-width:56ch}
-.tile-lead p{max-width:62ch}
-.results{display:grid; gap:var(--s3); margin-top:var(--s5)}
-.tile-lead .results{grid-template-columns:repeat(4,1fr); gap:var(--s5); margin-top:var(--s6)}
-.results div{display:flex; flex-direction:column; gap:3px}
-.results b{font-family:var(--display); font-weight:600; font-stretch:104%;
-  font-size:1.32rem; letter-spacing:-.028em; font-variant-numeric:tabular-nums}
-.results span{font-family:var(--mono); font-size:.68rem; line-height:1.5; color:var(--drift)}
-.tile .tags{margin-top:auto; padding-top:var(--s5)}
-.tile-acts{display:flex; flex-wrap:wrap; gap:var(--s2); margin-top:var(--s4)}
-.strip-row{display:flex; align-items:center; justify-content:space-between;
-  gap:var(--s5); flex-wrap:wrap}
-.tile-foot-strip h3{margin-top:0; font-size:1.02rem}
-.tile-foot-strip p{margin-top:6px; font-size:.92rem}
-.strip-fig{display:flex; align-items:baseline; gap:10px; flex:none}
-.strip-fig b{font-family:var(--display); font-weight:600; font-size:1.32rem;
-  letter-spacing:-.028em}
-.strip-fig span{font-family:var(--mono); font-size:.68rem; color:var(--drift)}
-
-/* ============================================================
-   SKILLS — typographic rows, no cards
-   ============================================================ */
-.skills{display:grid; gap:0}
-.skill{display:grid; grid-template-columns:200px minmax(0,1fr); gap:var(--s5);
-  padding:var(--s5) 0; border-bottom:1px solid var(--line); align-items:baseline}
-.skills .skill:first-child{border-top:1px solid var(--line)}
-.skill-label{display:flex; align-items:center; gap:10px;
-  font-family:var(--mono); font-size:.76rem; letter-spacing:.03em; color:var(--drift)}
-.skill-label .ic{font-size:15px; color:var(--glacier)}
-.skill-items{font-family:var(--mono); font-size:.82rem; line-height:2;
-  color:var(--firn); word-spacing:.04em}
-.skill-items i{font-style:normal; color:var(--drift)}
-
-/* ============================================================
-   ACTIVITY
-   ============================================================ */
-.activity{padding:var(--s6); border:1px solid var(--line);
-  border-radius:var(--r3); background:var(--basin)}
-.act-top{display:flex; justify-content:space-between; align-items:baseline;
-  gap:var(--s4); flex-wrap:wrap}
-.act-top h2{font-size:1.24rem; font-stretch:104%; letter-spacing:-.02em}
-.act-total{font-family:var(--mono); font-size:.76rem; color:var(--drift)}
-.act-total b{color:var(--firn); font-weight:500}
-.hm-scroll{margin-top:var(--s5); overflow-x:auto; padding-bottom:var(--s2)}
-.hm{display:grid; grid-auto-flow:column; grid-auto-columns:1fr;
-  grid-template-rows:repeat(7,1fr); gap:3px; min-width:640px}
-.hm i{width:100%; aspect-ratio:1; border-radius:2px}
-.hm-skel i{opacity:.55}
-i[data-l]{background:var(--h0)}
-i[data-l="1"]{background:var(--h1)}
-i[data-l="2"]{background:var(--h2)}
-i[data-l="3"]{background:var(--h3)}
-i[data-l="4"]{background:var(--h4)}
-.act-foot{margin-top:var(--s5); padding-top:var(--s5); border-top:1px solid var(--line);
-  display:grid; gap:var(--s2)}
-.act-line{font-family:var(--mono); font-size:.76rem; color:var(--drift)}
-.act-line b{color:var(--firn); font-weight:500}
-.act-caveat{font-family:var(--mono); font-size:.7rem; color:var(--drift); opacity:.8}
-
-/* ============================================================
-   CONTACT + FOOT
-   ============================================================ */
-.contact{max-width:60ch}
-.contact h2{font-size:clamp(1.6rem,3.2vw,2rem); letter-spacing:-.026em; line-height:1.16}
-.contact p{margin-top:var(--s5); color:var(--drift)}
-.foot{display:flex; justify-content:space-between; gap:var(--s4); flex-wrap:wrap;
-  padding:var(--s6) 0 var(--s7); border-top:1px solid var(--line);
-  font-family:var(--mono); font-size:.72rem; color:var(--drift)}
-
-/* ============================================================
-   PAGE-LOAD REVEAL — one orchestrated sequence, above the fold only.
-   Scoped to .js so the page is fully visible without JavaScript.
-   ============================================================ */
-.js .rv{opacity:0; transform:translateY(10px)}
-.js .rv.in{opacity:1; transform:none;
-  transition:opacity .6s cubic-bezier(.22,1,.36,1) var(--d,0s),
-             transform .6s cubic-bezier(.22,1,.36,1) var(--d,0s)}
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-@media (max-width:1080px){
-  :root{--rail:0px}
-  .rail{display:none}
-  .bar{display:flex}
-  .page{padding:0 var(--s5)}
-  .sec{padding:var(--s8) 0}
-  .about{grid-template-columns:1fr; gap:var(--s7)}
-  .tile-lead .results{grid-template-columns:repeat(2,1fr)}
-}
-@media (max-width:720px){
-  body{font-size:16px}
-  .page{padding:0 var(--s4)}
-  .sec{padding:var(--s7) 0}
-  .field{height:96px}
-  .metrics{grid-template-columns:1fr}
-  .bento{grid-template-columns:1fr}
-  .tile-lead,.tile-foot-strip{grid-column:span 1}
-  .tile,.paper,.activity{padding:var(--s5)}
-  .tile-lead .results{grid-template-columns:1fr}
-  .skill{grid-template-columns:1fr; gap:var(--s2)}
-  .role-when{text-align:left}
-  .role-top{gap:var(--s2)}
-}
-@media (max-width:400px){
-  .page{padding:0 var(--s3)}
-  .tile,.paper,.activity{padding:var(--s4)}
-}
-
-/* ============================================================
-   MOTION + PRINT
-   ============================================================ */
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{
-    animation-duration:.001ms !important; animation-iteration-count:1 !important;
-    transition-duration:.001ms !important; scroll-behavior:auto !important;
-  }
-  .js .rv{opacity:1; transform:none}
-}
-@media print{
-  .rail,.bar,.drawer,.field-wrap,.hm-scroll,.skip{display:none}
-  .page{margin:0; padding:0}
-  body{background:#fff; color:#000; font-size:11pt}
-  .sec{padding:18pt 0; break-inside:avoid}
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Muhammad Ahmed — Weather, climate &amp; scientific ML · KAIST</title>
+  <meta name="description" content="Muhammad Ahmed, researcher at KAIST. Graph-based climate downscaling, lightweight global weather forecasting, and the engineering behind scientific machine learning. Open to research collaborations.">
+  <link rel="canonical" href="https://homelessamy.github.io/">
+  <meta property="og:type" content="profile">
+  <meta property="og:site_name" content="Muhammad Ahmed">
+  <meta property="og:title" content="Muhammad Ahmed — Weather, climate &amp; scientific ML">
+  <meta property="og:description" content="Research at KAIST: terrain-conditioned graph downscaling and lightweight global weather forecasting. Open to research collaborations.">
+  <meta property="og:url" content="https://homelessamy.github.io/">
+  <meta property="og:image" content="https://homelessamy.github.io/assets/og-card.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Muhammad Ahmed, KAIST — weather forecasting, climate downscaling, geospatial ML">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#f5f5f0">
+  <link rel="icon" href="assets/favicon.ico" sizes="any">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/source-serif.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <script src="site.js" defer></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Muhammad Ahmed","url":"https://homelessamy.github.io/","image":"https://homelessamy.github.io/assets/portrait-480.jpg","email":"mailto:mahmed@kaist.ac.kr","affiliation":{"@type":"Organization","name":"KAIST"},"sameAs":["https://github.com/homelessamy","https://www.linkedin.com/in/ahmedkr71/"],"knowsAbout":["Weather forecasting","Climate downscaling","Graph neural networks","Scientific machine learning"]}</script>
 </head>
-
 <body>
-<script>
-/* Set theme + .js before first paint so there is no flash and no
-   flash-of-hidden-content when JavaScript is unavailable. */
-(function(){
-  var r=document.documentElement;
-  r.classList.add('js');
-  try{var t=localStorage.getItem('theme'); if(t==='dark'||t==='light') r.setAttribute('data-theme',t);}catch(e){}
-})();
-</script>
-
-<a class="skip" href="#main">Skip to content</a>
-
-<svg class="sprite" aria-hidden="true" focusable="false"><defs>
-<symbol id="i-github" viewBox="0 0 24 24"><path class="ic-solid" d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2c-3.34.72-4.04-1.42-4.04-1.42-.54-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.17 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.65 1.65.24 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .5Z"/></symbol>
-<symbol id="i-linkedin" viewBox="0 0 24 24"><path class="ic-solid" d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.04 0 4.78 2.66 4.78 6.12V21h-4v-5.4c0-1.29-.02-2.94-1.8-2.94-1.8 0-2.08 1.4-2.08 2.85V21h-4V9Z"/></symbol>
-<symbol id="i-mail" viewBox="0 0 24 24"><g class="ic-line"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="m3 7.5 9 5.5 9-5.5"/></g></symbol>
-<symbol id="i-download" viewBox="0 0 24 24"><g class="ic-line"><path d="M12 3.5v11"/><path d="m7.5 10 4.5 4.5 4.5-4.5"/><path d="M4.5 20.5h15"/></g></symbol>
-<symbol id="i-ext" viewBox="0 0 24 24"><g class="ic-line"><path d="M7 17 17 7"/><path d="M8.5 7H17v8.5"/></g></symbol>
-<symbol id="i-arrow" viewBox="0 0 24 24"><g class="ic-line"><path d="M4.5 12h15"/><path d="m13 5.5 6.5 6.5-6.5 6.5"/></g></symbol>
-<symbol id="i-lock" viewBox="0 0 24 24"><g class="ic-line"><rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M7.75 10.5V7a4.25 4.25 0 0 1 8.5 0v3.5"/></g></symbol>
-<symbol id="i-quote" viewBox="0 0 24 24"><g class="ic-line"><path d="M14.5 3.5H7A2.5 2.5 0 0 0 4.5 6v12A2.5 2.5 0 0 0 7 20.5h10a2.5 2.5 0 0 0 2.5-2.5V8.5Z"/><path d="M14.5 3.5v5h5"/><path d="M8.5 13.5h7M8.5 16.5h4"/></g></symbol>
-<symbol id="i-copy" viewBox="0 0 24 24"><g class="ic-line"><rect x="8.5" y="8.5" width="12" height="12" rx="2.5"/><path d="M4.75 15.5A2.25 2.25 0 0 1 3.5 13.5v-8a2 2 0 0 1 2-2h8a2.25 2.25 0 0 1 2 1.25"/></g></symbol>
-<symbol id="i-check" viewBox="0 0 24 24"><g class="ic-line"><path d="m20 6.5-10.5 11L4 12"/></g></symbol>
-<symbol id="i-sun" viewBox="0 0 24 24"><g class="ic-line"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2.5 12h2M19.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></g></symbol>
-<symbol id="i-moon" viewBox="0 0 24 24"><g class="ic-line"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/></g></symbol>
-<symbol id="i-menu" viewBox="0 0 24 24"><g class="ic-line"><path d="M4 7h16M4 12h16M4 17h16"/></g></symbol>
-<symbol id="i-close" viewBox="0 0 24 24"><g class="ic-line"><path d="M6 6l12 12M18 6 6 18"/></g></symbol>
-<symbol id="i-code" viewBox="0 0 24 24"><g class="ic-line"><path d="m17.5 16 4.5-4-4.5-4"/><path d="m6.5 8-4.5 4 4.5 4"/><path d="m14 4-4 16"/></g></symbol>
-<symbol id="i-chip" viewBox="0 0 24 24"><g class="ic-line"><rect x="5" y="5" width="14" height="14" rx="2.5"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 2.5v2.5M15 2.5v2.5M9 19v2.5M15 19v2.5M2.5 9H5M2.5 15H5M19 9h2.5M19 15h2.5"/></g></symbol>
-<symbol id="i-data" viewBox="0 0 24 24"><g class="ic-line"><ellipse cx="12" cy="5.5" rx="7.5" ry="3"/><path d="M4.5 5.5v13c0 1.66 3.36 3 7.5 3s7.5-1.34 7.5-3v-13"/><path d="M4.5 12c0 1.66 3.36 3 7.5 3s7.5-1.34 7.5-3"/></g></symbol>
-<symbol id="i-globe" viewBox="0 0 24 24"><g class="ic-line"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18Z"/></g></symbol>
-<symbol id="i-term" viewBox="0 0 24 24"><g class="ic-line"><rect x="2.5" y="4" width="19" height="16" rx="2.5"/><path d="m7 9.5 3 2.5-3 2.5"/><path d="M12.5 15h4.5"/></g></symbol>
-<symbol id="i-lang" viewBox="0 0 24 24"><g class="ic-line"><path d="M2.5 5.5h9"/><path d="M7 3.5v2"/><path d="M9.5 5.5c0 4-3 7.5-7 8.5"/><path d="M4.5 9.5c1.2 2.2 3 3.7 5.5 4.5"/><path d="m13 20.5 4-9 4 9"/><path d="M14.4 17.5h5.2"/></g></symbol>
-<symbol id="i-pulse" viewBox="0 0 24 24"><g class="ic-line"><path d="M2.5 12h4l2.5-6.5 4.5 13 2.5-6.5h5.5"/></g></symbol>
-</defs></svg>
-
-<!-- ============================================================
-     TOP BAR — mobile only
-     ============================================================ -->
-<header class="bar">
-  <span class="bar-id">
-    <picture>
-      <source srcset="assets/portrait-240.webp" type="image/webp">
-      <img class="bar-avatar" src="assets/portrait-240.jpg" width="240" height="240" alt="">
-    </picture>
-    <span class="bar-name">Muhammad Ahmed</span>
-  </span>
-  <div class="bar-tools">
-    <button class="theme" id="themeMobile" type="button" aria-label="Switch colour theme">
-      <svg class="ic theme-sun" aria-hidden="true"><use href="#i-sun"/></svg>
-      <svg class="ic theme-moon" aria-hidden="true"><use href="#i-moon"/></svg>
-    </button>
-    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Open menu">
-      <svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg>
-    </button>
-  </div>
-</header>
-<nav class="drawer" id="drawer" aria-label="Sections">
-  <a href="#home">Home</a>
-  <a href="#about">About</a>
-  <a href="#research">Research</a>
-  <a href="#experience">Experience</a>
-  <a href="#projects">Projects</a>
-  <a href="#skills">Skills</a>
-  <a href="#contact">Contact</a>
-</nav>
-
-<!-- ============================================================
-     RAIL — desktop
-     ============================================================ -->
-<aside class="rail">
-  <div class="rail-id">
-    <picture>
-      <source srcset="assets/portrait-240.webp 1x, assets/portrait-480.webp 2x" type="image/webp">
-      <img class="portrait" width="240" height="240" alt="Muhammad Ahmed"
-           src="assets/portrait-240.jpg"
-           srcset="assets/portrait-240.jpg 1x, assets/portrait-480.jpg 2x"
-           onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'portrait',textContent:'MA',title:'Muhammad Ahmed'}))">
-    </picture>
-    <p class="rail-name">Muhammad Ahmed</p>
-    <p class="rail-meta">
-      <span>Researcher · KAIST</span>
-      <span>Daejeon, South Korea</span>
-    </p>
-    <div class="social">
-      <a class="sq" href="https://github.com/homelessamy" target="_blank" rel="noopener" aria-label="GitHub">
-        <svg class="ic" aria-hidden="true"><use href="#i-github"/></svg></a>
-      <a class="sq" href="https://www.linkedin.com/in/ahmedkr71/" target="_blank" rel="noopener" aria-label="LinkedIn">
-        <svg class="ic" aria-hidden="true"><use href="#i-linkedin"/></svg></a>
-      <a class="sq" href="mailto:mahmed@kaist.ac.kr" aria-label="Email">
-        <svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg></a>
-      <a class="sq" href="Muhammad-Ahmed-CV.pdf" download="Muhammad-Ahmed-CV.pdf" aria-label="Download CV (PDF)">
-        <svg class="ic" aria-hidden="true"><use href="#i-download"/></svg></a>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="canvas header-inner">
+      <a class="wordmark" href="#home">Muhammad Ahmed</a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">Menu</button>
+      <nav class="primary-nav" id="primary-nav" aria-label="Main navigation">
+        <a href="#research">Research</a><a href="#experience">Experience</a><a href="#teaching">Teaching</a><a href="#education">Education</a><a href="#about">About</a><a href="Muhammad-Ahmed-CV.pdf">CV <span class="sr-only">(PDF)</span></a><a href="#contact">Contact</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch to dark theme" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/></svg>
+      </button>
     </div>
-  </div>
+  </header>
 
-  <nav class="nav" id="nav" aria-label="Sections">
-    <a href="#home" aria-current="true">Home</a>
-    <a href="#about">About</a>
-    <a href="#research">Research</a>
-    <a href="#experience">Experience</a>
-    <a href="#projects">Projects</a>
-    <a href="#skills">Skills</a>
-    <a href="#contact">Contact</a>
-  </nav>
-
-  <div class="rail-end">
-    <button class="theme" id="themeDesktop" type="button" aria-label="Switch colour theme">
-      <svg class="ic theme-sun" aria-hidden="true"><use href="#i-sun"/></svg>
-      <svg class="ic theme-moon" aria-hidden="true"><use href="#i-moon"/></svg>
-      <span id="themeText">Theme</span>
-    </button>
-  </div>
-</aside>
-
-<main class="page" id="main" tabindex="-1">
-<div class="wrap">
-
-<!-- ============================================================
-     HERO
-     ============================================================ -->
-<section class="sec" id="home" aria-labelledby="h-home">
-  <div class="field-wrap rv" style="--d:0s">
-    <canvas class="field" id="field" width="176" height="22"
-            role="img" aria-label="Abstract field resolving from coarse blocks on the left to fine detail on the right, illustrating 8× downscaling."></canvas>
-    <div class="field-key" aria-hidden="true"><span>2°</span><span>0.25°</span></div>
-  </div>
-
-  <p class="pill rv" style="--d:.05s"><span class="dot"></span>Open to research collaborations · Fall 2026</p>
-  <h1 id="h-home" class="rv" style="--d:.1s">Muhammad Ahmed</h1>
-  <p class="thesis rv" style="--d:.16s">Lightweight neural models for <em>weather, climate, and geospatial data</em>.</p>
-  <p class="lede rv" style="--d:.22s">
-    Undergraduate researcher at KAIST MetaEarth. I work on global weather forecasting with
-    ultralight models, physics-informed climate downscaling, and graph methods for the
-    irregular geometries of climate fields.
-  </p>
-
-  <div class="cta rv" style="--d:.28s">
-    <a class="btn btn-solid" href="#research">Read the research
-      <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-    <a class="btn btn-line" href="Muhammad-Ahmed-CV.pdf" download="Muhammad-Ahmed-CV.pdf">Download CV
-      <svg class="ic" aria-hidden="true"><use href="#i-download"/></svg></a>
-  </div>
-
-  <div class="metrics rv" style="--d:.34s">
-    <div class="metric">
-      <b><span id="cnt8">8</span>×</b>
-      <span>fewer parameters than GraphCast and FourCastNet</span>
-    </div>
-    <div class="metric">
-      <b>2° → 0.25°</b>
-      <span>downscaling resolution, PcMAN-DS</span>
-    </div>
-    <div class="metric">
-      <b>60–85%</b>
-      <span>RMSE reduction, graph-based ERA5 downscaling</span>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     ABOUT
-     ============================================================ -->
-<section class="sec" id="about" aria-labelledby="h-about">
-  <div class="sec-head"><h2 id="h-about">About</h2></div>
-  <div class="about">
-    <div class="prose">
-      <p>I study <strong>Civil and Environmental Engineering</strong> at KAIST, with coursework in
-        <strong>Computer Science</strong> and a minor in <strong>Business and Technology Management</strong>.</p>
-      <p>My work sits between deep learning and climate science: ultralight forecasters that match
-        much larger systems in skill, downscalers that preserve spectral properties, and graph
-        architectures that learn over irregular climate fields.</p>
-      <p>On the engineering side I build training and inference pipelines and modular evaluation
-        frameworks for benchmarking across architectures.</p>
-    </div>
-    <dl class="facts">
-      <div><dt>Affiliation</dt><dd>KAIST</dd></div>
-      <div><dt>Program</dt><dd>BS, CEE + CS</dd></div>
-      <div><dt>Minor</dt><dd>Business &amp; Tech. Mgmt</dd></div>
-      <div><dt>Lab</dt><dd>MetaEarth</dd></div>
-      <div><dt>At KAIST since</dt><dd>2021</dd></div>
-      <div><dt>Based in</dt><dd>Daejeon, KR</dd></div>
-    </dl>
-  </div>
-</section>
-
-<!-- ============================================================
-     RESEARCH
-     ============================================================ -->
-<section class="sec" id="research" aria-labelledby="h-research">
-  <div class="sec-head"><h2 id="h-research">Research</h2></div>
-  <div class="papers">
-
-    <article class="paper">
-      <div class="paper-top">
-        <h3>KAI-α: Ultralight Convolutional Architectures for Global Weather Forecasting</h3>
-        <span class="status status-wip">In progress</span>
+  <main class="canvas" id="main" tabindex="-1">
+    <section class="hero" id="home" aria-labelledby="name">
+      <div>
+        <div class="identity">
+          <picture><source srcset="assets/portrait-240.webp 1x, assets/portrait-480.webp 2x" type="image/webp"><img class="portrait" src="assets/portrait-240.jpg" width="240" height="240" alt="Muhammad Ahmed"></picture>
+          <p class="meta"><strong>Researcher · KAIST MetaEarth</strong>Daejeon, South Korea</p>
+        </div>
+        <h1 id="name">Muhammad Ahmed</h1>
+        <p class="hero-thesis">Learning the structure of weather, from global fields to local terrain.</p>
+        <p class="hero-description">I work on lightweight weather forecasting and graph-based climate downscaling at KAIST, building the models and the training and evaluation systems around them.</p>
+        <p class="collaboration">I’m open to research collaborations in weather and climate modelling, geospatial ML, and efficient scientific ML systems.</p>
+        <div class="text-links"><a href="#research">Selected research <span class="arrow" aria-hidden="true">↓</span></a><a href="Muhammad-Ahmed-CV.pdf">CV <span class="meta">(PDF)</span></a><a href="https://github.com/homelessamy">GitHub</a><a href="mailto:mahmed@kaist.ac.kr">Email</a></div>
       </div>
-      <p class="byline"><b>Muhammad Ahmed</b>, MetaEarth Research Team</p>
-      <p class="venue">KAIST MetaEarth Research Center · 2024–Present</p>
-      <p class="abs">An ultralight CNN architecture for global medium-range weather forecasting that
-        reaches competitive skill with roughly 8× fewer parameters than GraphCast and FourCastNet.
-        Includes a scalable training and modular evaluation framework built to benchmark across
-        architectures on equal footing.</p>
-      <div class="paper-foot">
-        <span class="chip chip-static"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>Code private</span>
-      </div>
-    </article>
+      <figure class="hero-figure" data-scientific-media>
+        <div class="media-frame">
+          <img src="assets/research/water-vapour.webp" width="660" height="660" fetchpriority="high" alt="A globe showing the spatial structure of total column water vapour, with bands and filaments across the atmosphere.">
+          <video id="water-vapour-video" width="660" height="660" preload="none" muted playsinline loop aria-label="Total column water vapour on a rotating globe" aria-describedby="water-vapour-caption" hidden data-src="assets/research/water-vapour.mp4"></video>
+        </div>
+        <figcaption id="water-vapour-caption"><span class="figure-label">A view of the atmosphere.</span> Total column water vapour: the spatial structure of moisture across the globe.</figcaption>
+        <div class="figure-tools"><button class="media-toggle" type="button" aria-controls="water-vapour-video" aria-pressed="false" hidden>Play visualization</button><span class="technical">TCWV · global field</span></div>
+        <noscript><p class="meta"><a href="assets/research/water-vapour.mp4">Watch the water-vapour visualization (MP4)</a></p></noscript>
+      </figure>
+    </section>
 
-    <article class="paper">
-      <div class="paper-top">
-        <h3>PcMAN-DS: Physics-Constrained Multi-Scale Attention for Surface Climate Downscaling</h3>
-        <span class="status status-wip">In progress</span>
-      </div>
-      <p class="byline"><b>Muhammad Ahmed</b>, MetaEarth Research Team</p>
-      <p class="venue">KAIST MetaEarth Research Center · 2024–Present</p>
-      <p class="abs">A multi-scale, constraint-aware statistical downscaling model for surface climate
-        variables. Enables resolution enhancement from 2° to 0.25° while preserving physical
-        consistency across scales.</p>
-      <div class="paper-foot">
-        <span class="chip chip-static"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>Code private</span>
-      </div>
-    </article>
-
-    <article class="paper">
-      <div class="paper-top">
-        <h3>Development and Evaluation of Graph Neural Network Based Climate Downscaling Methods</h3>
-        <span class="status status-draft">Preprint · draft</span>
-      </div>
-      <p class="byline"><b>Muhammad Ahmed</b></p>
-      <p class="venue">Undergraduate Research Program · Spring 2025</p>
-      <p class="abs">Graph-based climate downscaling for ERA5 over South Asia, with a multi-scale graph
-        reasoning module and a spectral–structural loss. Reaches 60–85% RMSE reduction across winds,
-        temperature, humidity and radiative fluxes, and about 84% for surface pressure. Spectral
-        errors stay within ±0.2% across 90% of wavenumbers.</p>
-      <div class="paper-foot">
-        <details class="cite" id="cite1">
-          <summary><svg class="ic" aria-hidden="true"><use href="#i-quote"/></svg>Cite</summary>
-          <div class="cite-body">
-<pre id="bib1">@unpublished{ahmed2025graphdownscaling,
-  author = {Ahmed, Muhammad},
-  title  = {Development and Evaluation of Graph Neural Network
-            Based Climate Downscaling Methods},
-  note   = {Undergraduate Research Program, KAIST},
-  year   = {2025}
-}</pre>
+    <section class="section" id="research" aria-labelledby="research-title">
+      <div class="section-heading"><h2 id="research-title">Selected Research</h2><p class="section-intro">Efficient prediction.<br>Spatial structure. Geographic transfer.</p></div>
+      <article class="research-entry flagship-kai" id="kai" aria-labelledby="kai-title">
+        <div class="research-header">
+          <div><p class="eyebrow">Global weather forecasting</p><h3 id="kai-title">KAI-α: a lighter global forecaster</h3><p class="meta">KAIST MetaEarth Research Center<br><time datetime="2024">2024</time>–Present · In progress</p></div>
+          <div><p>An ultralight convolutional model for medium-range global weather forecasting. The research asks how much forecasting skill can be retained with a substantially smaller parameter budget.</p><p class="contribution"><strong>My contribution</strong>I co-developed the model and built end-to-end training and inference pipelines, including a modular evaluation framework for comparing architectures on common benchmarks.</p><p class="result-line"><strong>Approximately 8× fewer parameters</strong> than GraphCast and FourCastNet, with competitive medium-range forecasting skill in the project’s evaluations.</p></div>
+        </div>
+        <figure class="research-wide-visual" data-scientific-media>
+          <div class="media-frame">
+            <img src="assets/research/kai-temperature-bias.webp" width="1350" height="550" loading="lazy" decoding="async" alt="Six global maps compare ground truth and KAI-alpha 2 metre temperature with the bias fields of KAI-alpha, GraphCast, Pangu-Weather and IFS HRES.">
+            <video id="kai-bias-video" width="1350" height="550" preload="none" muted playsinline loop hidden data-src="assets/research/kai-temperature-bias.mp4" aria-label="Temperature forecasts and model bias at successive forecast lead times" aria-describedby="kai-caption"></video>
           </div>
-        </details>
-      </div>
-    </article>
+          <figcaption id="kai-caption"><span class="figure-label">Forecasts need error maps, too.</span> Ground truth and KAI-α 2 m temperature, alongside bias fields for KAI-α, GraphCast, Pangu-Weather, and IFS HRES. Bias panels share a scale in kelvin.</figcaption>
+          <div class="figure-tools"><button class="media-toggle" type="button" aria-controls="kai-bias-video" aria-pressed="false" hidden>Play forecast comparison</button><a href="assets/research/kai-temperature-bias.webp">View full-size still <span aria-hidden="true">↗</span></a></div>
+          <noscript><p class="meta"><a href="assets/research/kai-temperature-bias.mp4">Watch forecast comparison (MP4)</a></p></noscript>
+        </figure>
+        <div class="text-links"><a href="research/kai.html">View the 10-day rollout &amp; research note <span class="arrow" aria-hidden="true">→</span></a><span class="meta">Research code is currently private.</span></div>
+      </article>
 
-  </div>
-</section>
-
-<!-- ============================================================
-     EXPERIENCE
-     ============================================================ -->
-<section class="sec" id="experience" aria-labelledby="h-experience">
-  <div class="sec-head"><h2 id="h-experience">Experience</h2></div>
-  <div class="roles">
-
-    <article class="role role-live">
-      <div class="role-top">
-        <div>
-          <h3>Research Intern</h3>
-          <p class="role-org"><a href="https://melab.kaist.ac.kr/" target="_blank" rel="noopener">KAIST MetaEarth Research Center
-            <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg></a></p>
+      <article class="research-entry feature secondary-feature" aria-labelledby="zameen-title">
+        <div class="feature-copy">
+          <p class="eyebrow">Graph-based climate downscaling</p>
+          <h3 id="zameen-title">Zameen: learning weather through terrain</h3>
+          <p class="meta">KAIST · Undergraduate Research Program<br><time datetime="2025">Spring 2025</time> · Ongoing research · Public code</p>
+          <p class="project-summary">Can a downscaler learn how terrain shapes local weather—and carry that relationship into a region it has never seen?</p>
+          <p>Coarse fields miss the spatial detail needed for regional analysis. Zameen reconstructs seven daily surface variables at 0.25° from 1.5° ERA5 inputs, with a graph hierarchy that connects large-scale weather to local terrain.</p>
+          <p class="contribution"><strong>My contribution</strong>I built the multi-scale graph downscaler and its spectral–structural learning objective. The model conditions message passing on terrain differences and atmospheric flow, then predicts a correction to bicubic interpolation.</p>
+          <div class="findings">
+            <p><strong>0.283 K temperature RMSE</strong>72.4% lower than bicubic on the 2020 test year, averaged across six fitted domains. On three unseen domains, temperature RMSE is 0.428 K—46.2% lower than bicubic.</p>
+            <p class="meta">Perfect-model ERA5 experiment. Fine-scale spectral recovery is less consistent on unseen geography.</p>
+          </div>
+          <div class="text-links"><a href="research/zameen.html">Read the research note <span class="arrow" aria-hidden="true">→</span></a><a href="https://github.com/homelessamy/zameen">Code &amp; experiments <span aria-hidden="true">↗</span></a></div>
         </div>
-        <p class="role-when">May 2024 – Present
-          <b>Vice Lead, Data-Driven Team, Spring 2025</b></p>
+        <figure class="feature-visual" data-scientific-media>
+          <div class="media-frame">
+            <img src="assets/research/south-asia-temperature.webp" width="704" height="828" loading="lazy" decoding="async" alt="South Asia 2 metre temperature on 1 June 2020: coarse 1.5 degree ERA5 outside the lens and Zameen’s 0.25 degree output inside, sharing a temperature scale in kelvin.">
+            <video id="zameen-video" width="704" height="828" preload="none" muted playsinline loop hidden data-src="assets/research/south-asia-temperature.mp4" aria-label="Daily South Asia temperature downscaling through a moving comparison lens" aria-describedby="zameen-caption"></video>
+          </div>
+          <figcaption id="zameen-caption"><span class="figure-label">From coarse field to local structure.</span> Daily 2 m temperature over South Asia, June–July 2020. The lens reveals Zameen’s 0.25° output; the surrounding field is the 1.5° input. Both use the same colour scale.</figcaption>
+          <div class="figure-tools"><button class="media-toggle" type="button" aria-controls="zameen-video" aria-pressed="false" hidden>Play comparison</button><a href="assets/research/south-asia-temperature.webp">View still <span aria-hidden="true">↗</span></a></div>
+          <noscript><p class="meta"><a href="assets/research/south-asia-temperature.mp4">Watch the comparison (MP4)</a></p></noscript>
+        </figure>
+      </article>
+    </section>
+
+    <!-- Ready for verified papers; the build script omits the section when empty. -->
+    <!-- publications:start -->
+    <!-- publications:end -->
+
+    <section class="section secondary-section" id="projects" aria-labelledby="work-title">
+      <h2 id="work-title">Other Work</h2>
+      <div>
+        <article class="index-entry"><div><p class="meta">KAIST · Graph Machine Learning and Mining · <time datetime="2025">Spring 2025</time></p><h3>Spatio-temporal drought prediction</h3><p>I designed a two-stage GRU–GraphSAGE model: six-step temporal encoding and climate prediction, followed by drought severity classification. Accuracy improved from 40% to 70% against the project’s bilinear and CNN baselines.</p></div><a href="https://github.com/homelessamy/drought" aria-label="Drought prediction repository">Code <span aria-hidden="true">↗</span></a></article>
+        <article class="index-entry"><div><p class="meta">KAIST · Urban and Regional Sustainability · <time datetime="2024">Spring 2024</time></p><h3>Accessibility across the US Northeast</h3><p>I used QGIS and network mapping to examine 30-minute job access, interstate travel times, and mode-shift emissions. The scenarios estimated up to 29.5 kg less CO₂ per trip when shifting from car to rail.</p></div></article>
+        <article class="index-entry"><div><p class="meta">KAIST · Introduction to Data Science · <time datetime="2023">Spring 2023</time></p><h3>Fraud in Korean customs declarations</h3><p>Statistical analysis of historical customs records and a KNN classifier for likely fraudulent declarations, reaching 88% classification accuracy in the course project.</p></div><a href="https://github.com/homelessamy/dscourse" aria-label="Customs fraud detection repository">Code <span aria-hidden="true">↗</span></a></article>
       </div>
-      <ul>
-        <li>Co-developed <strong>KAI-α</strong>, an ultralight CNN for global weather forecasting reaching
-          competitive skill with roughly <strong>8× fewer parameters</strong> than GraphCast and FourCastNet.</li>
-        <li>Built end-to-end <strong>training and inference pipelines from scratch</strong>, including a modular
-          evaluation framework for benchmarking across model architectures.</li>
-        <li>Contributed to <strong>PcMAN-DS</strong>, a multi-scale, constraint-aware physics-informed model for
-          statistical downscaling of surface climate variables from 2° to 0.25°.</li>
-      </ul>
-      <div class="tags">
-        <span class="tag tag-key">Weather forecasting</span>
-        <span class="tag tag-key">Climate downscaling</span>
-        <span class="tag">PyTorch</span>
-        <span class="tag">ERA5</span>
-        <span class="tag">Physics-informed ML</span>
+    </section>
+
+    <section class="section secondary-section" id="experience" aria-labelledby="experience-title">
+      <h2 id="experience-title">Experience</h2>
+      <div>
+        <article class="record"><div><h3>KAIST MetaEarth Research Center</h3><p class="record-subtitle">Research Intern · Vice Lead, Data-Driven Team (Spring 2025)</p></div><time datetime="2024-05">May 2024–Present</time><p class="record-description">Research and engineering for global weather prediction, with responsibility for training, inference, and comparative model evaluation.</p></article>
+        <article class="record"><div><h3>KAIST AIxMobility Lab</h3><p class="record-subtitle">Undergraduate Research Assistant</p></div><time datetime="2023-03">Mar 2023–Feb 2024</time><p class="record-description">Built and validated orthophoto datasets; developed computer-vision methods for road monitoring and contributed to AI-driven traffic simulation.</p></article>
       </div>
-    </article>
+    </section>
 
-    <article class="role">
-      <div class="role-top">
-        <div>
-          <h3>Undergraduate Research Assistant</h3>
-          <p class="role-org"><a href="https://www.aimobility.kaist.ac.kr/" target="_blank" rel="noopener">KAIST AIxMobility Lab
-            <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg></a></p>
-        </div>
-        <p class="role-when">Mar 2023 – Feb 2024</p>
+    <section class="section secondary-section" id="teaching" aria-labelledby="teaching-title">
+      <h2 id="teaching-title">Teaching</h2>
+      <div>
+        <article class="record"><div><h3>Scientific Writing</h3><p class="record-subtitle">Teaching Assistant · KAIST</p></div><time datetime="2026">Fall 2026</time></article>
+        <article class="record"><div><h3>Intermediate Writing</h3><p class="record-subtitle">Teaching Assistant · KAIST</p></div><time datetime="2024">Summer 2024</time></article>
+        <article class="record"><div><h3>English Presentation and Discussion</h3><p class="record-subtitle">Teaching Assistant · KAIST</p></div><time datetime="2024">Summer 2024</time></article>
       </div>
-      <ul>
-        <li>Generated and validated <strong>high-resolution orthophotos</strong> for urban mapping and
-          large-scale dataset development (contributed to Haechan 2024).</li>
-        <li>Developed <strong>computer-vision methods for automated road condition monitoring</strong>,
-          enabling scalable detection and analysis of roadway features.</li>
-        <li>Contributed to the design and implementation of an <strong>AI-driven traffic simulation
-          system</strong> for data-informed analysis of urban mobility.</li>
-      </ul>
-      <div class="tags">
-        <span class="tag tag-key">Geospatial</span>
-        <span class="tag tag-key">Computer vision</span>
-        <span class="tag">OpenCV</span>
-        <span class="tag">MetaShape</span>
-        <span class="tag">Traffic simulation</span>
-      </div>
-    </article>
+    </section>
 
-  </div>
-</section>
+    <section class="section secondary-section" id="education" aria-labelledby="education-title">
+      <h2 id="education-title">Education</h2>
+      <div><article class="record"><div><h3>Korea Advanced Institute of Science and Technology</h3><p class="record-subtitle">BS · Civil and Environmental Engineering &amp; Computer Science</p></div><time datetime="2021-09">Sep 2021–Present</time><p class="record-description">Minor in Business and Technology Management.</p></article></div>
+    </section>
 
-<!-- ============================================================
-     PROJECTS
-     ============================================================ -->
-<section class="sec" id="projects" aria-labelledby="h-projects">
-  <div class="sec-head"><h2 id="h-projects">Projects</h2></div>
-  <div class="bento">
+    <section class="section secondary-section" id="skills" aria-labelledby="toolkit-title">
+      <h2 id="toolkit-title">Research &amp;<br>Technical Toolkit</h2>
+      <dl class="toolkit"><div><dt>Research</dt><dd>Weather forecasting, climate downscaling, graph ML, spectral analysis, geospatial modelling.</dd></div><div><dt>Models &amp; data</dt><dd>Python, PyTorch, PyTorch Geometric, Xarray, ERA5, NumPy, Pandas.</dd></div><div><dt>Spatial analysis</dt><dd>QGIS, Cartopy, xESMF, OpenCV.</dd></div><div><dt>Engineering</dt><dd>Training and inference pipelines, reproducible experiments, modular model evaluation.</dd></div></dl>
+    </section>
 
-    <article class="tile tile-lead">
-      <p class="tile-kind">Undergraduate Research Program · Spring 2025</p>
-      <h3>Graph neural network climate downscaling</h3>
-      <p>Graph-based downscaling of ERA5 over South Asia. Multi-scale graph reasoning paired with a
-        spectral–structural loss that preserves high-frequency atmospheric features.</p>
-      <div class="results">
-        <div><b>60–85%</b><span>RMSE reduction: winds, temperature, humidity, fluxes</span></div>
-        <div><b>84%</b><span>RMSE reduction on surface pressure</span></div>
-        <div><b>±0.2%</b><span>spectral error across 90% of wavenumbers</span></div>
-        <div><b>ERA5</b><span>South Asia domain</span></div>
-      </div>
-      <div class="tags">
-        <span class="tag">PyTorch</span><span class="tag">GNN</span><span class="tag">ERA5</span>
-        <span class="tag">Xarray</span><span class="tag">Spectral analysis</span>
-      </div>
-      <div class="tile-acts">
-        <span class="chip chip-static"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>Code private</span>
-      </div>
-    </article>
+    <section class="section secondary-section" id="about" aria-labelledby="about-title">
+      <h2 id="about-title">About</h2>
+      <div class="about-prose"><p>I’m interested in what a model needs to know about the world to generalize. In my downscaling work, that becomes a concrete question: can relationships between neighbouring terrain features tell us more than a model’s familiarity with a particular place?</p><p>Weather and climate bring together the questions I keep coming back to in engineering: spatial structure, physical constraints, and the gap between a useful approximation and a misleading one. My studies in civil and environmental engineering and computer science give me ways to approach both the physical problem and its computational form.</p><p>I like working across the whole experiment—from the data representation to the training pipeline to the plot that reveals where the model fails. I’d welcome collaborators who care about geographic generalization, efficient forecasting, or making scientific ML results easier to inspect and reproduce.</p><p class="about-aside">Outside the model itself, I also care about explaining it clearly. Teaching writing and presentation is another way I work on that.</p></div>
+    </section>
 
-    <article class="tile">
-      <p class="tile-kind">Graph Machine Learning and Mining · Spring 2025</p>
-      <h3>Spatio-temporal drought prediction</h3>
-      <p>Two-stage architecture: a GRU temporal encoder over T=6 steps feeding shared GraphSAGE layers
-        for next-state climate prediction, then a GraphSAGE classifier over severity classes 0–4.</p>
-      <div class="results">
-        <div><b>40% → 70%</b><span>classification accuracy against bilinear and CNN baselines</span></div>
-      </div>
-      <div class="tags">
-        <span class="tag">GraphSAGE</span><span class="tag">GRU</span><span class="tag">PyTorch Geometric</span>
-      </div>
-      <div class="tile-acts">
-        <a class="chip" href="https://github.com/homelessamy/drought" target="_blank" rel="noopener">
-          <svg class="ic" aria-hidden="true"><use href="#i-github"/></svg>Repository
-          <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg></a>
-      </div>
-    </article>
+    <section class="section" id="activity" aria-labelledby="activity-title">
+      <div class="activity-heading"><h2 id="activity-title">On GitHub</h2><p class="activity-total" id="activity-total"><a href="https://github.com/homelessamy">@homelessamy</a></p></div>
+      <div class="heatmap-scroll" id="heatmap-scroll" role="region" aria-label="GitHub contribution history, horizontally scrollable" tabindex="0" hidden><div class="heatmap" id="heatmap" role="img" aria-label="GitHub contributions over the last year"></div></div>
+      <p class="activity-note" id="activity-fallback">Explore repositories and contribution history on <a href="https://github.com/homelessamy">GitHub</a>.</p>
+      <div class="activity-bottom"><p class="activity-note">A little of the day-to-day engineering. Some research lives in private repositories.</p><div class="heatmap-key" id="heatmap-key" aria-hidden="true" hidden><span>Less</span><i></i><i data-level="1"></i><i data-level="2"></i><i data-level="3"></i><i data-level="4"></i><span>More</span></div></div>
+    </section>
 
-    <article class="tile">
-      <p class="tile-kind">Urban and Regional Sustainability · Spring 2024</p>
-      <h3>US Northeast megaregion accessibility</h3>
-      <p>Public-transit accessibility and interstate travel emissions across major Northeast cities.
-        Evaluated 30-minute job access, modal travel times and CO₂ under mode-shift scenarios.</p>
-      <div class="results">
-        <div><b>29.5 kg</b><span>CO₂ saved per trip shifting from car to rail</span></div>
-      </div>
-      <div class="tags">
-        <span class="tag">QGIS</span><span class="tag">Spatial analysis</span><span class="tag">Network mapping</span>
-      </div>
-    </article>
-
-    <article class="tile tile-foot-strip">
-      <div class="strip-row">
-        <div>
-          <p class="tile-kind">Introduction to Data Science · Spring 2023</p>
-          <h3>Detecting fraud in Korean customs declarations</h3>
-          <p>Statistical analysis and a KNN classifier over historical customs records to surface
-            likely-fraudulent declarations.</p>
-        </div>
-        <div class="strip-fig"><b>88%</b><span>classification<br>accuracy</span></div>
-        <a class="chip" href="https://github.com/homelessamy/dscourse" target="_blank" rel="noopener">
-          <svg class="ic" aria-hidden="true"><use href="#i-github"/></svg>Repository
-          <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg></a>
-      </div>
-    </article>
-
-  </div>
-</section>
-
-<!-- ============================================================
-     SKILLS
-     ============================================================ -->
-<section class="sec" id="skills" aria-labelledby="h-skills">
-  <div class="sec-head"><h2 id="h-skills">Skills</h2></div>
-  <div class="skills">
-    <div class="skill">
-      <p class="skill-label"><svg class="ic" aria-hidden="true"><use href="#i-code"/></svg>Programming</p>
-      <p class="skill-items">Python <i>·</i> C++ <i>·</i> Java <i>·</i> Rust <i>·</i> MATLAB</p>
-    </div>
-    <div class="skill">
-      <p class="skill-label"><svg class="ic" aria-hidden="true"><use href="#i-chip"/></svg>Machine learning</p>
-      <p class="skill-items">PyTorch <i>·</i> TensorFlow <i>·</i> GNNs <i>·</i> Super-resolution <i>·</i> Spatio-temporal modeling</p>
-    </div>
-    <div class="skill">
-      <p class="skill-label"><svg class="ic" aria-hidden="true"><use href="#i-data"/></svg>Data</p>
-      <p class="skill-items">NumPy <i>·</i> Pandas <i>·</i> SQL <i>·</i> Xarray <i>·</i> Cartopy <i>·</i> xESMF <i>·</i> Model evaluation</p>
-    </div>
-    <div class="skill">
-      <p class="skill-label"><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg>Geospatial &amp; vision</p>
-      <p class="skill-items">QGIS <i>·</i> MetaShape <i>·</i> OpenCV <i>·</i> ERA5 <i>·</i> Orthophotos</p>
-    </div>
-    <div class="skill">
-      <p class="skill-label"><svg class="ic" aria-hidden="true"><use href="#i-term"/></svg>Systems</p>
-      <p class="skill-items">ROS <i>·</i> Training pipelines <i>·</i> Inference pipelines <i>·</i> Distributed training</p>
-    </div>
-    <div class="skill">
-      <p class="skill-label"><svg class="ic" aria-hidden="true"><use href="#i-lang"/></svg>Languages</p>
-      <p class="skill-items">English <i>fluent</i> <i>·</i> Urdu <i>native</i> <i>·</i> Punjabi <i>native</i> <i>·</i> Korean <i>intermediate</i></p>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     ACTIVITY — live GitHub contributions, recoloured to the palette.
-     Degrades to the static summary line below if the fetch fails.
-     ============================================================ -->
-<section class="sec" id="activity" aria-labelledby="h-activity">
-  <div class="activity">
-    <div class="act-top">
-      <h2 id="h-activity">Activity</h2>
-      <p class="act-total" id="actTotal">
-        <a href="https://github.com/homelessamy" target="_blank" rel="noopener">@homelessamy</a>
-      </p>
-    </div>
-
-    <div class="hm-scroll" id="hmScroll" hidden>
-      <div class="hm hm-skel" id="hm" role="img" aria-label="GitHub contribution heatmap"></div>
-    </div>
-
-    <div class="act-foot">
-      <!-- Hand-edit this line whenever the focus changes. -->
-      <p class="act-line"><svg class="ic" aria-hidden="true"><use href="#i-pulse"/></svg>
-        <b>Currently:</b> lightweight global forecasting and physics-informed downscaling at KAIST MetaEarth.</p>
-      <p class="act-caveat">Public contributions only. Most lab work sits in private repositories.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     CONTACT
-     ============================================================ -->
-<section class="sec" id="contact" aria-labelledby="h-contact">
-  <div class="contact">
-    <h2 id="h-contact">Open to research collaborations, internships and graduate opportunities.</h2>
-    <p>If you work on AI for weather and climate, downscaling, geospatial ML, graph methods or
-      efficient training systems, get in touch.</p>
-    <div class="cta">
-      <a class="btn btn-solid" href="mailto:mahmed@kaist.ac.kr">mahmed@kaist.ac.kr
-        <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-      <a class="btn btn-line" href="https://github.com/homelessamy" target="_blank" rel="noopener">GitHub
-        <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg></a>
-      <a class="btn btn-line" href="https://www.linkedin.com/in/ahmedkr71/" target="_blank" rel="noopener">LinkedIn
-        <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg></a>
-    </div>
-  </div>
-</section>
-
-<footer class="foot">
-  <span>© 2026 Muhammad Ahmed</span>
-  <span>KAIST · Daejeon, South Korea</span>
-</footer>
-
-</div>
-</main>
-
-<script>
-(function(){
-'use strict';
-var root = document.documentElement;
-var reduce = matchMedia('(prefers-reduced-motion: reduce)');
-
-/* ---------------------------------------------------------
-   1. Theme
-   --------------------------------------------------------- */
-function currentTheme(){
-  var set = root.getAttribute('data-theme');
-  if (set) return set;
-  return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
-function setTheme(t){
-  root.setAttribute('data-theme', t);
-  try { localStorage.setItem('theme', t); } catch(e){}
-  var label = document.getElementById('themeText');
-  if (label) label.textContent = t === 'dark' ? 'Light' : 'Dark';
-  paintField();
-  paintHeatmap();
-}
-['themeDesktop','themeMobile'].forEach(function(id){
-  var b = document.getElementById(id);
-  if (b) b.addEventListener('click', function(){
-    setTheme(currentTheme() === 'dark' ? 'light' : 'dark');
-  });
-});
-(function(){
-  var label = document.getElementById('themeText');
-  if (label) label.textContent = currentTheme() === 'dark' ? 'Light' : 'Dark';
-})();
-
-/* ---------------------------------------------------------
-   2. Mobile drawer
-   --------------------------------------------------------- */
-var burger = document.getElementById('burger');
-var drawer = document.getElementById('drawer');
-if (burger && drawer){
-  var icon = burger.querySelector('use');
-  burger.addEventListener('click', function(){
-    var open = drawer.classList.toggle('open');
-    burger.setAttribute('aria-expanded', String(open));
-    burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    icon.setAttribute('href', open ? '#i-close' : '#i-menu');
-  });
-  drawer.addEventListener('click', function(e){
-    if (e.target.tagName !== 'A') return;
-    drawer.classList.remove('open');
-    burger.setAttribute('aria-expanded','false');
-    burger.setAttribute('aria-label','Open menu');
-    icon.setAttribute('href','#i-menu');
-  });
-}
-
-/* ---------------------------------------------------------
-   3. Scrollspy
-   --------------------------------------------------------- */
-(function(){
-  var links = [].slice.call(document.querySelectorAll('#nav a'));
-  if (!links.length || !('IntersectionObserver' in window)) return;
-  var map = {};
-  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
-  var targets = Object.keys(map)
-    .map(function(id){ return document.getElementById(id); })
-    .filter(Boolean);
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if (!e.isIntersecting) return;
-      links.forEach(function(a){ a.removeAttribute('aria-current'); });
-      var a = map[e.target.id];
-      if (a) a.setAttribute('aria-current','true');
-    });
-  }, { rootMargin: '-45% 0px -50% 0px' });
-  targets.forEach(function(t){ io.observe(t); });
-})();
-
-/* ---------------------------------------------------------
-   4. Orchestrated page-load reveal (one sequence, above the fold).
-      Real values live in the HTML, so nothing here is load-bearing.
-   --------------------------------------------------------- */
-requestAnimationFrame(function(){
-  requestAnimationFrame(function(){
-    [].forEach.call(document.querySelectorAll('.rv'), function(el){ el.classList.add('in'); });
-  });
-});
-
-(function(){
-  var el = document.getElementById('cnt8');
-  if (!el || reduce.matches) return;
-  var target = parseInt(el.textContent, 10);
-  if (!isFinite(target)) return;
-  var t0 = null, dur = 820, delay = 300;
-  el.textContent = '0';
-  function step(now){
-    if (t0 === null) t0 = now;
-    var p = Math.min((now - t0) / dur, 1);
-    el.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 3))));
-    if (p < 1) requestAnimationFrame(step);
-  }
-  setTimeout(function(){ requestAnimationFrame(step); }, delay);
-})();
-
-/* ---------------------------------------------------------
-   5. Signature — a field resolving from 8x coarse cells to 1x.
-      Deterministic value noise, no dependencies, ~10fps,
-      paused off-screen, one static frame under reduced motion.
-   --------------------------------------------------------- */
-var cv = document.getElementById('field');
-var ctx = cv ? cv.getContext('2d', { alpha:false }) : null;
-var NX = cv ? cv.width : 0, NY = cv ? cv.height : 0;
-var stops = [];
-
-function readStops(){
-  var cs = getComputedStyle(root);
-  stops = ['--f0','--f1','--f2','--f3','--f4'].map(function(v){
-    var h = cs.getPropertyValue(v).trim().replace('#','');
-    if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
-    return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
-  });
-}
-function ramp(v){
-  v = v < 0 ? 0 : v > 1 ? 1 : v;
-  // cool baseline over most of the range; the warm pole only at the very top
-  var band = v < 0.42 ? [0,1,v/0.42]
-           : v < 0.74 ? [1,2,(v-0.42)/0.32]
-           : v < 0.955 ? [2,3,(v-0.74)/0.215]
-           : [3,4,(v-0.955)/0.045];
-  var a = stops[band[0]], b = stops[band[1]], t = band[2];
-  return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t];
-}
-function hash(x,y,s){
-  var n = (Math.imul(x|0, 374761393) ^ Math.imul(y|0, 668265263) ^ Math.imul(s|0, 1442695041)) >>> 0;
-  n = Math.imul(n ^ (n >>> 13), 1274126177) >>> 0;
-  return ((n ^ (n >>> 16)) >>> 0) / 4294967295;
-}
-function sstep(t){ return t*t*(3-2*t); }
-function vnoise(x,y,s){
-  var xi = Math.floor(x), yi = Math.floor(y);
-  var u = sstep(x-xi), v = sstep(y-yi);
-  var a = hash(xi,yi,s), b = hash(xi+1,yi,s), c = hash(xi,yi+1,s), d = hash(xi+1,yi+1,s);
-  return (a*(1-u)+b*u)*(1-v) + (c*(1-u)+d*u)*v;
-}
-function fbm(x,y,s){
-  return vnoise(x,y,s)*0.50 + vnoise(x*2.2,y*2.2,s+7)*0.30 + vnoise(x*4.6,y*4.6,s+13)*0.20;
-}
-function paintField(t){
-  if (!ctx) return;
-  if (!stops.length) readStops();
-  t = t || 0;
-  var img = ctx.createImageData(NX, NY), d = img.data, i, j, k = 0;
-  var front = 0.42 + Math.sin(t*0.06) * 0.10;   // the resolution edge drifts
-  var ox = t * 0.11;                            // and the field advects
-  for (j = 0; j < NY; j++){
-    for (i = 0; i < NX; i++){
-      var w = sstep(Math.max(0, Math.min(1, (i/NX - front)/0.36 + 0.5)));
-      var q = Math.max(1, Math.round(8 - 7*w));
-      var bx = Math.floor(i/q)*q + q/2, by = Math.floor(j/q)*q + q/2;
-      // the mapping is tuned so the warm pole covers under 2% of cells
-      var c = ramp((fbm(bx/13 + ox, by/7, 5) - 0.26) / 0.52);
-      d[k++] = c[0]; d[k++] = c[1]; d[k++] = c[2]; d[k++] = 255;
-    }
-  }
-  ctx.putImageData(img, 0, 0);
-}
-if (ctx){
-  readStops();
-  if (reduce.matches){
-    paintField(0);
-  } else {
-    var tick = 0, running = false, timer = null;
-    var loop = function(){
-      paintField(tick += 1);
-      timer = setTimeout(function(){ if (running) requestAnimationFrame(loop); }, 100);
-    };
-    var start = function(){ if (!running){ running = true; loop(); } };
-    var stop  = function(){ running = false; clearTimeout(timer); };
-    paintField(0);
-    if ('IntersectionObserver' in window){
-      new IntersectionObserver(function(es){
-        es[0].isIntersecting ? start() : stop();
-      }, { threshold: 0 }).observe(cv);
-    } else { start(); }
-    document.addEventListener('visibilitychange', function(){
-      document.hidden ? stop() : start();
-    });
-  }
-}
-
-/* ---------------------------------------------------------
-   6. BibTeX copy — progressive enhancement on a <details>
-      that already works without JavaScript.
-   --------------------------------------------------------- */
-(function(){
-  var box = document.querySelector('#cite1 .cite-body');
-  var pre = document.getElementById('bib1');
-  if (!box || !pre || !navigator.clipboard) return;
-  var btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = 'copy';
-  btn.innerHTML = '<svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg>Copy BibTeX';
-  btn.addEventListener('click', function(){
-    navigator.clipboard.writeText(pre.textContent).then(function(){
-      btn.innerHTML = '<svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Copied';
-      setTimeout(function(){
-        btn.innerHTML = '<svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg>Copy BibTeX';
-      }, 1800);
-    });
-  });
-  box.appendChild(btn);
-})();
-
-/* ---------------------------------------------------------
-   7. GitHub contributions — unauthenticated, CORS-friendly,
-      cached 6h in localStorage, silent on failure.
-   --------------------------------------------------------- */
-var USER = 'homelessamy';
-var CACHE = 'gh-contrib-v1';
-var TTL = 6 * 60 * 60 * 1000;
-var contrib = null;
-
-function readCache(){
-  try {
-    var raw = localStorage.getItem(CACHE);
-    if (!raw) return null;
-    var o = JSON.parse(raw);
-    return (Date.now() - o.t < TTL) ? o.d : null;
-  } catch(e){ return null; }
-}
-function writeCache(d){
-  try { localStorage.setItem(CACHE, JSON.stringify({ t: Date.now(), d: d })); } catch(e){}
-}
-function paintHeatmap(){
-  if (!contrib) return;
-  var grid = document.getElementById('hm');
-  var days = contrib.contributions || [];
-  if (!grid || !days.length) return;
-  grid.classList.remove('hm-skel');
-  grid.textContent = '';
-  // pad so the first column starts on a Sunday
-  var pad = new Date(days[0].date + 'T00:00:00Z').getUTCDay();
-  var frag = document.createDocumentFragment();
-  var n;
-  for (n = 0; n < pad; n++){
-    var blank = document.createElement('i');
-    blank.style.visibility = 'hidden';
-    frag.appendChild(blank);
-  }
-  days.forEach(function(day){
-    var cell = document.createElement('i');
-    cell.setAttribute('data-l', String(day.level));
-    cell.title = day.count + (day.count === 1 ? ' contribution' : ' contributions') + ' on ' + day.date;
-    frag.appendChild(cell);
-  });
-  grid.appendChild(frag);
-  grid.setAttribute('aria-label',
-    (contrib.total && contrib.total.lastYear) + ' GitHub contributions in the last year');
-  document.getElementById('hmScroll').hidden = false;
-  var total = document.getElementById('actTotal');
-  if (total && contrib.total && contrib.total.lastYear != null){
-    total.innerHTML = '<b>' + contrib.total.lastYear + '</b> contributions in the last year · ' +
-      '<a href="https://github.com/' + USER + '" target="_blank" rel="noopener">@' + USER + '</a>';
-  }
-}
-(function(){
-  var cached = readCache();
-  if (cached){ contrib = cached; paintHeatmap(); return; }
-  fetch('https://github-contributions-api.jogruber.de/v4/' + USER + '?y=last', { mode:'cors' })
-    .then(function(r){
-      var left = r.headers.get('x-ratelimit-remaining');
-      if (!r.ok || left === '0') throw new Error('unavailable');
-      return r.json();
-    })
-    .then(function(d){
-      if (!d || !d.contributions || !d.contributions.length) throw new Error('empty');
-      contrib = d; writeCache(d); paintHeatmap();
-    })
-    .catch(function(){ /* the static summary below stays as-is */ });
-})();
-
-})();
-</script>
+    <section class="section contact" id="contact" aria-labelledby="contact-title">
+      <div><p class="eyebrow">Contact</p><h2 id="contact-title">There’s more to understand. Let’s compare notes.</h2><p>For research collaborations, questions about the models, or a conversation about weather, climate, and geospatial machine learning, email is the best place to start.</p></div>
+      <div class="contact-links"><a class="contact-email" href="mailto:mahmed@kaist.ac.kr">mahmed@kaist.ac.kr <span aria-hidden="true">↗</span></a><div class="text-links"><a href="https://github.com/homelessamy">GitHub</a><a href="https://www.linkedin.com/in/ahmedkr71/">LinkedIn</a><a href="Muhammad-Ahmed-CV.pdf">CV (PDF)</a></div></div>
+    </section>
+  </main>
+  <footer class="canvas foot"><span>© 2026 Muhammad Ahmed</span><span>KAIST · Daejeon, South Korea</span></footer>
 </body>
 </html>
