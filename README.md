@@ -20,8 +20,15 @@ GitHub Pages workflow; the redesign itself does not push or deploy anything.
   Education → Research & Technical Toolkit → About → Beyond Research → Contact.
   Awards and Beyond Research are intentionally not in the navigation. The CV is
   linked only from the shared navigation; the GitHub profile only from Contact.
-- `research/kai.html`: KAI research note, HEALPix geometry, **days 1–10 only** of
-  the autoregressive rollout, and comparative temperature bias.
+  The KAI entry (`#kai`) holds everything that used to be on the KAI note, in
+  three h4 subsections with stable anchors: `#kai-geometry` (HEALPix),
+  `#kai-comparison` (temperature bias, rendered once) and `#kai-rollout`
+  (**days 1–10 only** of the autoregressive rollout).
+- `research/kai.html`: not a research page. A `noindex` redirect stub (canonical
+  to the homepage) that maps old fragments to fixed homepage anchors:
+  `#geometry` → `#kai-geometry`, `#comparison-title` → `#kai-comparison`,
+  `#rollout-title` → `#kai-rollout`, anything else → `#kai`. Without JavaScript a
+  `<noscript>` meta refresh goes to `#kai`. It loads no stylesheet, script or media.
 - `research/zameen.html`: not a research page. A `noindex` redirect stub
   (`location.replace` plus a zero-second meta refresh, canonical to GitHub) that
   sends old inbound links to https://github.com/homelessamy/zameen. Nothing on the
@@ -29,9 +36,10 @@ GitHub Pages workflow; the redesign itself does not push or deploy anything.
 - `styles.css`: shared Archivo / Source Serif 4 / Plex Mono typography, warm
   neutral and scientific teal themes, a 1120px canvas, responsive layouts.
 - `theme.js`: early restoration of the existing `theme` localStorage key.
-- Stylesheet and script links carry a `?v=YYYYMMDD` tag. Bump it in all three
-  HTML files whenever `styles.css`, `site.js` or `theme.js` changes, because
-  GitHub Pages lets browsers cache them for ten minutes.
+- Stylesheet and script links carry a date-based `?v=` tag (currently
+  `20260926-2` on the homepage). Bump it whenever `styles.css`, `site.js` or
+  `theme.js` changes, because GitHub Pages lets browsers cache them for ten
+  minutes.
 - `site.js`: progressive enhancement for navigation, theme, and autoplaying
   media. Content remains static HTML. There is no GitHub activity section and no
   third-party API request.
@@ -131,7 +139,7 @@ Add only verified records using this shape (illustrative placeholders, not a pap
   "year": 2026,
   "paper": null,
   "code": null,
-  "project": "research/kai.html"
+  "project": "https://homelessamy.github.io/#kai"
 }
 ```
 
@@ -163,8 +171,10 @@ Checks cover local links/assets/posters/anchors, retired content, unchanged
 research assets (via git), section order, 1440/768/375px in both themes, axe
 WCAG A/AA rules, autoplay state (muted, looping, inline, no controls, poster,
 aspect ratio), reduced motion on load and on live change, failed MP4 and blocked
-autoplay fallbacks, keyboard/menu/theme persistence, no-JavaScript posters, and
-the Zameen redirect with and without JavaScript. GitHub is stubbed in the browser
+autoplay fallbacks, keyboard/menu/theme persistence, no-JavaScript posters, the
+exact set of homepage MP4s (no orphans, comparison clip once), preserved research
+figures (4×, 13.46M rollout configuration, Zameen metrics), the KAI redirect and
+its legacy fragments, and the Zameen redirect with and without JavaScript. GitHub is stubbed in the browser
 checks; check real destinations separately.
 
 Automated accessibility checks do not replace a screen-reader review. Local
@@ -178,5 +188,11 @@ performance observations are not field Core Web Vitals measurements.
   entry keeps its May 2024 start and notes the earlier Research Intern role;
   no internship end date is stated.
 - KAI's parameter comparison reads “approximately 4× fewer parameters” than
-  GraphCast and FourCastNet, per the owner; the separate 13.46M rollout
-  configuration figure is unchanged.
+  GraphCast and FourCastNet, per the owner; the 13.46M figure describes only the
+  local-normalized rollout configuration and should not be read as the
+  benchmark configuration.
+- Other Work descriptions follow the DS518 and CE580 repository reports
+  (framing shifted, sentiment did not, attribution is suggestive; geometry
+  refinement improved localization with little change to the wavefield fit).
+- The 1426 × 324 rollout figure fits at 375px but its native labels are too small
+  to read there; it is kept whole rather than cropped.

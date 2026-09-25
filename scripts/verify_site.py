@@ -56,7 +56,16 @@ for text in ("View still", "View full-size still", "(MP4)", "media-toggle", "jog
              'id="activity"', "drought", "dscourse", "Northeast", "Muhammad-Ahmed-CV.pdf\">CV <span class=\"meta\">"):
     assert text not in home and text not in kai, f"Retired content remains: {text}"
 assert home.count("Muhammad-Ahmed-CV.pdf") == 1, "CV should appear only in the shared navigation"
-assert not re.search(r"<video[^>]*\scontrols", home + kai), "Videos must not expose controls"
+assert not re.search(r"<video[^>]*\scontrols", home), "Videos must not expose controls"
+# research/kai.html is a redirect stub: no article, media or navigation.
+assert 'name="robots" content="noindex"' in kai and "<video" not in kai and "<nav" not in kai and ".mp4" not in kai
+assert "research/kai.html" not in home, "Homepage still links to the retired KAI note"
+for fact in ("Approximately 4× fewer parameters", "13.46 million parameters, HEALPix nside 64", "1 January 2018",
+             "0.283 K temperature RMSE", "72.4% lower than bicubic on the 2020 test year, averaged across six fitted domains. "
+             "On three unseen domains, temperature RMSE is 0.428 K—46.2% lower than bicubic."):
+    assert fact in home, f"Research fact changed: {fact}"
+assert "8×" not in home and "eight times" not in home, "Retired 8x claim restored"
+assert home.count("kai-temperature-bias.mp4") == 1, "Comparison clip must render once"
 assert not list(ROOT.rglob("*.pdf")) or [p.name for p in ROOT.rglob("*.pdf")] == ["Muhammad-Ahmed-CV.pdf"], "Unexpected PDF in site output"
 try:
     changed = subprocess.run(["git", "status", "--porcelain", "--", "assets/research"], cwd=ROOT,
@@ -103,7 +112,7 @@ with sync_playwright() as p:
                 page.on("pageerror", lambda error: errors.append(str(error)))
                 requests = []
                 page.on("request", lambda request: requests.append(request.url))
-                for path in ("/", "/research/kai.html"):
+                for path in ("/",):
                     requests.clear()
                     page.goto(args.url + path)
                     page.evaluate("document.fonts.ready")
@@ -118,8 +127,9 @@ with sync_playwright() as p:
                         check_playing(page, path)
                         mp4s = {urlsplit(u).path for u in requests if u.endswith(".mp4")}
                         assert not any("europe-wind" in u for u in mp4s), "Orphan Zameen-note video requested"
-                        if path == "/":
-                            assert not any("healpix" in u or "rollout" in u for u in mp4s), mp4s
+                        expected = {"water-vapour", "healpix", "kai-temperature-bias", "kai-rollout-10day",
+                                    "south-asia-temperature", "cycling"}
+                        assert {Path(u).stem for u in mp4s} == expected, mp4s
                     assert not any("jogruber" in url for url in requests), "Contribution API requested"
                     if args.axe and motion == "no-preference":
                         page.add_script_tag(path=str(args.axe))
@@ -131,8 +141,7 @@ with sync_playwright() as p:
                         assert page.locator("#projects .index-entry").count() == 2
                         assert page.locator("#research article").first.get_attribute("id") == "kai"
                     if motion == "no-preference":
-                        slug = "home" if path == "/" else "kai"
-                        page.screenshot(path=str(args.screenshots / f"{slug}-{theme}-{width}.png"), full_page=True)
+                        page.screenshot(path=str(args.screenshots / f"home-{theme}-{width}.png"), full_page=True)
                 context.close()
                 print(f"Responsive, theme, media ({motion}): {theme} {width}px PASS")
 
@@ -140,8 +149,8 @@ with sync_playwright() as p:
     context = browser.new_context(viewport={"width": 1440, "height": 900})
     page = context.new_page()
     page.on("pageerror", lambda error: errors.append(str(error)))
-    page.goto(args.url + "/research/kai.html")
-    check_playing(page, "kai")
+    page.goto(args.url)
+    check_playing(page, "/")
     page.emulate_media(reduced_motion="reduce")
     page.wait_for_function(POSTERS)
     page.emulate_media(reduced_motion="no-preference")
@@ -203,6 +212,24 @@ with sync_playwright() as p:
     assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
     print("No-JavaScript content, navigation and poster fallback: PASS")
     context.close()
+
+    # Retired KAI note: legacy fragments land on fixed homepage anchors; the stub fetches no media.
+    legacy = {"": "kai", "#geometry": "kai-geometry", "#comparison-title": "kai-comparison",
+              "#rollout-title": "kai-rollout", "#kai-status": "kai", "#anything": "kai"}
+    for js in (True, False):
+        for fragment, anchor in legacy.items():
+            if not js and fragment:
+                continue
+            context = browser.new_context(java_script_enabled=js)
+            page = context.new_page()
+            stub_requests = []
+            page.on("request", lambda request: stub_requests.append(request.url))
+            page.goto(args.url + "/research/kai.html" + fragment, wait_until="commit")
+            page.wait_for_url(f"{args.url}/#{anchor}", timeout=5000)
+            assert page.locator(f"#{anchor}").count() == 1, anchor
+            assert not any("research/" in u and u.endswith(".mp4") for u in stub_requests[:3])
+            context.close()
+    print("KAI redirect stub and legacy fragments: PASS")
 
     for js in (True, False):
         context = browser.new_context(java_script_enabled=js)

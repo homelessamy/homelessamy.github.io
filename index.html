@@ -22,9 +22,9 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="preload" href="fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/source-serif.woff2" as="font" type="font/woff2" crossorigin>
-  <script src="theme.js?v=20260926"></script>
-  <link rel="stylesheet" href="styles.css?v=20260926">
-  <script src="site.js?v=20260926" defer></script>
+  <script src="theme.js?v=20260926-2"></script>
+  <link rel="stylesheet" href="styles.css?v=20260926-2">
+  <script src="site.js?v=20260926-2" defer></script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Muhammad Ahmed","url":"https://homelessamy.github.io/","image":"https://homelessamy.github.io/assets/portrait-480.jpg","email":"mailto:mahmed@kaist.ac.kr","affiliation":{"@type":"Organization","name":"KAIST"},"sameAs":["https://github.com/homelessamy","https://www.linkedin.com/in/ahmedkr71/"],"knowsAbout":["Weather forecasting","Climate downscaling","Graph neural networks","Scientific machine learning"]}</script>
 </head>
 <body>
@@ -50,8 +50,8 @@
           <p class="meta"><strong>Master’s Student · KAIST MetaEarth Research Center</strong>Daejeon, South Korea</p>
         </div>
         <h1 id="name">Muhammad Ahmed</h1>
-        <p class="hero-thesis">Lightweight weather forecasting and graph-based climate downscaling.</p>
-        <p class="hero-description">I’m a master’s student at KAIST’s MetaEarth Research Center, developing models and the training and evaluation systems around them.</p>
+        <p class="hero-thesis">How much model does a good forecast need?</p>
+        <p class="hero-description">At KAIST’s MetaEarth Research Center, I work on compact global forecasting models and graph-based climate downscaling. I’m interested in what these models need to learn about the atmosphere and terrain, and how to tell when that learning carries beyond familiar conditions.</p>
         <div class="text-links"><a href="#research">Selected research <span class="arrow" aria-hidden="true">↓</span></a></div>
       </div>
       <figure class="hero-figure" data-autoplay-media>
@@ -68,28 +68,56 @@
       <article class="research-entry flagship-kai" id="kai" aria-labelledby="kai-title">
         <div class="research-header">
           <div><p class="eyebrow">Global weather forecasting</p><h3 id="kai-title">KAI-α: a lighter global forecaster</h3><p class="meta">KAIST MetaEarth Research Center<br><time datetime="2024">2024</time>–Present · In progress</p></div>
-          <div><p>I’m studying how much medium-range forecasting skill a smaller convolutional model can retain.</p><p class="contribution"><strong>My contribution</strong>I co-developed KAI-α and built its training, inference, and evaluation pipelines to compare architectures on common benchmarks.</p><p class="result-line"><strong>Approximately 4× fewer parameters</strong> than GraphCast and FourCastNet, with competitive medium-range forecasting skill in the project’s evaluations.</p></div>
+          <div><p>A global forecast has to follow weather systems as they evolve across the planet. I co-develop KAI-α to investigate how much medium-range forecasting skill a compact convolutional model can retain.</p><p class="contribution"><strong>My contribution</strong>My work spans the model and the systems needed to test it: training and inference pipelines, alongside a modular evaluation framework for comparing architectures on common benchmarks. I’m interested in how errors develop over successive forecast steps, as well as the accuracy of an individual prediction.</p><p class="result-line"><strong>Approximately 4× fewer parameters</strong> than GraphCast and FourCastNet, with competitive medium-range forecasting skill in the project’s evaluations.</p></div>
         </div>
-        <figure class="research-wide-visual" data-autoplay-media>
-          <div class="media-frame">
-            <img src="assets/research/kai-temperature-bias.webp" width="1350" height="550" loading="lazy" decoding="async" alt="Six global maps compare ground truth and KAI-alpha 2 metre temperature with the bias fields of KAI-alpha, GraphCast, Pangu-Weather and IFS HRES.">
-            <video autoplay loop muted playsinline preload="auto" poster="assets/research/kai-temperature-bias.webp" width="1350" height="550" aria-label="Global 2 m temperature forecasts and model bias across forecast lead times." aria-describedby="kai-caption" hidden data-src="assets/research/kai-temperature-bias.mp4"></video>
-          </div>
-          <figcaption id="kai-caption">Ground truth and KAI-α 2 m temperature, alongside bias fields for KAI-α, GraphCast, Pangu-Weather, and IFS HRES. Bias panels share a scale in kelvin.</figcaption>
-        </figure>
-        <div class="text-links"><a href="research/kai.html">KAI-α research note <span class="arrow" aria-hidden="true">→</span></a><span class="meta">Research code is currently private.</span></div>
+
+        <div class="kai-part kai-geometry" id="kai-geometry">
+          <div class="kai-part-copy"><h4 id="kai-geometry-title">Representing the globe</h4><p>The HEALPix view shows how a spherical weather field can be arranged into local patches for computation. The globe and unfolded faces are two views of the same field.</p></div>
+          <figure data-autoplay-media>
+            <div class="media-frame">
+              <img src="assets/research/healpix.webp" width="1140" height="520" loading="lazy" decoding="async" alt="A spherical weather field divided into HEALPix faces beside the same faces unfolded into a two-dimensional layout.">
+              <video autoplay loop muted playsinline preload="auto" poster="assets/research/healpix.webp" width="1140" height="520" aria-label="A spherical weather field divided into HEALPix faces beside the same faces unfolded into a two-dimensional layout." aria-describedby="kai-healpix-caption" hidden data-src="assets/research/healpix.mp4"></video>
+            </div>
+            <figcaption id="kai-healpix-caption">The same field on the sphere and its twelve HEALPix base faces. This illustrates the representation, not forecast accuracy.</figcaption>
+          </figure>
+        </div>
+
+        <div class="kai-part" id="kai-comparison">
+          <div class="kai-part-copy"><h4 id="kai-comparison-title">Comparing the errors</h4><p>The comparison places KAI-α’s temperature forecast beside ground truth and shows its bias alongside other forecasting models. The shared bias scale makes the location and magnitude of errors easier to compare.</p></div>
+          <figure class="research-wide-visual" data-autoplay-media>
+            <div class="media-frame">
+              <img src="assets/research/kai-temperature-bias.webp" width="1350" height="550" loading="lazy" decoding="async" alt="Six global maps compare ground truth and KAI-alpha 2 metre temperature with the bias fields of KAI-alpha, GraphCast, Pangu-Weather and IFS HRES.">
+              <video autoplay loop muted playsinline preload="auto" poster="assets/research/kai-temperature-bias.webp" width="1350" height="550" aria-label="Global 2 m temperature forecasts and model bias across forecast lead times." aria-describedby="kai-caption" hidden data-src="assets/research/kai-temperature-bias.mp4"></video>
+            </div>
+            <figcaption id="kai-caption">Ground truth and KAI-α 2 m temperature, with bias fields for KAI-α, GraphCast, Pangu-Weather, and IFS HRES. Bias panels share a scale in kelvin.</figcaption>
+          </figure>
+        </div>
+
+        <div class="kai-part" id="kai-rollout">
+          <div class="kai-part-copy"><h4 id="kai-rollout-title">Following a forecast for ten days</h4><p>Each prediction becomes the input to the next step, so errors can carry forward through the forecast. This ten-day example follows the KAI local-normalized configuration: 13.46 million parameters, HEALPix nside 64, initialized on 1 January 2018.</p></div>
+          <figure class="research-wide-visual" data-autoplay-media>
+            <div class="media-frame">
+              <img src="assets/research/kai-rollout-10day.webp" width="1426" height="324" loading="lazy" decoding="async" alt="Day 1 of the rollout: initial condition, ERA5 truth, KAI local-normalized forecast, and forecast-minus-truth bias for 500 hPa geopotential and 2 metre temperature.">
+              <video autoplay loop muted playsinline preload="auto" poster="assets/research/kai-rollout-10day.webp" width="1426" height="324" aria-label="Forecast days 1 to 10 in sequence, showing initial condition, ERA5 truth, KAI local-normalized forecast, and forecast-minus-truth bias for 500 hPa geopotential and 2 metre temperature." aria-describedby="kai-rollout-caption" hidden data-src="assets/research/kai-rollout-10day.mp4"></video>
+            </div>
+            <figcaption id="kai-rollout-caption">Days 1–10 from one initial condition. Top: 500 hPa geopotential. Bottom: 2 m temperature. Columns: initial condition, ERA5 truth, forecast, and forecast-minus-truth bias. Field and bias colour scales remain fixed across all ten frames.</figcaption>
+          </figure>
+        </div>
+
+        <p class="kai-note">These examples show particular forecast fields and errors; they do not replace aggregate benchmark scores. Research is ongoing, and the code is currently private.</p>
       </article>
 
       <article class="research-entry feature secondary-feature" aria-labelledby="zameen-title">
         <div class="feature-copy">
           <p class="eyebrow">Graph-based climate downscaling</p>
-          <h3 id="zameen-title">Zameen: terrain-conditioned downscaling</h3>
+          <h3 id="zameen-title">Zameen: learning local weather from terrain</h3>
           <p class="meta">KAIST · Undergraduate Research Program<br><time datetime="2025">Spring 2025</time> · Ongoing research</p>
-          <p>Zameen reconstructs seven daily surface variables at 0.25° from 1.5° ERA5 inputs. It tests whether relationships learned from terrain can transfer to regions excluded from training.</p>
-          <p class="contribution"><strong>My contribution</strong>I built the multi-scale graph downscaler and its spectral–structural learning objective. The model conditions message passing on terrain differences and atmospheric flow, then predicts a correction to bicubic interpolation.</p>
+          <p>A coarse weather grid smooths over local detail. Zameen explores whether relationships between terrain and weather can help recover that detail in regions excluded from training.</p>
+          <p>The model reconstructs seven daily surface variables at 0.25° from 1.5° ERA5 inputs. It estimates the finer-scale weather for the same day rather than forecasting the next one.</p>
+          <p class="contribution"><strong>My contribution</strong>I built the multi-scale graph downscaler and its spectral–structural learning objective. Terrain differences and atmospheric flow guide message passing, while the model learns a correction to bicubic interpolation.</p>
           <div class="findings">
             <p><strong>0.283 K temperature RMSE</strong>72.4% lower than bicubic on the 2020 test year, averaged across six fitted domains. On three unseen domains, temperature RMSE is 0.428 K—46.2% lower than bicubic.</p>
-            <p class="meta">Perfect-model ERA5 experiment. Fine-scale spectral recovery is less consistent on unseen geography.</p>
+            <p class="meta">This is a perfect-model ERA5 experiment. Fine-scale spectral recovery is less consistent on unseen geography, which makes transfer of local variability an important next question.</p>
           </div>
           <div class="text-links"><a href="https://github.com/homelessamy/zameen">Code and technical report <span aria-hidden="true">↗</span></a></div>
         </div>
@@ -109,7 +137,7 @@
         <div>
           <h3>First Prize · 2026 KMA Weather Big Data Contest</h3>
           <p class="meta">Disaster Safety category · Team lead, Asian Union · <time datetime="2026-08">August 2026</time></p>
-          <p>I led Asian Union in developing K-火, a graph-based model for predicting utility-pole fire risk in Gangwon using weather data and power-grid structure.</p>
+          <p>I led Asian Union in developing K-火, a graph-based model for predicting utility-pole fire risk in Gangwon. We combined weather data with power-grid structure so the analysis could account for both local conditions and connections across the network.</p><p>The project brought my interests in geospatial modelling and infrastructure into a concrete risk-prediction problem: identifying where fire risk deserves closer attention.</p>
           <div class="text-links"><a href="https://www.kma.go.kr/kma/news/press_01.jsp?bid=press&amp;from=2026-05-09&amp;mode=view&amp;num=1194712&amp;page=1&amp;to=2026-08-09">Official award announcement <span aria-hidden="true">↗</span></a></div>
         </div>
         <figure class="award-cover">
@@ -125,8 +153,8 @@
     <section class="section secondary-section" id="projects" aria-labelledby="work-title">
       <h2 id="work-title">Other Work</h2>
       <div>
-        <article class="index-entry"><div><p class="meta">Course project · DS518</p><h3>Climate discourse around the Russia–Ukraine war</h3><p>I examined changes in climate discussion across four Reddit communities around the February 2022 invasion, using topic modelling, sentiment analysis, and interrupted time-series analysis.</p></div><a href="https://github.com/homelessamy/DS518" aria-label="Climate discourse project: code and report">Code and report <span aria-hidden="true">↗</span></a></article>
-        <article class="index-entry"><div><p class="meta">Course project · CE580</p><h3>Physics-informed defect localization</h3><p>I used a physics-informed neural network to reconstruct a plate wavefield and locate a thin defect by jointly learning displacement and a spatial wave-speed map.</p></div><a href="https://github.com/homelessamy/ce580" aria-label="Defect localization project: code and report">Code and report <span aria-hidden="true">↗</span></a></article>
+        <article class="index-entry"><div><p class="meta">Course project · DS518</p><h3>Climate discourse around the Russia–Ukraine war</h3><p>I studied how climate discussion in four Reddit communities shifted around the February 2022 invasion of Ukraine. Using topic modelling, sentiment analysis, and interrupted time-series analysis, I examined changes in the discussion’s framing as well as its emotional tone. The clearest changes were in framing rather than sentiment; the observational design limits what can be attributed to the war itself.</p></div><a href="https://github.com/homelessamy/DS518" aria-label="Climate discourse project: code and report">Code and report <span aria-hidden="true">↗</span></a></article>
+        <article class="index-entry"><div><p class="meta">Course project · CE580</p><h3>Physics-informed defect localization</h3><p>Here, the task runs backwards: infer a hidden defect from the waves travelling through a plate. I used a physics-informed neural network to jointly reconstruct the wavefield and estimate a spatial wave-speed map. Refining the defect geometry improved its localization while barely changing the wavefield fit. The experiment focuses on a single thin defect, so it does not establish general damage-detection performance.</p></div><a href="https://github.com/homelessamy/ce580" aria-label="Defect localization project: code and report">Code and report <span aria-hidden="true">↗</span></a></article>
       </div>
     </section>
 
@@ -162,13 +190,13 @@
 
     <section class="section secondary-section" id="about" aria-labelledby="about-title">
       <h2 id="about-title">About</h2>
-      <div class="about-prose"><p>I’m interested in what a model needs to know about the world to generalize. In my downscaling work, I ask whether relationships between neighbouring terrain features can transfer to places excluded from training.</p><p>My background in civil and environmental engineering and computer science shapes how I approach these questions. I like following an experiment from its data representation through to the plots that show where the model fails.</p></div>
+      <div class="about-prose"><p>My background spans civil and environmental engineering and computer science. That combination keeps me interested in both the physical question and the choices we make when turning it into a model.</p><p>I enjoy the parts of research where a result needs explaining: why an architecture helps, where a forecast drifts, or what a metric leaves out. Those questions shape how I build models and how I evaluate them.</p></div>
     </section>
 
     <section class="section secondary-section" id="beyond-research" aria-labelledby="beyond-research-title">
       <h2 id="beyond-research-title">Beyond Research</h2>
       <div class="beyond-research">
-        <div class="about-prose"><p id="beyond-research-copy">Outside research, I enjoy cycling and exploring music and culture. I’m always happy to exchange music recommendations or talk about the cultures and traditions people bring with them.</p></div>
+        <div class="about-prose"><p id="beyond-research-copy">Away from research, I love cycling and discovering music. I’m curious about how people carry their cultures through language, traditions, and the things they listen to. A song recommendation or a story from your part of the world is always welcome.</p></div>
         <div class="beyond-media">
           <figure class="beyond-figure">
             <div class="media-frame"><img src="assets/activities/cycling.jpg" width="720" height="1280" loading="lazy" decoding="async" alt="A black-and-red road bike parked beside a railing, with green fields and greenhouses behind it."></div>
@@ -184,7 +212,7 @@
     </section>
 
     <section class="section contact" id="contact" aria-labelledby="contact-title">
-      <div><h2 id="contact-title">Contact</h2><p>I welcome research collaborations and questions about my work in weather forecasting, climate downscaling, and geospatial machine learning.</p></div>
+      <div><h2 id="contact-title">Let’s talk.</h2><p>If you’re working on weather or climate models, have a question about a project here, or see something we could explore together, I’d like to hear from you. Send me a note with what you’re thinking about; it doesn’t need to be a finished proposal.</p></div>
       <div class="contact-links"><a class="contact-email" href="mailto:mahmed@kaist.ac.kr">mahmed@kaist.ac.kr <span aria-hidden="true">↗</span></a><div class="text-links"><a href="https://github.com/homelessamy">GitHub</a><a href="https://www.linkedin.com/in/ahmedkr71/">LinkedIn</a></div></div>
     </section>
   </main>
