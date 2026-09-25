@@ -29,6 +29,9 @@ GitHub Pages workflow; the redesign itself does not push or deploy anything.
 - `styles.css`: shared Archivo / Source Serif 4 / Plex Mono typography, warm
   neutral and scientific teal themes, a 1120px canvas, responsive layouts.
 - `theme.js`: early restoration of the existing `theme` localStorage key.
+- Stylesheet and script links carry a `?v=YYYYMMDD` tag. Bump it in all three
+  HTML files whenever `styles.css`, `site.js` or `theme.js` changes, because
+  GitHub Pages lets browsers cache them for ten minutes.
 - `site.js`: progressive enhancement for navigation, theme, and autoplaying
   media. Content remains static HTML. There is no GitHub activity section and no
   third-party API request.
