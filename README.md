@@ -85,9 +85,9 @@ the site does not claim WCAG AA conformance.
 Beyond Research uses `assets/activities/cycling.mp4`, the first 14 s of the
 owner's clip re-encoded with the owner's approval (540 × 960, H.264 CRF 26, no
 audio, metadata stripped, fast-start; ~1.6 MB, down from ~28 MB), and
-`assets/activities/cycling.jpg`, a 720 × 1280 poster derived from the owner's
-photo with EXIF (including GPS location) removed, orientation applied and ~1px
-trimmed from each side to match 9:16.
+`assets/activities/cycling.jpg`, the owner's photo shown beside the clip (720 ×
+1280, EXIF including GPS location removed, orientation applied, ~1px trimmed from
+each side for 9:16). The clip's poster, `cycling-ride.jpg`, is its own frame at 3 s.
 
 Regenerate derived assets from the original exports:
 
