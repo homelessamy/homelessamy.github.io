@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Muhammad Ahmed — Weather, climate &amp; scientific ML · KAIST</title>
-  <meta name="description" content="Muhammad Ahmed, researcher at KAIST. Graph-based climate downscaling, lightweight global weather forecasting, and the engineering behind scientific machine learning. Open to research collaborations.">
+  <meta name="description" content="Muhammad Ahmed, master’s student at KAIST’s MetaEarth Research Center. Graph-based climate downscaling, lightweight global weather forecasting, and the engineering behind scientific machine learning. Open to research collaborations.">
   <link rel="canonical" href="https://homelessamy.github.io/">
   <meta property="og:type" content="profile">
   <meta property="og:site_name" content="Muhammad Ahmed">
@@ -14,7 +14,7 @@
   <meta property="og:image" content="https://homelessamy.github.io/assets/og-card.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Muhammad Ahmed, KAIST — weather forecasting, climate downscaling, geospatial ML">
+  <meta property="og:image:alt" content="Muhammad Ahmed — weather forecasting and climate downscaling at KAIST.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#f5f5f0">
   <link rel="icon" href="assets/favicon.ico" sizes="any">
@@ -47,66 +47,73 @@
       <div>
         <div class="identity">
           <picture><source srcset="assets/portrait-240.webp 1x, assets/portrait-480.webp 2x" type="image/webp"><img class="portrait" src="assets/portrait-240.jpg" width="240" height="240" alt="Muhammad Ahmed"></picture>
-          <p class="meta"><strong>Researcher · KAIST MetaEarth</strong>Daejeon, South Korea</p>
+          <p class="meta"><strong>Master’s Student · KAIST MetaEarth Research Center</strong>Daejeon, South Korea</p>
         </div>
         <h1 id="name">Muhammad Ahmed</h1>
-        <p class="hero-thesis">Learning the structure of weather, from global fields to local terrain.</p>
-        <p class="hero-description">I work on lightweight weather forecasting and graph-based climate downscaling at KAIST, building the models and the training and evaluation systems around them.</p>
-        <p class="collaboration">I’m open to research collaborations in weather and climate modelling, geospatial ML, and efficient scientific ML systems.</p>
-        <div class="text-links"><a href="#research">Selected research <span class="arrow" aria-hidden="true">↓</span></a><a href="Muhammad-Ahmed-CV.pdf">CV <span class="meta">(PDF)</span></a><a href="https://github.com/homelessamy">GitHub</a><a href="mailto:mahmed@kaist.ac.kr">Email</a></div>
+        <p class="hero-thesis">Lightweight weather forecasting and graph-based climate downscaling.</p>
+        <p class="hero-description">I’m a master’s student at KAIST’s MetaEarth Research Center, developing models and the training and evaluation systems around them.</p>
+        <div class="text-links"><a href="#research">Selected research <span class="arrow" aria-hidden="true">↓</span></a></div>
       </div>
-      <figure class="hero-figure" data-scientific-media>
+      <figure class="hero-figure" data-autoplay-media>
         <div class="media-frame">
           <img src="assets/research/water-vapour.webp" width="660" height="660" fetchpriority="high" alt="A globe showing the spatial structure of total column water vapour, with bands and filaments across the atmosphere.">
-          <video id="water-vapour-video" width="660" height="660" preload="none" muted playsinline loop aria-label="Total column water vapour on a rotating globe" aria-describedby="water-vapour-caption" hidden data-src="assets/research/water-vapour.mp4"></video>
+          <video autoplay loop muted playsinline preload="auto" poster="assets/research/water-vapour.webp" width="660" height="660" aria-label="Rotating globe showing total column water vapour." aria-describedby="water-vapour-caption" hidden data-src="assets/research/water-vapour.mp4"></video>
         </div>
-        <figcaption id="water-vapour-caption"><span class="figure-label">A view of the atmosphere.</span> Total column water vapour: the spatial structure of moisture across the globe.</figcaption>
-        <div class="figure-tools"><button class="media-toggle" type="button" aria-controls="water-vapour-video" aria-pressed="false" hidden>Play visualization</button><span class="technical">TCWV · global field</span></div>
-        <noscript><p class="meta"><a href="assets/research/water-vapour.mp4">Watch the water-vapour visualization (MP4)</a></p></noscript>
+        <figcaption id="water-vapour-caption">Total column water vapour across the globe.</figcaption>
       </figure>
     </section>
 
     <section class="section" id="research" aria-labelledby="research-title">
-      <div class="section-heading"><h2 id="research-title">Selected Research</h2><p class="section-intro">Efficient prediction.<br>Spatial structure. Geographic transfer.</p></div>
+      <div class="section-heading"><h2 id="research-title">Selected Research</h2></div>
       <article class="research-entry flagship-kai" id="kai" aria-labelledby="kai-title">
         <div class="research-header">
           <div><p class="eyebrow">Global weather forecasting</p><h3 id="kai-title">KAI-α: a lighter global forecaster</h3><p class="meta">KAIST MetaEarth Research Center<br><time datetime="2024">2024</time>–Present · In progress</p></div>
-          <div><p>An ultralight convolutional model for medium-range global weather forecasting. The research asks how much forecasting skill can be retained with a substantially smaller parameter budget.</p><p class="contribution"><strong>My contribution</strong>I co-developed the model and built end-to-end training and inference pipelines, including a modular evaluation framework for comparing architectures on common benchmarks.</p><p class="result-line"><strong>Approximately 8× fewer parameters</strong> than GraphCast and FourCastNet, with competitive medium-range forecasting skill in the project’s evaluations.</p></div>
+          <div><p>I’m studying how much medium-range forecasting skill a smaller convolutional model can retain.</p><p class="contribution"><strong>My contribution</strong>I co-developed KAI-α and built its training, inference, and evaluation pipelines to compare architectures on common benchmarks.</p><p class="result-line"><strong>Approximately 4× fewer parameters</strong> than GraphCast and FourCastNet, with competitive medium-range forecasting skill in the project’s evaluations.</p></div>
         </div>
-        <figure class="research-wide-visual" data-scientific-media>
+        <figure class="research-wide-visual" data-autoplay-media>
           <div class="media-frame">
             <img src="assets/research/kai-temperature-bias.webp" width="1350" height="550" loading="lazy" decoding="async" alt="Six global maps compare ground truth and KAI-alpha 2 metre temperature with the bias fields of KAI-alpha, GraphCast, Pangu-Weather and IFS HRES.">
-            <video id="kai-bias-video" width="1350" height="550" preload="none" muted playsinline loop hidden data-src="assets/research/kai-temperature-bias.mp4" aria-label="Temperature forecasts and model bias at successive forecast lead times" aria-describedby="kai-caption"></video>
+            <video autoplay loop muted playsinline preload="auto" poster="assets/research/kai-temperature-bias.webp" width="1350" height="550" aria-label="Global 2 m temperature forecasts and model bias across forecast lead times." aria-describedby="kai-caption" hidden data-src="assets/research/kai-temperature-bias.mp4"></video>
           </div>
-          <figcaption id="kai-caption"><span class="figure-label">Forecasts need error maps, too.</span> Ground truth and KAI-α 2 m temperature, alongside bias fields for KAI-α, GraphCast, Pangu-Weather, and IFS HRES. Bias panels share a scale in kelvin.</figcaption>
-          <div class="figure-tools"><button class="media-toggle" type="button" aria-controls="kai-bias-video" aria-pressed="false" hidden>Play forecast comparison</button><a href="assets/research/kai-temperature-bias.webp">View full-size still <span aria-hidden="true">↗</span></a></div>
-          <noscript><p class="meta"><a href="assets/research/kai-temperature-bias.mp4">Watch forecast comparison (MP4)</a></p></noscript>
+          <figcaption id="kai-caption">Ground truth and KAI-α 2 m temperature, alongside bias fields for KAI-α, GraphCast, Pangu-Weather, and IFS HRES. Bias panels share a scale in kelvin.</figcaption>
         </figure>
-        <div class="text-links"><a href="research/kai.html">View the 10-day rollout &amp; research note <span class="arrow" aria-hidden="true">→</span></a><span class="meta">Research code is currently private.</span></div>
+        <div class="text-links"><a href="research/kai.html">KAI-α research note <span class="arrow" aria-hidden="true">→</span></a><span class="meta">Research code is currently private.</span></div>
       </article>
 
       <article class="research-entry feature secondary-feature" aria-labelledby="zameen-title">
         <div class="feature-copy">
           <p class="eyebrow">Graph-based climate downscaling</p>
-          <h3 id="zameen-title">Zameen: learning weather through terrain</h3>
-          <p class="meta">KAIST · Undergraduate Research Program<br><time datetime="2025">Spring 2025</time> · Ongoing research · Public code</p>
-          <p class="project-summary">Can a downscaler learn how terrain shapes local weather—and carry that relationship into a region it has never seen?</p>
-          <p>Coarse fields miss the spatial detail needed for regional analysis. Zameen reconstructs seven daily surface variables at 0.25° from 1.5° ERA5 inputs, with a graph hierarchy that connects large-scale weather to local terrain.</p>
+          <h3 id="zameen-title">Zameen: terrain-conditioned downscaling</h3>
+          <p class="meta">KAIST · Undergraduate Research Program<br><time datetime="2025">Spring 2025</time> · Ongoing research</p>
+          <p>Zameen reconstructs seven daily surface variables at 0.25° from 1.5° ERA5 inputs. It tests whether relationships learned from terrain can transfer to regions excluded from training.</p>
           <p class="contribution"><strong>My contribution</strong>I built the multi-scale graph downscaler and its spectral–structural learning objective. The model conditions message passing on terrain differences and atmospheric flow, then predicts a correction to bicubic interpolation.</p>
           <div class="findings">
             <p><strong>0.283 K temperature RMSE</strong>72.4% lower than bicubic on the 2020 test year, averaged across six fitted domains. On three unseen domains, temperature RMSE is 0.428 K—46.2% lower than bicubic.</p>
             <p class="meta">Perfect-model ERA5 experiment. Fine-scale spectral recovery is less consistent on unseen geography.</p>
           </div>
-          <div class="text-links"><a href="research/zameen.html">Read the research note <span class="arrow" aria-hidden="true">→</span></a><a href="https://github.com/homelessamy/zameen">Code &amp; experiments <span aria-hidden="true">↗</span></a></div>
+          <div class="text-links"><a href="https://github.com/homelessamy/zameen">Code and technical report <span aria-hidden="true">↗</span></a></div>
         </div>
-        <figure class="feature-visual" data-scientific-media>
+        <figure class="feature-visual" data-autoplay-media>
           <div class="media-frame">
             <img src="assets/research/south-asia-temperature.webp" width="704" height="828" loading="lazy" decoding="async" alt="South Asia 2 metre temperature on 1 June 2020: coarse 1.5 degree ERA5 outside the lens and Zameen’s 0.25 degree output inside, sharing a temperature scale in kelvin.">
-            <video id="zameen-video" width="704" height="828" preload="none" muted playsinline loop hidden data-src="assets/research/south-asia-temperature.mp4" aria-label="Daily South Asia temperature downscaling through a moving comparison lens" aria-describedby="zameen-caption"></video>
+            <video autoplay loop muted playsinline preload="auto" poster="assets/research/south-asia-temperature.webp" width="704" height="828" aria-label="South Asia temperature comparison showing coarse ERA5 input outside a moving lens and Zameen output inside it." aria-describedby="zameen-caption" hidden data-src="assets/research/south-asia-temperature.mp4"></video>
           </div>
-          <figcaption id="zameen-caption"><span class="figure-label">From coarse field to local structure.</span> Daily 2 m temperature over South Asia, June–July 2020. The lens reveals Zameen’s 0.25° output; the surrounding field is the 1.5° input. Both use the same colour scale.</figcaption>
-          <div class="figure-tools"><button class="media-toggle" type="button" aria-controls="zameen-video" aria-pressed="false" hidden>Play comparison</button><a href="assets/research/south-asia-temperature.webp">View still <span aria-hidden="true">↗</span></a></div>
-          <noscript><p class="meta"><a href="assets/research/south-asia-temperature.mp4">Watch the comparison (MP4)</a></p></noscript>
+          <figcaption id="zameen-caption">Daily 2 m temperature over South Asia, June–July 2020. The moving lens shows Zameen’s 0.25° output within the 1.5° input field. Both use the same colour scale.</figcaption>
+        </figure>
+      </article>
+    </section>
+
+    <section class="section secondary-section" id="awards" aria-labelledby="awards-title">
+      <h2 id="awards-title">Awards</h2>
+      <article class="award">
+        <div>
+          <h3>First Prize · 2026 KMA Weather Big Data Contest</h3>
+          <p class="meta">Disaster Safety category · Team lead, Asian Union · <time datetime="2026-08">August 2026</time></p>
+          <p>I led Asian Union in developing K-火, a graph-based model for predicting utility-pole fire risk in Gangwon using weather data and power-grid structure.</p>
+          <div class="text-links"><a href="https://www.kma.go.kr/kma/news/press_01.jsp?bid=press&amp;from=2026-05-09&amp;mode=view&amp;num=1194712&amp;page=1&amp;to=2026-08-09">Official award announcement <span aria-hidden="true">↗</span></a></div>
+        </div>
+        <figure class="award-cover">
+          <div class="media-frame"><img src="assets/awards/kma-asian-union-cover.webp" width="1600" height="900" loading="lazy" decoding="async" alt="Cover of Asian Union’s K-火 competition presentation, listing Muhammad Ahmed as team leader."></div>
         </figure>
       </article>
     </section>
@@ -118,17 +125,16 @@
     <section class="section secondary-section" id="projects" aria-labelledby="work-title">
       <h2 id="work-title">Other Work</h2>
       <div>
-        <article class="index-entry"><div><p class="meta">KAIST · Graph Machine Learning and Mining · <time datetime="2025">Spring 2025</time></p><h3>Spatio-temporal drought prediction</h3><p>I designed a two-stage GRU–GraphSAGE model: six-step temporal encoding and climate prediction, followed by drought severity classification. Accuracy improved from 40% to 70% against the project’s bilinear and CNN baselines.</p></div><a href="https://github.com/homelessamy/drought" aria-label="Drought prediction repository">Code <span aria-hidden="true">↗</span></a></article>
-        <article class="index-entry"><div><p class="meta">KAIST · Urban and Regional Sustainability · <time datetime="2024">Spring 2024</time></p><h3>Accessibility across the US Northeast</h3><p>I used QGIS and network mapping to examine 30-minute job access, interstate travel times, and mode-shift emissions. The scenarios estimated up to 29.5 kg less CO₂ per trip when shifting from car to rail.</p></div></article>
-        <article class="index-entry"><div><p class="meta">KAIST · Introduction to Data Science · <time datetime="2023">Spring 2023</time></p><h3>Fraud in Korean customs declarations</h3><p>Statistical analysis of historical customs records and a KNN classifier for likely fraudulent declarations, reaching 88% classification accuracy in the course project.</p></div><a href="https://github.com/homelessamy/dscourse" aria-label="Customs fraud detection repository">Code <span aria-hidden="true">↗</span></a></article>
+        <article class="index-entry"><div><p class="meta">Course project · DS518</p><h3>Climate discourse around the Russia–Ukraine war</h3><p>I examined changes in climate discussion across four Reddit communities around the February 2022 invasion, using topic modelling, sentiment analysis, and interrupted time-series analysis.</p></div><a href="https://github.com/homelessamy/DS518" aria-label="Climate discourse project: code and report">Code and report <span aria-hidden="true">↗</span></a></article>
+        <article class="index-entry"><div><p class="meta">Course project · CE580</p><h3>Physics-informed defect localization</h3><p>I used a physics-informed neural network to reconstruct a plate wavefield and locate a thin defect by jointly learning displacement and a spatial wave-speed map.</p></div><a href="https://github.com/homelessamy/ce580" aria-label="Defect localization project: code and report">Code and report <span aria-hidden="true">↗</span></a></article>
       </div>
     </section>
 
     <section class="section secondary-section" id="experience" aria-labelledby="experience-title">
       <h2 id="experience-title">Experience</h2>
       <div>
-        <article class="record"><div><h3>KAIST MetaEarth Research Center</h3><p class="record-subtitle">Research Intern · Vice Lead, Data-Driven Team (Spring 2025)</p></div><time datetime="2024-05">May 2024–Present</time><p class="record-description">Research and engineering for global weather prediction, with responsibility for training, inference, and comparative model evaluation.</p></article>
-        <article class="record"><div><h3>KAIST AIxMobility Lab</h3><p class="record-subtitle">Undergraduate Research Assistant</p></div><time datetime="2023-03">Mar 2023–Feb 2024</time><p class="record-description">Built and validated orthophoto datasets; developed computer-vision methods for road monitoring and contributed to AI-driven traffic simulation.</p></article>
+        <article class="record"><div><h3>KAIST MetaEarth Research Center</h3><p class="record-subtitle">Master’s Student · Previously Research Intern and Vice Lead, Data-Driven Team (Spring 2025)</p></div><time datetime="2024-05">May 2024–Present</time><p class="record-description">Training, inference, and comparative evaluation for global weather-prediction models.</p></article>
+        <article class="record"><div><h3>KAIST AIxMobility Lab</h3><p class="record-subtitle">Undergraduate Research Assistant</p></div><time datetime="2023-03">Mar 2023–Feb 2024</time><p class="record-description">I built and validated orthophoto datasets, developed computer-vision methods for road monitoring, and contributed to traffic simulation.</p></article>
       </div>
     </section>
 
@@ -143,29 +149,38 @@
 
     <section class="section secondary-section" id="education" aria-labelledby="education-title">
       <h2 id="education-title">Education</h2>
-      <div><article class="record"><div><h3>Korea Advanced Institute of Science and Technology</h3><p class="record-subtitle">BS · Civil and Environmental Engineering &amp; Computer Science</p></div><time datetime="2021-09">Sep 2021–Present</time><p class="record-description">Minor in Business and Technology Management.</p></article></div>
+      <div>
+        <article class="record"><div><h3>Korea Advanced Institute of Science and Technology</h3><p class="record-subtitle">MS · Civil and Environmental Engineering</p></div><time datetime="2026">Fall 2026–Present</time><p class="record-description">Research focus: data-driven weather modeling and geospatial data processing. MetaEarth Research Center. Advisor: Prof. Kim Hyungjun.</p></article>
+        <article class="record"><div><h3>Korea Advanced Institute of Science and Technology</h3><p class="record-subtitle">BS · Civil and Environmental Engineering &amp; Computer Science</p></div><time datetime="2021-09">Sep 2021–Aug 2026</time><p class="record-description">Minor in Business and Technology Management.</p></article>
+      </div>
     </section>
 
     <section class="section secondary-section" id="skills" aria-labelledby="toolkit-title">
       <h2 id="toolkit-title">Research &amp;<br>Technical Toolkit</h2>
-      <dl class="toolkit"><div><dt>Research</dt><dd>Weather forecasting, climate downscaling, graph ML, spectral analysis, geospatial modelling.</dd></div><div><dt>Models &amp; data</dt><dd>Python, PyTorch, PyTorch Geometric, Xarray, ERA5, NumPy, Pandas.</dd></div><div><dt>Spatial analysis</dt><dd>QGIS, Cartopy, xESMF, OpenCV.</dd></div><div><dt>Engineering</dt><dd>Training and inference pipelines, reproducible experiments, modular model evaluation.</dd></div></dl>
+      <dl class="toolkit"><div><dt>Models &amp; data</dt><dd>Python, PyTorch, PyTorch Geometric, Xarray, ERA5, NumPy, Pandas.</dd></div><div><dt>Spatial analysis</dt><dd>QGIS, Cartopy, xESMF, OpenCV.</dd></div></dl>
     </section>
 
     <section class="section secondary-section" id="about" aria-labelledby="about-title">
       <h2 id="about-title">About</h2>
-      <div class="about-prose"><p>I’m interested in what a model needs to know about the world to generalize. In my downscaling work, that becomes a concrete question: can relationships between neighbouring terrain features tell us more than a model’s familiarity with a particular place?</p><p>Weather and climate bring together the questions I keep coming back to in engineering: spatial structure, physical constraints, and the gap between a useful approximation and a misleading one. My studies in civil and environmental engineering and computer science give me ways to approach both the physical problem and its computational form.</p><p>I like working across the whole experiment—from the data representation to the training pipeline to the plot that reveals where the model fails. I’d welcome collaborators who care about geographic generalization, efficient forecasting, or making scientific ML results easier to inspect and reproduce.</p><p class="about-aside">Outside the model itself, I also care about explaining it clearly. Teaching writing and presentation is another way I work on that.</p></div>
+      <div class="about-prose"><p>I’m interested in what a model needs to know about the world to generalize. In my downscaling work, I ask whether relationships between neighbouring terrain features can transfer to places excluded from training.</p><p>My background in civil and environmental engineering and computer science shapes how I approach these questions. I like following an experiment from its data representation through to the plots that show where the model fails.</p></div>
     </section>
 
-    <section class="section" id="activity" aria-labelledby="activity-title">
-      <div class="activity-heading"><h2 id="activity-title">On GitHub</h2><p class="activity-total" id="activity-total"><a href="https://github.com/homelessamy">@homelessamy</a></p></div>
-      <div class="heatmap-scroll" id="heatmap-scroll" role="region" aria-label="GitHub contribution history, horizontally scrollable" tabindex="0" hidden><div class="heatmap" id="heatmap" role="img" aria-label="GitHub contributions over the last year"></div></div>
-      <p class="activity-note" id="activity-fallback">Explore repositories and contribution history on <a href="https://github.com/homelessamy">GitHub</a>.</p>
-      <div class="activity-bottom"><p class="activity-note">A little of the day-to-day engineering. Some research lives in private repositories.</p><div class="heatmap-key" id="heatmap-key" aria-hidden="true" hidden><span>Less</span><i></i><i data-level="1"></i><i data-level="2"></i><i data-level="3"></i><i data-level="4"></i><span>More</span></div></div>
+    <section class="section secondary-section" id="beyond-research" aria-labelledby="beyond-research-title">
+      <h2 id="beyond-research-title">Beyond Research</h2>
+      <div class="beyond-research">
+        <div class="about-prose"><p id="beyond-research-copy">Outside research, I enjoy cycling and exploring music and culture. I’m always happy to exchange music recommendations or talk about the cultures and traditions people bring with them.</p></div>
+        <figure class="beyond-figure" data-autoplay-media>
+          <div class="media-frame">
+            <img src="assets/activities/cycling.jpg" width="720" height="1280" loading="lazy" decoding="async" alt="A black-and-red road bike parked beside a railing, with green fields and greenhouses behind it.">
+            <video autoplay loop muted playsinline preload="auto" poster="assets/activities/cycling.jpg" width="540" height="960" aria-label="A night ride on a road bike along a lit road, filmed from the handlebars, with brief shots of the rider in a helmet." aria-describedby="beyond-research-copy" hidden data-src="assets/activities/cycling.mp4"></video>
+          </div>
+        </figure>
+      </div>
     </section>
 
     <section class="section contact" id="contact" aria-labelledby="contact-title">
-      <div><p class="eyebrow">Contact</p><h2 id="contact-title">There’s more to understand. Let’s compare notes.</h2><p>For research collaborations, questions about the models, or a conversation about weather, climate, and geospatial machine learning, email is the best place to start.</p></div>
-      <div class="contact-links"><a class="contact-email" href="mailto:mahmed@kaist.ac.kr">mahmed@kaist.ac.kr <span aria-hidden="true">↗</span></a><div class="text-links"><a href="https://github.com/homelessamy">GitHub</a><a href="https://www.linkedin.com/in/ahmedkr71/">LinkedIn</a><a href="Muhammad-Ahmed-CV.pdf">CV (PDF)</a></div></div>
+      <div><h2 id="contact-title">Contact</h2><p>I welcome research collaborations and questions about my work in weather forecasting, climate downscaling, and geospatial machine learning.</p></div>
+      <div class="contact-links"><a class="contact-email" href="mailto:mahmed@kaist.ac.kr">mahmed@kaist.ac.kr <span aria-hidden="true">↗</span></a><div class="text-links"><a href="https://github.com/homelessamy">GitHub</a><a href="https://www.linkedin.com/in/ahmedkr71/">LinkedIn</a></div></div>
     </section>
   </main>
   <footer class="canvas foot"><span>© 2026 Muhammad Ahmed</span><span>KAIST · Daejeon, South Korea</span></footer>

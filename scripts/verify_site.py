@@ -4,14 +4,16 @@ Usage: python scripts/verify_site.py --url http://127.0.0.1:8765
 Optional: --axe /path/to/axe.min.js --screenshots /tmp/portfolio-review
 """
 import argparse
-from datetime import date, timedelta
 from html.parser import HTMLParser
 import json
+import re
 from pathlib import Path
+import subprocess
 from urllib.parse import urlsplit, unquote
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
+ZAMEEN = "https://github.com/homelessamy/zameen"
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--url", default="http://127.0.0.1:8765")
 parser.add_argument("--axe", type=Path)
@@ -30,7 +32,7 @@ class Document(HTMLParser):
         attrs = dict(attrs)
         if "id" in attrs:
             self.ids.append(attrs["id"])
-        for key in ("href", "src", "data-src"):
+        for key in ("href", "src", "data-src", "poster"):
             if key in attrs:
                 self.refs.append(attrs[key])
 
@@ -48,47 +50,126 @@ for path, doc in documents.items():
             assert unquote(parsed.fragment) in documents[target].ids, f"Missing anchor: {ref}"
 print("Local assets, links and anchors: PASS")
 
-today = date.today()
-days = [{"date": str(today - timedelta(days=364-i)), "count": i % 5, "level": i % 5} for i in range(365)]
-fixture = {"contributions": days}
+home = (ROOT / "index.html").read_text()
+kai = (ROOT / "research" / "kai.html").read_text()
+for text in ("View still", "View full-size still", "(MP4)", "media-toggle", "jogruber", "research/zameen.html",
+             'id="activity"', "drought", "dscourse", "Northeast", "Muhammad-Ahmed-CV.pdf\">CV <span class=\"meta\">"):
+    assert text not in home and text not in kai, f"Retired content remains: {text}"
+assert home.count("Muhammad-Ahmed-CV.pdf") == 1, "CV should appear only in the shared navigation"
+assert not re.search(r"<video[^>]*\scontrols", home + kai), "Videos must not expose controls"
+assert not list(ROOT.rglob("*.pdf")) or [p.name for p in ROOT.rglob("*.pdf")] == ["Muhammad-Ahmed-CV.pdf"], "Unexpected PDF in site output"
+try:
+    changed = subprocess.run(["git", "status", "--porcelain", "--", "assets/research"], cwd=ROOT,
+                             capture_output=True, text=True, check=True).stdout
+    assert not changed.strip(), f"Research assets changed:\n{changed}"
+    print("Retired content absent; research assets unchanged: PASS")
+except (FileNotFoundError, subprocess.CalledProcessError):
+    print("Retired content absent: PASS (git unavailable; research asset check skipped)")
+
+SECTIONS = ["home", "research", "awards", "projects", "experience", "teaching", "education", "skills",
+            "about", "beyond-research", "contact"]
+# Every enhanced video: autoplaying, muted, looping, no controls, poster matching its still.
+ACTIVE = """() => [...document.querySelectorAll('[data-autoplay-media] video')].map(v => {
+  const img = v.parentElement.querySelector('img'), frame = img.getBoundingClientRect(), box = v.getBoundingClientRect();
+  return {id: v.dataset.src, playing: !v.paused, muted: v.muted, loop: v.loop, autoplay: v.autoplay,
+    inline: v.playsInline, controls: v.controls, hidden: v.hidden, src: v.getAttribute('src'),
+    poster: v.getAttribute('poster') === img.getAttribute('src'), imgHidden: img.getAttribute('aria-hidden'),
+    ratio: Math.abs(frame.width / frame.height / (v.width / v.height) - 1) < 0.01 && Math.abs(box.height - frame.height) < 1.5, preload: v.preload,
+    label: !!v.getAttribute('aria-label'), described: !!document.getElementById(v.getAttribute('aria-describedby'))};
+})"""
+POSTERS = """() => [...document.querySelectorAll('[data-autoplay-media]')].every(f => {
+  const v = f.querySelector('video'), img = f.querySelector('img');
+  return v.hidden && v.paused && !img.hasAttribute('aria-hidden') && img.getBoundingClientRect().height > 50;
+})"""
+
+
+def check_playing(page, path):
+    page.wait_for_function("[...document.querySelectorAll('[data-autoplay-media] video')].every(v => !v.paused && v.currentTime > 0)", timeout=15000)
+    for v in page.evaluate(ACTIVE):
+        assert v["playing"] and v["muted"] and v["loop"] and v["autoplay"] and v["inline"], (path, v)
+        assert not v["controls"] and not v["hidden"] and v["src"] and v["preload"] == "auto", (path, v)
+        assert v["poster"] and v["imgHidden"] == "true" and v["ratio"] and v["label"] and v["described"], (path, v)
+
+
 errors = []
 with sync_playwright() as p:
     browser = p.chromium.launch()
-    for theme in ("light", "dark"):
-        for width in (1440, 768, 390, 320):
-            context = browser.new_context(viewport={"width": width, "height": 1000}, color_scheme=theme, reduced_motion="reduce")
-            context.route("**/github-contributions-api.jogruber.de/**", lambda route: route.fulfill(json=fixture))
-            page = context.new_page()
-            page.on("pageerror", lambda error: errors.append(str(error)))
-            requests = []
-            page.on("request", lambda request: requests.append(request.url))
-            for path in ("/", "/research/zameen.html", "/research/kai.html"):
-                page.goto(args.url + path)
-                page.evaluate("document.fonts.ready")
-                assert page.locator("h1").count() == 1
-                assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), f"Overflow: {path} {width}"
-                assert not page.evaluate("[...document.querySelectorAll('video')].some(v => !v.paused || v.getAttribute('src'))"), "Media loaded without play"
-                assert not any(url.endswith(".mp4") for url in requests), "Unrequested video download"
-                assert page.locator(".theme-toggle").get_attribute("aria-label") == f"Switch to {'dark' if theme == 'light' else 'light'} theme"
-                if args.axe:
-                    page.add_script_tag(path=str(args.axe))
-                    violations = page.evaluate("async () => (await axe.run(document, {runOnly: {type: 'tag', values: ['wcag2a','wcag2aa','wcag21aa']}})).violations")
-                    assert not violations, json.dumps({"path":path,"width":width,"theme":theme,"violations":[{"id":v["id"],"nodes":[n["target"] for n in v["nodes"]]} for v in violations]}, indent=2)
-                slug = "home" if path == "/" else Path(path).stem
-                if width in (1440,390):
-                    page.screenshot(path=str(args.screenshots / f"{slug}-{theme}-{width}.png"), full_page=True)
-                if path == "/":
-                    assert page.locator("#research article").first.get_attribute("id") == "kai"
-                    page.locator("#activity").scroll_into_view_if_needed()
-                    page.wait_for_selector("#heatmap-scroll:not([hidden])")
-                    assert page.locator("#heatmap i[data-level]").count() == 365
-                    if width == 1440:
-                        page.screenshot(path=str(args.screenshots / f"activity-{theme}.png"))
-            context.close()
-            print(f"Responsive, theme, media, accessibility: {theme} {width}px PASS")
+    for motion in ("no-preference", "reduce"):
+        for theme in ("light", "dark"):
+            for width in (1440, 768, 375):
+                context = browser.new_context(viewport={"width": width, "height": 1000}, color_scheme=theme, reduced_motion=motion)
+                context.route("https://github.com/**", lambda route: route.fulfill(body="GitHub stub"))
+                page = context.new_page()
+                page.on("pageerror", lambda error: errors.append(str(error)))
+                requests = []
+                page.on("request", lambda request: requests.append(request.url))
+                for path in ("/", "/research/kai.html"):
+                    requests.clear()
+                    page.goto(args.url + path)
+                    page.evaluate("document.fonts.ready")
+                    assert page.locator("h1").count() == 1
+                    assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), f"Overflow: {path} {width}"
+                    assert page.locator(".theme-toggle").get_attribute("aria-label") == f"Switch to {'dark' if theme == 'light' else 'light'} theme"
+                    if motion == "reduce":
+                        assert page.evaluate(POSTERS), f"Reduced motion must keep posters: {path}"
+                        assert not page.evaluate("[...document.querySelectorAll('video')].some(v => v.getAttribute('src'))")
+                        assert not any(url.endswith(".mp4") for url in requests), "Reduced motion loaded video"
+                    else:
+                        check_playing(page, path)
+                        mp4s = {urlsplit(u).path for u in requests if u.endswith(".mp4")}
+                        assert not any("europe-wind" in u for u in mp4s), "Orphan Zameen-note video requested"
+                        if path == "/":
+                            assert not any("healpix" in u or "rollout" in u for u in mp4s), mp4s
+                    assert not any("jogruber" in url for url in requests), "Contribution API requested"
+                    if args.axe and motion == "no-preference":
+                        page.add_script_tag(path=str(args.axe))
+                        violations = page.evaluate("async () => (await axe.run(document, {runOnly: {type: 'tag', values: ['wcag2a','wcag2aa','wcag21aa']}})).violations")
+                        assert not violations, json.dumps({"path": path, "width": width, "theme": theme, "violations": [{"id": v["id"], "nodes": [n["target"] for n in v["nodes"]]} for v in violations]}, indent=2)
+                    if path == "/":
+                        order = page.evaluate("[...document.querySelectorAll('main > section')].map(s => s.id)")
+                        assert order == SECTIONS, order
+                        assert page.locator("#projects .index-entry").count() == 2
+                        assert page.locator("#research article").first.get_attribute("id") == "kai"
+                    if motion == "no-preference":
+                        slug = "home" if path == "/" else "kai"
+                        page.screenshot(path=str(args.screenshots / f"{slug}-{theme}-{width}.png"), full_page=True)
+                context.close()
+                print(f"Responsive, theme, media ({motion}): {theme} {width}px PASS")
 
-    context = browser.new_context(viewport={"width":390,"height":844})
-    context.route("**/github-contributions-api.jogruber.de/**", lambda route: route.abort())
+    # Live preference change: stop and show posters, then restart from the beginning.
+    context = browser.new_context(viewport={"width": 1440, "height": 900})
+    page = context.new_page()
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(args.url + "/research/kai.html")
+    check_playing(page, "kai")
+    page.emulate_media(reduced_motion="reduce")
+    page.wait_for_function(POSTERS)
+    page.emulate_media(reduced_motion="no-preference")
+    page.wait_for_function("[...document.querySelectorAll('[data-autoplay-media] video')].every(v => !v.paused && !v.hidden)")
+    assert page.evaluate("[...document.querySelectorAll('[data-autoplay-media] video')].every(v => v.currentTime < 2)")
+    duration = page.locator("[data-src$='kai-rollout-10day.mp4']").evaluate("v => v.duration")
+    assert 3.2 <= duration <= 3.5, f"Not a 10-day clip: {duration}"
+    print("Reduced-motion live changes and 10-day clip: PASS")
+    context.close()
+
+    # Failed video downloads and browser-blocked autoplay both leave meaningful posters.
+    context = browser.new_context(viewport={"width": 1440, "height": 900})
+    context.route("**/*.mp4", lambda route: route.abort())
+    page = context.new_page()
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(args.url)
+    page.wait_for_function(POSTERS)
+    context.close()
+    context = browser.new_context(viewport={"width": 1440, "height": 900})
+    context.add_init_script("HTMLMediaElement.prototype.play = function () { return Promise.reject(new DOMException('Blocked', 'NotAllowedError')); }")
+    page = context.new_page()
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(args.url)
+    page.wait_for_function(POSTERS)
+    context.close()
+    print("Failed MP4 and blocked autoplay fall back to posters: PASS")
+
+    context = browser.new_context(viewport={"width": 375, "height": 844})
     page = context.new_page()
     page.goto(args.url)
     page.keyboard.press("Tab")
@@ -108,33 +189,29 @@ with sync_playwright() as p:
     chosen = page.evaluate("document.documentElement.dataset.theme")
     page.reload()
     assert page.evaluate("document.documentElement.dataset.theme") == chosen
-    page.locator("#activity").scroll_into_view_if_needed()
-    assert page.locator("#activity-fallback").is_visible()
-    print("Keyboard, mobile menu, persisted theme, API failure: PASS")
-    page.goto(args.url + "/research/kai.html")
-    button = page.locator("button[aria-controls='rollout-video']")
-    button.click()
-    page.wait_for_function("!document.getElementById('rollout-video').paused")
-    duration = page.locator("#rollout-video").evaluate("v => v.duration")
-    assert 3.2 <= duration <= 3.5, f"Not a 10-day clip: {duration}"
-    button.click()
-    assert page.locator("#rollout-video").evaluate("v => v.paused")
-    button.click()
-    page.wait_for_function("!document.getElementById('rollout-video').paused")
-    page.emulate_media(reduced_motion="reduce")
-    page.wait_for_function("document.getElementById('rollout-video').hidden")
-    assert page.locator("#rollout-video").evaluate("v => v.paused")
-    print("10-day video playback, pause, reduced-motion change: PASS")
+    assert page.evaluate("localStorage.getItem('theme')") == chosen
+    print("Keyboard, mobile menu, persisted theme: PASS")
     context.close()
-    context = browser.new_context(java_script_enabled=False, viewport={"width":390,"height":844})
+
+    context = browser.new_context(java_script_enabled=False, viewport={"width": 375, "height": 844})
     page = context.new_page()
     page.goto(args.url)
     assert page.locator("#primary-nav").is_visible()
     assert page.locator("#name").is_visible()
-    assert page.locator("noscript a").first.is_visible()
+    assert page.evaluate("[...document.querySelectorAll('[data-autoplay-media]')].every(f => f.querySelector('video').hidden && f.querySelector('img').getBoundingClientRect().height > 50)")
+    assert page.locator("noscript").count() == 0
     assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
-    print("No-JavaScript content, navigation and media fallback: PASS")
+    print("No-JavaScript content, navigation and poster fallback: PASS")
     context.close()
+
+    for js in (True, False):
+        context = browser.new_context(java_script_enabled=js)
+        context.route("https://github.com/**", lambda route: route.fulfill(body="GitHub stub"))
+        page = context.new_page()
+        page.goto(args.url + "/research/zameen.html")
+        page.wait_for_url(ZAMEEN, timeout=5000)
+        context.close()
+    print("Zameen redirect stub reaches GitHub (with and without JavaScript): PASS")
     browser.close()
 assert not errors, errors
 print("Browser console: PASS")

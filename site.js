@@ -82,105 +82,34 @@
     });
   }
 
-  // A real static figure is always present. No video URL is fetched until play.
-  const media = [...document.querySelectorAll('[data-scientific-media]')].map(figure => {
+  // Animations autoplay muted and loop from first load, as the owner requested.
+  // Sources stay in data-src until reduced motion has been checked, so a
+  // reduced-motion visitor keeps the static poster and never loads the MP4.
+  const media = [...document.querySelectorAll('[data-autoplay-media]')].map(figure => {
     const video = figure.querySelector('video');
-    const button = figure.querySelector('.media-toggle');
-    if (!video || !button) return null;
-    const playLabel = button.textContent;
-    button.hidden = false;
-    const sync = () => {
-      button.setAttribute('aria-pressed', String(!video.paused));
-      button.textContent = video.paused ? playLabel : 'Pause visualization';
+    const still = figure.querySelector('img');
+    if (!video || !video.dataset.src) return null;
+    let run = 0;
+    const showPoster = () => {
+      run++;
+      video.pause();
+      video.hidden = true;
+      still?.removeAttribute('aria-hidden');
     };
-    const showPoster = () => { video.pause(); video.hidden = true; sync(); };
-    video.addEventListener('play', sync);
-    video.addEventListener('pause', sync);
-    video.addEventListener('error', () => {
-      showPoster(); button.disabled = true; button.textContent = 'Video unavailable · still shown';
-    });
-    button.addEventListener('click', async () => {
-      if (!video.paused) { video.pause(); return; }
-      media.forEach(item => { if (item && item.video !== video) item.video.pause(); });
-      if (!video.src) video.src = video.dataset.src;
+    const start = () => {
+      const current = ++run;
+      video.muted = true;
+      if (!video.getAttribute('src')) video.src = video.dataset.src;
+      else video.currentTime = 0;
       video.hidden = false;
-      button.disabled = true;
-      try { await video.play(); }
-      catch (_) { showPoster(); }
-      finally { button.disabled = false; sync(); }
-    });
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(entries => {
-        if (!entries[0].isIntersecting) video.pause();
-      }).observe(figure);
-    }
-    return { video, showPoster };
-  });
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) media.forEach(item => item?.video.pause());
-  });
-  reducedMotion.addEventListener('change', () => {
-    if (reducedMotion.matches) media.forEach(item => item?.showPoster());
-  });
-
-  // Preserve the contribution visualization and six-hour cache, load near it.
-  const activity = document.getElementById('activity');
-  if (!activity) return;
-  const CACHE = 'gh-contrib-v1';
-  const TTL = 6 * 60 * 60 * 1000;
-  function valid(data) {
-    return data && Array.isArray(data.contributions) && data.contributions.length > 0 &&
-      data.contributions.every(day => /^\d{4}-\d{2}-\d{2}$/.test(day.date) &&
-        Number.isInteger(day.level) && day.level >= 0 && day.level <= 4 &&
-        Number.isInteger(day.count) && day.count >= 0);
-  }
-  function render(data) {
-    const days = [...data.contributions].sort((a, b) => a.date.localeCompare(b.date)).slice(-366);
-    const grid = document.getElementById('heatmap');
-    grid.replaceChildren();
-    const fragment = document.createDocumentFragment();
-    const padding = new Date(`${days[0].date}T00:00:00Z`).getUTCDay();
-    for (let i = 0; i < padding; i++) {
-      const blank = document.createElement('i'); blank.style.visibility = 'hidden'; fragment.append(blank);
-    }
-    days.forEach(day => {
-      const cell = document.createElement('i');
-      cell.dataset.level = String(day.level);
-      cell.title = `${day.count} contributions on ${day.date}`;
-      fragment.append(cell);
-    });
-    grid.append(fragment);
-    const total = days.reduce((sum, day) => sum + day.count, 0);
-    const summary = `${total.toLocaleString()} contributions · ${days[0].date} to ${days.at(-1).date}`;
-    grid.setAttribute('aria-label', summary);
-    document.getElementById('activity-total').replaceChildren(document.createTextNode(`${total.toLocaleString()} contributions in the last year · `));
-    const profile = document.createElement('a'); profile.href = 'https://github.com/homelessamy'; profile.textContent = '@homelessamy';
-    document.getElementById('activity-total').append(profile);
-    document.getElementById('heatmap-scroll').hidden = false;
-    document.getElementById('heatmap-key').hidden = false;
-    document.getElementById('activity-fallback').hidden = true;
-  }
-  async function loadActivity() {
-    try {
-      const cached = JSON.parse(localStorage.getItem(CACHE));
-      if (cached && Date.now() - cached.t < TTL && valid(cached.d)) { render(cached.d); return; }
-    } catch (_) {}
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-    try {
-      const response = await fetch('https://github-contributions-api.jogruber.de/v4/homelessamy?y=last', { signal: controller.signal });
-      if (!response.ok) throw new Error('Unavailable');
-      const data = await response.json();
-      if (!valid(data)) throw new Error('Invalid contribution history');
-      render(data);
-      try { localStorage.setItem(CACHE, JSON.stringify({ t: Date.now(), d: data })); } catch (_) {}
-    } catch (_) { /* The profile link remains useful offline or during API outages. */ }
-    finally { clearTimeout(timeout); }
-  }
-  if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) { observer.disconnect(); loadActivity(); }
-    }, { rootMargin: '300px' });
-    observer.observe(activity);
-  } else loadActivity();
+      // The poster image stays underneath for sizing; announce only the video.
+      still?.setAttribute('aria-hidden', 'true');
+      video.play()?.catch(() => { if (current === run) showPoster(); });
+    };
+    video.addEventListener('error', showPoster);
+    return { start, showPoster };
+  }).filter(Boolean);
+  const applyMotion = () => media.forEach(item => reducedMotion.matches ? item.showPoster() : item.start());
+  applyMotion();
+  reducedMotion.addEventListener('change', applyMotion);
 })();
