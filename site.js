@@ -112,4 +112,24 @@
   const applyMotion = () => media.forEach(item => reducedMotion.matches ? item.showPoster() : item.start());
   applyMotion();
   reducedMotion.addEventListener('change', applyMotion);
+
+  // Visit log: one beacon per page view to the owner's private Cloudflare Worker.
+  // Opening the site with ?notrack stops logging in that browser; ?track resumes it.
+  const params = new URLSearchParams(location.search);
+  let tracked = location.hostname === 'homelessamy.github.io';
+  try {
+    if (params.has('notrack')) localStorage.setItem('notrack', '1');
+    if (params.has('track')) localStorage.removeItem('notrack');
+    if (localStorage.getItem('notrack')) tracked = false;
+  } catch (_) { /* Storage blocked: log the visit as usual. */ }
+  if (tracked && navigator.sendBeacon) {
+    navigator.sendBeacon('https://visitor-logger.muhammadahmed71e.workers.dev/collect', JSON.stringify({
+      path: location.pathname + location.hash,
+      source: params.get('ref'),
+      referrer: document.referrer,
+      language: navigator.language,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      screen: `${screen.width}x${screen.height}`,
+    }));
+  }
 })();
