@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<title>Parhai · Research Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://open.spotify.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<script>/* theme + mode bootstrap (runs before paint). Edit CONFIG further down, not this. */
+(function(){var q=new URLSearchParams(location.search),d=document.documentElement;d.dataset.theme=q.get('theme')||'ink';if(q.get('card')==='0')d.classList.add('bare');if(q.get('compact')==='1')d.classList.add('compact');})();</script>
+<style>
+:root{
+  --surface:#232220; --line:rgba(236,230,218,.10); --hair:rgba(236,230,218,.09);
+  --text:#ECE6DA; --muted:#A39D90; --accent:#D9A658; --accent-soft:rgba(217,166,88,.16);
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+:root[data-theme="paper"]{--surface:#F6F3EC;--line:rgba(38,35,31,.12);--hair:rgba(38,35,31,.12);--text:#26231F;--muted:#6B655B;--accent:#8F6418;--accent-soft:rgba(143,100,24,.14)}
+@media (prefers-color-scheme: light){:root[data-theme="auto"]{--surface:#F6F3EC;--line:rgba(38,35,31,.12);--hair:rgba(38,35,31,.12);--text:#26231F;--muted:#6B655B;--accent:#8F6418;--accent-soft:rgba(143,100,24,.14)}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:transparent;overflow:hidden}
+body{color:var(--text);font:400 12px/1.45 var(--mono);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.card{position:fixed;inset:0;background:var(--surface);border:1px solid var(--hair);border-radius:14px;overflow:hidden}
+.bare .card{background:transparent;border:0;border-radius:0}
+.label{font:500 10.5px/1.25 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.wrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:clamp(12px,4vmin,22px) clamp(14px,4.5vmin,24px)}
+.head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.head a{flex:none;font:400 10.5px/1 var(--mono);letter-spacing:.06em;color:var(--muted);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}
+.head a:hover,.head a:focus-visible{color:var(--text);border-bottom-color:var(--line);outline:none}
+.title{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--text);letter-spacing:0;text-transform:none;margin-right:.5em}
+.player{position:relative;border-radius:12px;overflow:hidden;background:rgba(0,0,0,.18);box-shadow:0 0 0 1px var(--line)}
+.player iframe{display:block;width:100%;border:0;border-radius:12px}
+.bare .wrap{padding:6px}
+@media (max-height:190px){.head{display:none}}
+</style>
+</head>
+<body>
+<div class="card">
+  <main class="wrap">
+    <div class="head">
+      <div class="label"><span class="title" id="title"></span><span id="sub"></span></div>
+      <a id="open" target="_blank" rel="noopener">open in Spotify ↗</a>
+    </div>
+    <div class="player"><iframe id="sp" title="Spotify player" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+  </main>
+</div>
+<script>
+/* ============================== CONFIG ==============================
+   Any Spotify playlist/album/track id works. HEIGHT: 152 = compact player,
+   352 = player with track list. theme=0 asks Spotify for its dark variant.
+   URL overrides: ?id=<playlist id>&type=playlist&h=352&title=Parhai  */
+const PLAYLIST = {
+  title: 'Parhai',
+  subtitle: 'study playlist',
+  type: 'playlist',
+  id: '5hGkozycxt4V7t75Zb6ROx',
+  height: 152,
+};
+/* =================================================================== */
+
+const q = new URLSearchParams(location.search);
+const type = q.get('type') || PLAYLIST.type, id = q.get('id') || PLAYLIST.id;
+const h = +(q.get('h') || PLAYLIST.height);
+document.getElementById('title').textContent = q.get('title') || PLAYLIST.title;
+document.getElementById('sub').textContent = q.has('title') ? '' : PLAYLIST.subtitle;
+document.getElementById('open').href = `https://open.spotify.com/${type}/${id}`;
+const sp = document.getElementById('sp');
+sp.height = h;
+sp.src = `https://open.spotify.com/embed/${type}/${id}?utm_source=generator&theme=0`;
+</script>
+</body>
+</html>

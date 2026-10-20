@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<title>Progress · Research Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<script>/* theme + mode bootstrap (runs before paint). Edit CONFIG further down, not this. */
+(function(){var q=new URLSearchParams(location.search),d=document.documentElement;d.dataset.theme=q.get('theme')||'ink';if(q.get('card')==='0')d.classList.add('bare');if(q.get('compact')==='1')d.classList.add('compact');})();</script>
+<style>
+:root{
+  --surface:#232220; --line:rgba(236,230,218,.10); --hair:rgba(236,230,218,.09);
+  --text:#ECE6DA; --muted:#A39D90; --accent:#D9A658; --accent-soft:rgba(217,166,88,.16);
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+:root[data-theme="paper"]{--surface:#F6F3EC;--line:rgba(38,35,31,.12);--hair:rgba(38,35,31,.12);--text:#26231F;--muted:#6B655B;--accent:#8F6418;--accent-soft:rgba(143,100,24,.14)}
+@media (prefers-color-scheme: light){:root[data-theme="auto"]{--surface:#F6F3EC;--line:rgba(38,35,31,.12);--hair:rgba(38,35,31,.12);--text:#26231F;--muted:#6B655B;--accent:#8F6418;--accent-soft:rgba(143,100,24,.14)}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:transparent;overflow:hidden}
+body{color:var(--text);font:400 12px/1.45 var(--mono);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.card{position:fixed;inset:0;background:var(--surface);border:1px solid var(--hair);border-radius:14px;overflow:hidden}
+.bare .card{background:transparent;border:0;border-radius:0}
+.label{font:500 10.5px/1.25 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.serif{font-family:var(--serif);font-variant-numeric:lining-nums tabular-nums;font-optical-sizing:auto}
+.tag{display:inline-block;flex:none;font:400 9.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 7px 2px}
+.bar{position:relative;height:2px;background:var(--line);border-radius:2px}
+.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:2px}
+.bar b{position:absolute;top:-4px;width:1px;height:10px;background:var(--text);opacity:.7}
+
+.wrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(14px,6vh,30px);padding:clamp(16px,5vmin,30px) clamp(18px,6vmin,34px)}
+.row{display:flex;flex-direction:column;gap:8px}
+.top{display:flex;align-items:center;gap:10px;min-width:0}
+.foot{display:flex;justify-content:space-between;align-items:baseline;gap:14px;min-width:0}
+.foot .range{flex:none;font-size:11px;color:var(--muted);white-space:nowrap;opacity:.8}
+.pct{font-weight:300;font-size:clamp(30px,min(11vw,15vh),58px);line-height:.95;letter-spacing:-.015em}
+.pct small{font-size:.45em;color:var(--muted);margin-left:.08em;font-weight:400}
+.detail{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:360px){.foot .range{display:none}}
+@media (max-height:240px){.wrap{gap:12px}.row{gap:5px}.pct{font-size:clamp(24px,10vh,34px)}}
+
+.ph{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:12px}
+
+/* ---- compact (strip cell) grammar: label / figure / reading / caption / detail ----
+   every cell shares these row heights, so readings line up across the strip */
+.cmp{display:none}
+.compact .wrap{display:none}
+.compact .cmp{position:absolute;inset:0;display:flex;flex-direction:column;padding:14px 14px 13px}
+.cmp .top{flex:none;display:flex;align-items:center;gap:8px;min-width:0;height:16px}
+.cmp .top .label{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.cmp .top .tag{margin-left:auto}
+.cmp .fig{flex:1 1 0;min-height:0;position:relative;margin:10px 0}
+.cmp .fig > svg{position:absolute;left:0;top:50%;transform:translateY(-50%);overflow:visible}
+.cmp .rd{flex:none;margin-top:auto;font-family:var(--serif);font-weight:300;font-variant-numeric:lining-nums tabular-nums;font-optical-sizing:auto;font-size:clamp(26px,min(22vw,14.5vh),40px);line-height:1;letter-spacing:-.015em;white-space:nowrap}
+.cmp .rd .u{font-size:.42em;font-weight:400;color:var(--muted);margin-left:.1em;letter-spacing:0}
+.cmp .rd .u.it{font-style:italic;margin-left:.28em}
+.cmp .cap{flex:none;margin-top:7px;font-family:var(--serif);font-size:clamp(13px,min(9.5vw,6vh),15px);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp .cap.muted{color:var(--muted);font-style:italic}
+.cmp .det{flex:none;margin-top:7px;font:400 10.5px/1.3 var(--mono);letter-spacing:.01em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-height:175px){.cmp .fig{display:none}}
+.cmp .fig > svg.ruler{right:0;width:100%;height:min(100%,30px)}
+.ruler line{vector-effect:non-scaling-stroke;stroke-width:1}
+.ruler .base{stroke:var(--line)}
+.ruler .past{stroke:var(--text);opacity:.5}
+.ruler .fut{stroke:var(--muted);opacity:.35}
+.ruler .cur{stroke:var(--accent);stroke-width:2}
+</style>
+</head>
+<body>
+<div class="card">
+  <main class="wrap" id="full"></main>
+  <section class="cmp" id="cmp"></section>
+</div>
+<script>
+/* ============================== CONFIG ==============================
+   Dates are calendar days (inclusive) in TZ below. Delete `placeholder: true`
+   once you've checked a date — the "placeholder" tag then disappears.
+   URL overrides: ?s1=2026-09-01&e1=2026-12-18&l1=Fall%202026&s2=…&e2=…&l2=…  */
+const SEMESTER = { label: 'Fall 2026', start: '2026-09-01', end: '2026-12-18', placeholder: true }; // PLACEHOLDER: verify against the KAIST academic calendar
+const MILESTONE = { label: 'Graduation phase', start: '2026-09-01', end: '2027-08-31', placeholder: true }; // PLACEHOLDER
+const TZ = 'Asia/Seoul';
+/* =================================================================== */
+
+const q = new URLSearchParams(location.search);
+const rows = [
+  { ...SEMESTER, label: q.get('l1') || SEMESTER.label, start: q.get('s1') || SEMESTER.start, end: q.get('e1') || SEMESTER.end, placeholder: q.has('s1') ? false : SEMESTER.placeholder },
+  { ...MILESTONE, label: q.get('l2') || MILESTONE.label, start: q.get('s2') || MILESTONE.start, end: q.get('e2') || MILESTONE.end, placeholder: q.has('s2') ? false : MILESTONE.placeholder },
+];
+const compact = document.documentElement.classList.contains('compact');
+const DAY = 86400000;
+const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+/* "now" expressed as a UTC timestamp of the TZ wall clock, so date strings compare as plain UTC days */
+function wallNow() {
+  const p = {}; new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    .formatToParts(new Date()).forEach(x => p[x.type] = x.value);
+  return Date.UTC(+p.year, +p.month - 1, +p.day, (+p.hour) % 24, +p.minute, +p.second);
+}
+const d0 = s => { const [y, m, d] = s.split('-').map(Number); return Date.UTC(y, m - 1, d); };
+const short = t => { const d = new Date(t); return d.getUTCDate() + ' ' + MO[d.getUTCMonth()]; };
+
+function measure(r, now) {
+  const s = d0(r.start), e = d0(r.end) + DAY;          // end is inclusive
+  const total = (e - s) / DAY, today = Math.floor(now / DAY) * DAY;
+  const f = Math.min(1, Math.max(0, (now - s) / (e - s)));
+  const left = Math.round((d0(r.end) - today) / DAY);
+  const tw = Math.ceil(total / 7), w = Math.max(0, Math.min(tw, Math.floor((now - s) / DAY / 7) + 1));
+  const dl = `${left} day${left === 1 ? '' : 's'} left`;
+  let detail, caps;
+  if (now < s) { const n = Math.round((s - today) / DAY); detail = `starts in ${n} day${n === 1 ? '' : 's'}`; caps = [detail, `in ${n} d`]; }
+  else if (now >= e) { detail = 'complete'; caps = [detail]; }
+  else if (total > 140) {
+    const tm = Math.round(total / 30.44), m = Math.min(tm, Math.floor((now - s) / DAY / 30.44) + 1);
+    detail = `Month ${m} of ${tm} · ${dl}`; caps = [detail, `Month ${m} of ${tm}`, `Mo ${m}/${tm}`];
+  } else {
+    detail = `Week ${w} of ${tw} · ${dl}`; caps = [detail, `Week ${w} of ${tw}`, `Wk ${w}/${tw}`];
+  }
+  return { f, w, tw, detail, caps, range: `${short(s)} – ${short(d0(r.end))}` };
+}
+const pct = f => { const v = f * 100; return v >= 99.95 || v === 0 ? String(Math.round(v)) : v.toFixed(v < 10 ? 1 : 0); };
+const tag = r => r.placeholder ? '<span class="tag">placeholder</span>' : '';
+const bar = f => `<div class="bar"><i style="width:${(f * 100).toFixed(2)}%"></i><b style="left:calc(${(f * 100).toFixed(2)}% - .5px)"></b></div>`;
+
+// first variant whose laid-out width fits the line (Range width is fractional; scrollWidth rounds)
+function fitText(el, variants) {
+  const r = document.createRange();
+  for (const v of variants) { el.innerHTML = v; r.selectNodeContents(el); if (r.getBoundingClientRect().width <= el.clientWidth - 0.5) return; }
+}
+/* compact figure: one hairline tick per week; elapsed weeks solid, this week in brass */
+function ruler(mm) {
+  const n = Math.max(2, Math.min(60, mm.tw)), parts = [];
+  for (let i = 0; i < n; i++) {
+    const x = (i / (n - 1) * 100).toFixed(2), cur = i === mm.w - 1, past = i < mm.w - 1;
+    parts.push(`<line class="${cur ? 'cur' : past ? 'past' : 'fut'}" x1="${x}" x2="${x}" y1="${cur ? 0 : past ? 9 : 15}" y2="30"/>`);
+  }
+  return `<svg class="ruler" viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true"><line class="base" x1="0" x2="100" y1="30" y2="30"/>${parts.join('')}</svg>`;
+}
+function render() {
+  const now = wallNow();
+  const m = rows.map(r => measure(r, now));
+  if (compact) {
+    const c = document.getElementById('cmp'), p2 = pct(m[1].f), L2 = rows[1].label;
+    c.innerHTML = `<div class="top"><span class="label">${rows[0].label}</span>${tag(rows[0])}</div>
+      <div class="fig">${ruler(m[0])}</div>
+      <div class="rd">${pct(m[0].f)}<span class="u">%</span></div>
+      <div class="cap" data-cap></div>
+      <div class="det" data-det></div>`;
+    const lab = c.querySelector('.top .label'), tg = c.querySelector('.top .tag');
+    if (tg && lab.scrollWidth > lab.clientWidth + 1) tg.remove();
+    fitText(c.querySelector('[data-cap]'), m[0].caps);
+    fitText(c.querySelector('[data-det]'), [`${L2} ${p2}%${rows[1].placeholder ? ' · placeholder' : ''}`, `${L2} ${p2}%`, `${L2.split(' ')[0]} ${p2}%`, `${p2}%`]);
+    return;
+  }
+  document.getElementById('full').innerHTML = rows.map((r, i) => `
+    <div class="row">
+      <div class="top"><div class="label">${r.label}</div>${tag(r)}</div>
+      <div class="pct serif">${pct(m[i].f)}<small>%</small></div>
+      ${bar(m[i].f)}
+      <div class="foot"><span class="detail">${m[i].detail}</span><span class="range">${m[i].range}</span></div>
+    </div>`).join('');
+}
+render();
+if (document.fonts) document.fonts.ready.then(render);
+addEventListener('resize', render);
+setInterval(render, 60000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+</script>
+</body>
+</html>

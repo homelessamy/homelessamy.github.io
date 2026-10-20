@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<title>Focus · Research Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<script>/* theme + mode bootstrap (runs before paint). Edit CONFIG further down, not this. */
+(function(){var q=new URLSearchParams(location.search),d=document.documentElement;d.dataset.theme=q.get('theme')||'ink';if(q.get('card')==='0')d.classList.add('bare');if(q.get('compact')==='1')d.classList.add('compact');})();</script>
+<style>
+:root{
+  --surface:#232220; --line:rgba(236,230,218,.10); --hair:rgba(236,230,218,.09);
+  --text:#ECE6DA; --muted:#A39D90; --accent:#D9A658; --accent-soft:rgba(217,166,88,.16);
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+:root[data-theme="paper"]{--surface:#F6F3EC;--line:rgba(38,35,31,.12);--hair:rgba(38,35,31,.12);--text:#26231F;--muted:#6B655B;--accent:#8F6418;--accent-soft:rgba(143,100,24,.14)}
+@media (prefers-color-scheme: light){:root[data-theme="auto"]{--surface:#F6F3EC;--line:rgba(38,35,31,.12);--hair:rgba(38,35,31,.12);--text:#26231F;--muted:#6B655B;--accent:#8F6418;--accent-soft:rgba(143,100,24,.14)}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:transparent;overflow:hidden}
+body{color:var(--text);font:400 12px/1.45 var(--mono);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.card{position:fixed;inset:0;background:var(--surface);border:1px solid var(--hair);border-radius:14px;overflow:hidden}
+.bare .card{background:transparent;border:0;border-radius:0}
+.label{font:500 10.5px/1.25 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.serif{font-family:var(--serif);font-variant-numeric:lining-nums tabular-nums;font-optical-sizing:auto}
+button{all:unset;cursor:pointer;font:400 11px/1 var(--mono);letter-spacing:.1em;text-transform:lowercase;color:var(--muted);padding:6px 2px;border-bottom:1px solid transparent}
+button:hover{color:var(--text)}
+button:focus-visible{color:var(--text);border-bottom-color:var(--line)}
+button.primary{color:var(--text)}
+
+.wrap{position:absolute;inset:0;display:flex;flex-direction:column;padding:clamp(14px,4.5vmin,26px) clamp(16px,5.5vmin,30px)}
+.head{display:flex;justify-content:space-between;align-items:center}
+.body{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,3vh,18px)}
+.dial{position:relative;width:min(58vh,74vw);height:min(58vh,74vw);flex:none}
+.dial svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.track{fill:none;stroke:var(--line);stroke-width:1;vector-effect:non-scaling-stroke}
+.arc{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;vector-effect:non-scaling-stroke;transition:stroke-dashoffset .25s linear}
+.nib{fill:var(--accent)}
+.brk .nib{fill:var(--text);opacity:.7}
+.brk .arc{stroke:var(--text);opacity:.7}
+.ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5em}
+.time{font-weight:300;font-size:min(14vh,17vw);line-height:1;letter-spacing:-.01em}
+.dots{display:flex;gap:6px}
+.dots i{width:5px;height:5px;border-radius:50%;border:1px solid var(--muted)}
+.dots i.on{background:var(--text);border-color:var(--text)}
+.ctl{display:flex;gap:clamp(14px,4vw,24px);justify-content:center}
+.foot{font-size:10.5px;color:var(--muted);text-align:center;letter-spacing:.04em}
+.side{display:contents}
+@media (min-aspect-ratio: 3/2){
+  .body{flex-direction:row;gap:clamp(20px,7vw,56px)}
+  .dial{width:min(70vh,46vw);height:min(70vh,46vw)}
+  .time{font-size:min(17vh,9vw)}
+  .side{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+  .ctl{justify-content:flex-start}
+  .foot{text-align:left}
+}
+@media (max-height:200px){.foot{display:none}}
+
+/* settings sheet */
+.sheet{position:absolute;inset:0;background:var(--surface);display:none;flex-direction:column;justify-content:center;gap:12px;padding:clamp(16px,5vmin,30px) clamp(18px,6vmin,34px);overflow:auto}
+.bare .sheet{background:var(--surface)}
+.sheet.open{display:flex}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px 18px}
+.fields label{display:flex;flex-direction:column;gap:6px}
+input[type=number]{all:unset;font:400 20px/1.2 var(--serif);font-variant-numeric:lining-nums tabular-nums;color:var(--text);border-bottom:1px solid var(--line);padding:2px 0;width:100%}
+input[type=number]:focus{border-bottom-color:var(--accent)}
+.chk{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
+.chk input{accent-color:var(--accent)}
+
+/* compact */
+.compact .head,.compact .foot,.compact .side .ctl button:not(.primary){display:none}
+.compact .wrap{padding:10px}
+.compact .body{flex-direction:column;gap:8px}
+.compact .dial{width:min(68vh,80vw);height:min(68vh,80vw)}
+.compact .time{font-size:min(15vh,19vw)}
+.compact .side{display:contents}
+</style>
+</head>
+<body>
+<div class="card">
+  <main class="wrap">
+    <div class="head"><span class="label">Focus timer</span><button id="openSettings" type="button" aria-haspopup="dialog">settings</button></div>
+    <div class="body" id="body">
+      <div class="dial" id="dial">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><circle class="track" cx="50" cy="50" r="47"/><circle class="arc" id="arc" cx="50" cy="50" r="47"/><circle class="nib" id="nib" cx="97" cy="50" r="1.15"/></svg>
+        <div class="ctr">
+          <span class="label" id="phase">Focus</span>
+          <span class="time serif" id="time" role="timer" aria-live="off">50:00</span>
+          <span class="dots" id="dots"></span>
+        </div>
+      </div>
+      <div class="side">
+        <div class="ctl">
+          <button class="primary" id="toggle" type="button">start</button>
+          <button id="reset" type="button">reset</button>
+          <button id="skip" type="button">skip</button>
+        </div>
+        <div class="foot" id="today"></div>
+      </div>
+    </div>
+  </main>
+  <form class="sheet" id="sheet" role="dialog" aria-label="Timer settings" novalidate>
+    <span class="label">Durations, minutes</span>
+    <div class="fields">
+      <label><span class="label">Focus</span><input type="number" min="0.5" max="240" step="any" name="f_focus"></label>
+      <label><span class="label">Short break</span><input type="number" min="0.5" max="120" step="any" name="f_short"></label>
+      <label><span class="label">Long break</span><input type="number" min="0.5" max="180" step="any" name="f_long"></label>
+      <label><span class="label">Rounds → long</span><input type="number" min="1" max="12" step="1" name="f_rounds"></label>
+    </div>
+    <label class="chk"><input type="checkbox" name="f_auto"> start breaks automatically</label>
+    <div class="ctl" style="justify-content:flex-start"><button class="primary" type="submit">save</button><button type="button" id="cancel">cancel</button><button type="button" id="defaults">defaults</button></div>
+  </form>
+</div>
+<script>
+/* ============================== CONFIG ==============================
+   Default durations in minutes. Precedence: these < URL params < values saved
+   from the in-widget "settings" sheet (stored in this browser; "defaults" clears them).
+   URL overrides: ?focus=50&short=10&long=20&rounds=4&auto=1&chime=0
+   Keyboard (click the widget first): Space start/pause · R reset · S skip  */
+const CONFIG = {
+  focus: 50,
+  short: 10,
+  long: 20,
+  roundsBeforeLong: 4,
+  autoStartBreaks: false,
+  chime: true,
+};
+/* =================================================================== */
+
+const q = new URLSearchParams(location.search);
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} },
+};
+const K = { settings: 'rl.timer.settings.v1', state: 'rl.timer.state.v1', today: 'rl.timer.today.v1' };
+const num = (v, d) => { const n = parseFloat(v); return isFinite(n) && n > 0 ? n : d; };
+function baseSettings() {
+  return {
+    focus: num(q.get('focus'), CONFIG.focus), short: num(q.get('short'), CONFIG.short), long: num(q.get('long'), CONFIG.long),
+    rounds: Math.round(num(q.get('rounds'), CONFIG.roundsBeforeLong)),
+    auto: q.has('auto') ? q.get('auto') === '1' : CONFIG.autoStartBreaks,
+    chime: q.has('chime') ? q.get('chime') !== '0' : CONFIG.chime,
+  };
+}
+let S = { ...baseSettings(), ...(store.get(K.settings) || {}) };
+const dur = ph => S[ph] * 60000;
+const NAMES = { focus: 'Focus', short: 'Short break', long: 'Long break' };
+
+let st = store.get(K.state) || null;
+if (!st || !NAMES[st.phase]) st = { phase: 'focus', done: 0, running: false, endsAt: 0, remaining: dur('focus') };
+const save = () => store.set(K.state, st);
+
+const kst = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
+function today() { const t = store.get(K.today); return t && t.date === kst() ? t : { date: kst(), n: 0, min: 0 }; }
+function addToday(mins) { const t = today(); t.n++; t.min += mins; store.set(K.today, t); }
+
+let actx = null;
+function audio() { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); } catch (e) {} }
+function chime() {
+  if (!S.chime || !actx) return;
+  const t0 = actx.currentTime;
+  [[659.25, 0], [987.77, .18]].forEach(([f, dt]) => {
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, t0 + dt); g.gain.exponentialRampToValueAtTime(0.09, t0 + dt + .02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dt + 1.6);
+    o.connect(g).connect(actx.destination); o.start(t0 + dt); o.stop(t0 + dt + 1.7);
+  });
+}
+
+const remaining = () => st.running ? st.endsAt - Date.now() : st.remaining;
+function complete(natural, late) {
+  if (st.phase === 'focus') {
+    if (natural) addToday(S.focus);
+    st.done = Math.min(S.rounds, st.done + (natural ? 1 : 0));
+    st.phase = st.done >= S.rounds ? 'long' : 'short';
+  } else {
+    if (st.phase === 'long') st.done = 0;
+    st.phase = 'focus';
+  }
+  if (natural && !late) chime();
+  const autoRun = natural && !late && S.auto && st.phase !== 'focus';
+  st.running = autoRun; st.remaining = dur(st.phase); st.endsAt = autoRun ? Date.now() + st.remaining : 0;
+  save();
+}
+
+const $ = id => document.getElementById(id);
+const arc = $('arc'), C = 2 * Math.PI * 47;
+arc.style.strokeDasharray = C.toFixed(3);
+const pad = n => String(n).padStart(2, '0');
+function fmt(ms) {
+  const s = Math.max(0, Math.ceil(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, x = s % 60;
+  return h ? `${h}:${pad(m)}:${pad(x)}` : `${pad(m)}:${pad(x)}`;
+}
+function render() {
+  let r = remaining();
+  if (st.running && r <= 0) { complete(true, r < -5000); r = remaining(); }
+  const total = dur(st.phase), f = Math.max(0, Math.min(1, r / total)), done = 1 - f;
+  // brass arc grows clockwise from 12 o'clock as the phase elapses; a dot marks its head
+  arc.style.strokeDashoffset = (C * (1 - done)).toFixed(3);
+  arc.style.opacity = done > 0.002 ? 1 : 0;
+  const th = done * 2 * Math.PI;
+  $("nib").setAttribute('cx', (50 + 47 * Math.cos(th)).toFixed(2));
+  $("nib").setAttribute('cy', (50 + 47 * Math.sin(th)).toFixed(2));
+  $('time').textContent = fmt(r);
+  $('phase').textContent = NAMES[st.phase];
+  $('body').classList.toggle('brk', st.phase !== 'focus');
+  $('toggle').textContent = st.running ? 'pause' : (r < total ? 'resume' : 'start');
+  const filled = st.phase === 'long' ? S.rounds : st.done;
+  $('dots').innerHTML = Array.from({ length: S.rounds }, (_, i) => `<i class="${i < filled ? 'on' : ''}"></i>`).join('');
+  const t = today(), h = Math.floor(t.min / 60), m = Math.round(t.min % 60);
+  $('today').textContent = `today · ${t.n} focus session${t.n === 1 ? '' : 's'}${t.min ? ` · ${h ? h + 'h ' : ''}${m}m` : ''}`;
+}
+
+function toggle() {
+  audio();
+  if (st.running) { st.remaining = st.endsAt - Date.now(); st.running = false; st.endsAt = 0; }
+  else { st.endsAt = Date.now() + st.remaining; st.running = true; }
+  save(); render();
+}
+function reset() { st.running = false; st.endsAt = 0; st.remaining = dur(st.phase); save(); render(); }
+function skip() { audio(); complete(false); render(); }
+
+$('toggle').onclick = toggle; $('reset').onclick = reset; $('skip').onclick = skip;
+$('dial').addEventListener('click', toggle);
+document.addEventListener('keydown', e => {
+  if (e.target.closest && e.target.closest('input')) return;
+  if (e.code === 'Space') { e.preventDefault(); toggle(); }
+  else if (e.key === 'r' || e.key === 'R') reset();
+  else if (e.key === 's' || e.key === 'S') skip();
+});
+
+/* settings sheet */
+const sheet = $('sheet'), F = sheet.elements;
+function openSheet() {
+  F.f_focus.value = S.focus; F.f_short.value = S.short; F.f_long.value = S.long; F.f_rounds.value = S.rounds; F.f_auto.checked = S.auto;
+  sheet.classList.add('open'); F.f_focus.focus();
+}
+const closeSheet = () => sheet.classList.remove('open');
+$('openSettings').onclick = openSheet; $('cancel').onclick = closeSheet;
+$('defaults').onclick = () => { store.del(K.settings); S = baseSettings(); applySettings(); closeSheet(); };
+sheet.onsubmit = e => {
+  e.preventDefault();
+  const saved = { focus: num(F.f_focus.value, S.focus), short: num(F.f_short.value, S.short), long: num(F.f_long.value, S.long), rounds: Math.round(num(F.f_rounds.value, S.rounds)), auto: F.f_auto.checked };
+  store.set(K.settings, saved); S = { ...S, ...saved }; applySettings(); closeSheet();
+};
+function applySettings() { if (!st.running) st.remaining = dur(st.phase); st.done = Math.min(st.done, S.rounds); save(); render(); }
+
+render();
+setInterval(render, 250);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+addEventListener('storage', e => { if (e.key === K.state && e.newValue) { try { st = JSON.parse(e.newValue); render(); } catch (x) {} } });
+</script>
+</body>
+</html>

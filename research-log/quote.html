@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<title>Quote · Research Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<script>/* theme + mode bootstrap (runs before paint). Edit CONFIG further down, not this. */
+(function(){var q=new URLSearchParams(location.search),d=document.documentElement;d.dataset.theme=q.get('theme')||'ink';if(q.get('card')==='0')d.classList.add('bare');if(q.get('compact')==='1')d.classList.add('compact');})();</script>
+<style>
+:root{
+  --surface:#232220; --line:rgba(236,230,218,.10); --hair:rgba(236,230,218,.09);
+  --text:#ECE6DA; --muted:#A39D90; --accent:#D9A658; --accent-soft:rgba(217,166,88,.16);
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+:root[data-theme="paper"]{--surface:#F6F3EC;--line:rgba(38,35,31,.12);--hair:rgba(38,35,31,.12);--text:#26231F;--muted:#6B655B;--accent:#8F6418;--accent-soft:rgba(143,100,24,.14)}
+@media (prefers-color-scheme: light){:root[data-theme="auto"]{--surface:#F6F3EC;--line:rgba(38,35,31,.12);--hair:rgba(38,35,31,.12);--text:#26231F;--muted:#6B655B;--accent:#8F6418;--accent-soft:rgba(143,100,24,.14)}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:transparent;overflow:hidden}
+body{color:var(--text);font:400 12px/1.45 var(--mono);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.card{position:fixed;inset:0;background:var(--surface);border:1px solid var(--hair);border-radius:14px;overflow:hidden}
+.bare .card{background:transparent;border:0;border-radius:0}
+.label{font:500 10.5px/1.25 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+
+.wrap{position:absolute;inset:0;display:flex;flex-direction:column;padding:clamp(16px,5vmin,30px) clamp(22px,8vmin,44px) clamp(12px,4vmin,22px)}
+.box{flex:1;min-height:0;display:flex;align-items:center}
+figure{margin:0;width:100%;cursor:pointer}
+blockquote{position:relative;margin:0;font-family:var(--serif);font-style:italic;font-weight:400;line-height:1.28;letter-spacing:-.003em;text-wrap:balance}
+blockquote::before{content:"\201C";position:absolute;left:-.48em;top:-.06em;color:var(--accent);font-style:normal;font-size:1.25em;line-height:1}
+figcaption{margin-top:.9em;font:500 10.5px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+figcaption .src{letter-spacing:.04em;text-transform:none;font-weight:400;opacity:.85}
+.bar{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+button{all:unset;cursor:pointer;font:400 10.5px/1 var(--mono);letter-spacing:.08em;color:var(--muted);padding:4px 0}
+button:hover,button:focus-visible{color:var(--text)}
+button:focus-visible{outline:1px solid var(--line);outline-offset:3px}
+.fade{transition:opacity .35s ease}
+.compact .wrap{padding:4px 4px 4px 18px}
+.compact .bar{display:none}
+.compact figcaption{margin-top:.55em;font-size:9.5px}
+@media (prefers-reduced-motion: reduce){.fade{transition:none}}
+</style>
+</head>
+<body>
+<div class="card">
+  <main class="wrap">
+    <div class="box" id="box"><figure id="fig" class="fade" title="Next quote"><blockquote id="q"></blockquote><figcaption id="c"></figcaption></figure></div>
+    <div class="bar"><span class="label" id="day"></span><button id="next" type="button">next →</button></div>
+  </main>
+</div>
+<script>
+/* ============================== CONFIG ==============================
+   Short, sourced quotes on science, craft, attention and writing.
+   One is chosen per day (KST) in a fixed shuffled order; tap to cycle.
+   Add your own: { q: 'text', a: 'Author', s: 'source, year' }.
+   URL overrides: ?i=3 pins a quote (0-based) · ?hidesrc=1 hides sources  */
+const QUOTES = [
+  { q: 'What I cannot create, I do not understand.', a: 'Richard Feynman', s: 'his blackboard, 1988' },
+  { q: 'The first principle is that you must not fool yourself — and you are the easiest person to fool.', a: 'Richard Feynman', s: 'Cargo Cult Science, 1974' },
+  { q: 'For a successful technology, reality must take precedence over public relations, for nature cannot be fooled.', a: 'Richard Feynman', s: 'Rogers Commission report, 1986' },
+  { q: 'I learned very early the difference between knowing the name of something and knowing something.', a: 'Richard Feynman', s: '1988' },
+  { q: 'Essentially, all models are wrong, but some are useful.', a: 'George E. P. Box', s: 'Empirical Model-Building, 1987' },
+  { q: 'The purpose of computing is insight, not numbers.', a: 'Richard Hamming', s: 'Numerical Methods for Scientists and Engineers, 1962' },
+  { q: 'If you don’t work on important problems, it’s not likely that you’ll do important work.', a: 'Richard Hamming', s: 'You and Your Research, 1986' },
+  { q: 'In science, if you know what you are doing, you should not be doing it.', a: 'Richard Hamming', s: 'The Art of Doing Science and Engineering, 1997' },
+  { q: 'Premature optimization is the root of all evil.', a: 'Donald Knuth', s: 'Structured Programming with go to Statements, 1974' },
+  { q: 'How we spend our days is, of course, how we spend our lives.', a: 'Annie Dillard', s: 'The Writing Life, 1989' },
+  { q: 'Does the flap of a butterfly’s wings in Brazil set off a tornado in Texas?', a: 'Edward N. Lorenz', s: 'AAAS address, 1972' },
+  { q: 'Big whirls have little whirls that feed on their velocity, and little whirls have lesser whirls and so on to viscosity.', a: 'Lewis Fry Richardson', s: 'Weather Prediction by Numerical Process, 1922' },
+  { q: 'The Analytical Engine has no pretensions whatever to originate any thing. It can do whatever we know how to order it to perform.', a: 'Ada Lovelace', s: 'Notes on the Analytical Engine, 1843' },
+  { q: 'Science is built up of facts, as a house is built of stones; but an accumulation of facts is no more a science than a heap of stones is a house.', a: 'Henri Poincaré', s: 'Science and Hypothesis, 1902' },
+  { q: 'The eternal mystery of the world is its comprehensibility.', a: 'Albert Einstein', s: 'Physics and Reality, 1936' },
+  { q: 'Extraordinary claims require extraordinary evidence.', a: 'Carl Sagan', s: 'Cosmos, 1980' },
+  { q: 'If I have seen further it is by standing on the shoulders of giants.', a: 'Isaac Newton', s: 'letter to Robert Hooke, 1675' },
+  { q: 'When you can measure what you are speaking about, and express it in numbers, you know something about it.', a: 'Lord Kelvin', s: 'lecture, 1883' },
+  { q: 'Clear thinking becomes clear writing; one can’t exist without the other.', a: 'William Zinsser', s: 'On Writing Well, 1976' },
+  { q: 'Omit needless words.', a: 'William Strunk Jr.', s: 'The Elements of Style, 1918' },
+  { q: 'Good prose is like a windowpane.', a: 'George Orwell', s: 'Why I Write, 1946' },
+  { q: 'Attention is the rarest and purest form of generosity.', a: 'Simone Weil', s: 'letter to Joë Bousquet, 1942' },
+  { q: 'Attention is the beginning of devotion.', a: 'Mary Oliver', s: 'Upstream, 2016' },
+  { q: 'Far better an approximate answer to the right question, which is often vague, than an exact answer to the wrong question, which can always be made precise.', a: 'John W. Tukey', s: 'The Future of Data Analysis, 1962' },
+  { q: 'Simplicity is prerequisite for reliability.', a: 'Edsger W. Dijkstra', s: 'EWD498, 1975' },
+  { q: 'The best way to predict the future is to invent it.', a: 'Alan Kay', s: '1971' },
+  { q: 'Everyone knows that debugging is twice as hard as writing a program in the first place.', a: 'Brian Kernighan', s: 'The Elements of Programming Style, 1974' },
+  { q: 'Plan to throw one away; you will, anyhow.', a: 'Fred Brooks', s: 'The Mythical Man-Month, 1975' },
+  { q: 'In the fields of observation, chance favours only the prepared mind.', a: 'Louis Pasteur', s: 'lecture at Lille, 1854' },
+  { q: 'While we are postponing, life speeds by.', a: 'Seneca', s: 'Letters to Lucilius, I' },
+  { q: 'Every man can, if he so desires, become the sculptor of his own brain.', a: 'Santiago Ramón y Cajal', s: 'Advice for a Young Investigator, 1897' },
+  { q: 'We especially need imagination in science. It is not all mathematics, nor all logic, but it is somewhat beauty and poetry.', a: 'Maria Mitchell', s: 'journals' },
+  { q: 'Equipped with his five senses, man explores the universe around him and calls the adventure Science.', a: 'Edwin Hubble', s: 'The Nature of Science, 1954' },
+  { q: 'If you cannot solve the proposed problem, try to solve first some related problem.', a: 'George Pólya', s: 'How to Solve It, 1945' },
+  { q: 'With four parameters I can fit an elephant, and with five I can make him wiggle his trunk.', a: 'John von Neumann', s: 'as recalled by Enrico Fermi, 1953' },
+  { q: 'Nothing is too wonderful to be true, if it be consistent with the laws of nature.', a: 'Michael Faraday', s: 'laboratory notebook, 1849' },
+  { q: 'Data dominates. If you’ve chosen the right data structures and organized things well, the algorithms will almost always be self-evident.', a: 'Rob Pike', s: 'Notes on Programming in C, 1989' },
+  { q: 'Beyond the stars, there are yet more worlds.', a: 'Muhammad Iqbal', s: 'Sitāron se āge jahān aur bhī hain · Bāl-e-Jibrīl, 1935' },
+];
+const TZ_OFFSET_HOURS = 9;   // the day flips at local midnight in this offset (KST)
+/* =================================================================== */
+
+const qs = new URLSearchParams(location.search);
+const compact = document.documentElement.classList.contains('compact');
+const hideSrc = qs.get('hidesrc') === '1' || compact;
+const n = QUOTES.length;
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+const step = [7, 11, 13, 17, 19].find(s => gcd(s, n) === 1);
+const day = Math.floor((Date.now() + TZ_OFFSET_HOURS * 3600000) / 86400000);
+let idx = qs.has('i') ? (+qs.get('i')) % n : (day * step + 5) % n;
+
+const qEl = document.getElementById('q'), cEl = document.getElementById('c'), box = document.getElementById('box'), fig = document.getElementById('fig');
+document.getElementById('day').textContent = 'Quote of the day';
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function fit() {
+  // largest size that fits the box; long quotes shrink, short ones stay generous
+  const vw = innerWidth, vh = innerHeight;
+  let size = Math.round(Math.min(compact ? 22 : 34, Math.max(13, Math.min(vw * (compact ? .055 : .075), vh * (compact ? .26 : .14)))));
+  const len = QUOTES[idx].q.length;
+  if (len > 110) size = Math.round(size * .86);
+  const wrap = document.querySelector('.wrap');
+  for (; size >= 12; size--) {
+    qEl.style.fontSize = size + 'px';
+    wrap.style.paddingLeft = Math.round(size * (compact ? .5 : .55) + (compact ? 6 : 16)) + 'px';
+    if (fig.scrollHeight <= box.clientHeight && fig.scrollWidth <= box.clientWidth + 1) break;
+  }
+}
+function show(i, animate) {
+  const Q = QUOTES[i];
+  const put = () => {
+    qEl.innerHTML = esc(Q.q);
+    cEl.innerHTML = `— ${esc(Q.a)}${!hideSrc && Q.s ? ` <span class="src">· ${esc(Q.s)}</span>` : ''}`;
+    fit(); fig.style.opacity = 1;
+  };
+  if (animate) { fig.style.opacity = 0; setTimeout(put, 220); } else put();
+}
+const next = () => { idx = (idx + 1) % n; show(idx, true); };
+fig.addEventListener('click', next);
+document.getElementById('next').addEventListener('click', next);
+addEventListener('resize', fit);
+show(idx, false);
+if (document.fonts) document.fonts.ready.then(fit);
+</script>
+</body>
+</html>

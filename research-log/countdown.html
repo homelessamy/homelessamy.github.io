@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<title>Countdown · Research Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<script>/* theme + mode bootstrap (runs before paint). Edit CONFIG further down, not this. */
+(function(){var q=new URLSearchParams(location.search),d=document.documentElement;d.dataset.theme=q.get('theme')||'ink';if(q.get('card')==='0')d.classList.add('bare');if(q.get('compact')==='1')d.classList.add('compact');})();</script>
+<style>
+:root{
+  --surface:#232220; --line:rgba(236,230,218,.10); --hair:rgba(236,230,218,.09);
+  --text:#ECE6DA; --muted:#A39D90; --accent:#D9A658; --accent-soft:rgba(217,166,88,.16);
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+:root[data-theme="paper"]{--surface:#F6F3EC;--line:rgba(38,35,31,.12);--hair:rgba(38,35,31,.12);--text:#26231F;--muted:#6B655B;--accent:#8F6418;--accent-soft:rgba(143,100,24,.14)}
+@media (prefers-color-scheme: light){:root[data-theme="auto"]{--surface:#F6F3EC;--line:rgba(38,35,31,.12);--hair:rgba(38,35,31,.12);--text:#26231F;--muted:#6B655B;--accent:#8F6418;--accent-soft:rgba(143,100,24,.14)}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:transparent;overflow:hidden}
+body{color:var(--text);font:400 12px/1.45 var(--mono);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.card{position:fixed;inset:0;background:var(--surface);border:1px solid var(--hair);border-radius:14px;overflow:hidden}
+.bare .card{background:transparent;border:0;border-radius:0}
+.label{font:500 10.5px/1.25 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.serif{font-family:var(--serif);font-variant-numeric:lining-nums tabular-nums;font-optical-sizing:auto}
+.tag{display:inline-block;flex:none;font:400 9.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 7px 2px}
+.bar{position:relative;height:2px;background:var(--line);border-radius:2px}
+.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:2px}
+
+.wrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(8px,3.4vh,18px);padding:clamp(16px,5vmin,30px) clamp(18px,6vmin,34px)}
+.head{display:flex;align-items:center;gap:10px;min-width:0}
+.big{display:flex;align-items:baseline;gap:.28em;line-height:.9;margin-top:6px}
+.n{font-weight:300;font-size:clamp(48px,min(22vw,34vh),120px);letter-spacing:-.02em}
+.unit{font-family:var(--serif);font-style:italic;font-size:clamp(17px,min(6vw,8vh),28px);color:var(--muted)}
+.hms{font-size:clamp(12px,min(3.6vw,5vh),15px);letter-spacing:.08em;color:var(--text)}
+.hms span{color:var(--muted)}
+.foot{display:flex;justify-content:space-between;gap:12px;font-size:11px;color:var(--muted);white-space:nowrap}
+.foot span{overflow:hidden;text-overflow:ellipsis}
+.past .n{color:var(--muted)}
+@media (max-height:190px){.hms{display:none}}
+
+/* ---- compact (strip cell) grammar: label / figure / reading / caption / detail ----
+   every cell shares these row heights, so readings line up across the strip */
+.cmp{display:none}
+.compact .wrap{display:none}
+.compact .cmp{position:absolute;inset:0;display:flex;flex-direction:column;padding:14px 14px 13px}
+.cmp .top{flex:none;display:flex;align-items:center;gap:8px;min-width:0;height:16px}
+.cmp .top .label{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.cmp .top .tag{margin-left:auto}
+.cmp .fig{flex:1 1 0;min-height:0;position:relative;margin:10px 0}
+.cmp .fig > svg{position:absolute;left:0;top:50%;transform:translateY(-50%);overflow:visible}
+.cmp .rd{flex:none;margin-top:auto;font-family:var(--serif);font-weight:300;font-variant-numeric:lining-nums tabular-nums;font-optical-sizing:auto;font-size:clamp(26px,min(22vw,14.5vh),40px);line-height:1;letter-spacing:-.015em;white-space:nowrap}
+.cmp .rd .u{font-size:.42em;font-weight:400;color:var(--muted);margin-left:.1em;letter-spacing:0}
+.cmp .rd .u.it{font-style:italic;margin-left:.28em}
+.cmp .cap{flex:none;margin-top:7px;font-family:var(--serif);font-size:clamp(13px,min(9.5vw,6vh),15px);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp .cap.muted{color:var(--muted);font-style:italic}
+.cmp .det{flex:none;margin-top:7px;font:400 10.5px/1.3 var(--mono);letter-spacing:.01em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-height:175px){.cmp .fig{display:none}}
+.cmp .fig > svg.ring{width:auto;height:min(100%,66px);aspect-ratio:1}
+.ring .trk{fill:none;stroke:var(--line);stroke-width:1;vector-effect:non-scaling-stroke}
+.ring .arc{fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.ring .head{fill:var(--accent)}
+.n{margin-left:-.04em}
+</style>
+</head>
+<body>
+<div class="card">
+  <main class="wrap" id="full"></main>
+  <section class="cmp" id="cmp"></section>
+</div>
+<script>
+/* ============================== CONFIG ==============================
+   The ONE deadline this widget counts down to. Use an ISO timestamp WITH offset.
+   URL overrides (so several embeds can count to different things):
+     ?to=2027-01-28T23:59:00-12:00&label=ICML%20full%20paper&from=2026-11-01  */
+const DEADLINE = {
+  label: 'PLACEHOLDER — edit DEADLINE in countdown.html',
+  at:    '2026-12-18T23:59:00+09:00',
+};
+const START_DAYS_BEFORE = 30;     // progress line starts this many days before the deadline (or ?from=)
+const DISPLAY_TZ = { tz: 'Asia/Seoul', abbr: 'KST' };
+/* =================================================================== */
+
+const q = new URLSearchParams(location.search);
+const label = q.get('label') || DEADLINE.label;
+const target = new Date(q.get('to') || DEADLINE.at).getTime();
+const start = q.get('from') ? new Date(q.get('from')).getTime() : target - START_DAYS_BEFORE * 86400000;
+const placeholder = /placeholder/i.test(label);
+const compact = document.documentElement.classList.contains('compact');
+const pad = n => String(n).padStart(2, '0');
+
+const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: DISPLAY_TZ.tz, weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+const fmtShort = new Intl.DateTimeFormat('en-GB', { timeZone: DISPLAY_TZ.tz, day: 'numeric', month: 'short' });
+const when = () => { const p = {}; fmt.formatToParts(new Date(target)).forEach(x => p[x.type] = x.value); return `${p.weekday} ${p.day} ${p.month} ${p.year} · ${p.hour}:${p.minute} ${DISPLAY_TZ.abbr}`; };
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+const full = document.getElementById('full'), cmp = document.getElementById('cmp');
+const tag = placeholder ? '<span class="tag">placeholder</span>' : '';
+if (isNaN(target)) {
+  (compact ? cmp : full).innerHTML = `<div class="top"><span class="label">Countdown</span></div><div class="fig"></div><div class="cap muted">Set a valid date in DEADLINE.at</div>`;
+} else if (compact) {
+  cmp.innerHTML = `<div class="top"><span class="label">Deadline</span></div>
+    <div class="fig"><svg class="ring" viewBox="-50 -50 100 100" aria-hidden="true">
+      <circle class="trk" r="44"/><circle class="arc" r="44" pathLength="100" transform="rotate(-90)" data-arc/><circle class="head" r="3.2" data-head/></svg></div>
+    <div class="rd"><span data-n></span><span class="u it" data-u></span></div>
+    <div class="cap${placeholder ? ' muted' : ''}" data-what></div>
+    <div class="det" data-hms></div>`;
+} else {
+  full.innerHTML = `<div class="head"><div class="label">${placeholder ? 'Deadline' : esc(label)}</div>${tag}</div>
+    <div class="big"><span class="n serif" data-n></span><span class="unit" data-u></span></div>
+    <div class="hms" data-hms></div>
+    <div class="bar"><i data-bar></i></div>
+    <div class="foot"><span>${when()}</span><span>from ${fmtShort.format(new Date(start))}</span></div>`;
+}
+const $ = s => document.querySelector(s);
+
+// first variant whose laid-out width fits the line (Range width is fractional; scrollWidth rounds)
+function fitText(el, variants) {
+  const r = document.createRange();
+  for (const v of variants) { el.innerHTML = v; r.selectNodeContents(el); if (r.getBoundingClientRect().width <= el.clientWidth - 0.5) return; }
+}
+function tick() {
+  if (isNaN(target)) return;
+  const now = Date.now(), diff = target - now, past = diff < 0, a = Math.abs(diff);
+  const days = Math.floor(a / 86400000), h = Math.floor(a / 3600000) % 24, m = Math.floor(a / 60000) % 60, s = Math.floor(a / 1000) % 60;
+  document.body.classList.toggle('past', past);
+  const n = $('[data-n]'), u = $('[data-u]'), hms = $('[data-hms]');
+  n.textContent = days;
+  u.textContent = past ? (days === 1 ? 'day ago' : 'days ago') : (days === 1 ? 'day' : 'days');
+  const clock = `${pad(h)}<span>h</span> ${pad(m)}<span>m</span> ${pad(s)}<span>s</span>`;
+  const f = Math.min(1, Math.max(0, (now - start) / (target - start)));
+  if (compact) {
+    const t = fmtShort.format(new Date(target)), hm = `${pad(h)}:${pad(m)}:${pad(s)}`;
+    fitText($('[data-what]'), placeholder ? ['Placeholder — edit countdown.html', 'Placeholder deadline', 'Placeholder'] : [esc(label)]);
+    fitText(hms, past ? [`passed · ${t}`] : [`${hm} left · ${t}`, `${hm} · ${t}`, hm]);
+    $('[data-arc]').setAttribute('stroke-dasharray', `${(f * 100).toFixed(2)} 100`);
+    const ang = f * 2 * Math.PI;
+    $('[data-head]').setAttribute('cx', (44 * Math.sin(ang)).toFixed(2));
+    $('[data-head]').setAttribute('cy', (-44 * Math.cos(ang)).toFixed(2));
+  } else {
+    hms.innerHTML = past ? `<span>passed ${days} ${days === 1 ? 'day' : 'days'} ago</span>` : clock;
+    $('[data-bar]').style.width = (f * 100).toFixed(2) + '%';
+  }
+}
+tick();
+setInterval(tick, 1000);
+</script>
+</body>
+</html>

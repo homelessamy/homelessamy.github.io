@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<title>Moon · Research Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<script>/* theme + mode bootstrap (runs before paint). Edit CONFIG further down, not this. */
+(function(){var q=new URLSearchParams(location.search),d=document.documentElement;d.dataset.theme=q.get('theme')||'ink';if(q.get('card')==='0')d.classList.add('bare');if(q.get('compact')==='1')d.classList.add('compact');})();</script>
+<style>
+:root{
+  --surface:#232220; --line:rgba(236,230,218,.10); --hair:rgba(236,230,218,.09);
+  --text:#ECE6DA; --muted:#A39D90; --accent:#D9A658; --accent-soft:rgba(217,166,88,.16);
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --disk:rgba(236,230,218,.045); --moon-lit:#ECE6DA;
+}
+:root[data-theme="paper"]{--surface:#F6F3EC;--line:rgba(38,35,31,.12);--hair:rgba(38,35,31,.12);--text:#26231F;--muted:#6B655B;--accent:#8F6418;--accent-soft:rgba(143,100,24,.14);--disk:#DCD5C8;--moon-lit:#FFFDF8}
+@media (prefers-color-scheme: light){:root[data-theme="auto"]{--surface:#F6F3EC;--line:rgba(38,35,31,.12);--hair:rgba(38,35,31,.12);--text:#26231F;--muted:#6B655B;--accent:#8F6418;--accent-soft:rgba(143,100,24,.14);--disk:#DCD5C8;--moon-lit:#FFFDF8}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:transparent;overflow:hidden}
+body{color:var(--text);font:400 12px/1.45 var(--mono);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.card{position:fixed;inset:0;background:var(--surface);border:1px solid var(--hair);border-radius:14px;overflow:hidden}
+.bare .card{background:transparent;border:0;border-radius:0}
+.label{font:500 10.5px/1.25 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.serif{font-family:var(--serif);font-variant-numeric:lining-nums tabular-nums;font-optical-sizing:auto}
+
+.disk-bg{fill:var(--disk);stroke:var(--line);stroke-width:1;vector-effect:non-scaling-stroke}
+.lit{fill:var(--moon-lit);opacity:.95}
+.limb{fill:none;stroke:var(--accent);stroke-width:2.4;opacity:.55}
+.limb-fine{fill:none;stroke:var(--accent);stroke-width:.8;opacity:.75}
+
+.wrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(10px,4vh,20px);padding:clamp(16px,5vmin,30px) clamp(18px,6vmin,34px)}
+.now{display:flex;align-items:center;gap:clamp(14px,5vw,30px)}
+.moon{flex:none;width:clamp(64px,min(26vw,40vh),150px);height:clamp(64px,min(26vw,40vh),150px);overflow:visible}
+.name{font-family:var(--serif);font-size:clamp(17px,min(5.4vw,7.5vh),25px);line-height:1.15}
+.illum{font-family:var(--serif);font-weight:300;font-size:clamp(32px,min(11vw,16vh),60px);line-height:1;margin:4px 0 6px;letter-spacing:-.015em}
+.illum small{font-size:.42em;color:var(--muted);font-weight:400;margin-left:.08em}
+.age{font-size:11.5px;color:var(--muted)}
+.next{display:grid;grid-template-columns:auto 1fr;align-items:baseline;gap:6px 18px;border-top:1px solid var(--line);padding-top:clamp(10px,3vh,14px);font-size:12px}
+.next .v{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-height:230px){.next{display:none}}
+@media (max-width:300px){.now{flex-direction:column;align-items:flex-start}}
+
+/* ---- compact (strip cell) grammar: label / figure / reading / caption / detail ----
+   every cell shares these row heights, so readings line up across the strip */
+.cmp{display:none}
+.compact .wrap{display:none}
+.compact .cmp{position:absolute;inset:0;display:flex;flex-direction:column;padding:14px 14px 13px}
+.cmp .top{flex:none;display:flex;align-items:center;gap:8px;min-width:0;height:16px}
+.cmp .top .label{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.cmp .top .tag{margin-left:auto}
+.cmp .fig{flex:1 1 0;min-height:0;position:relative;margin:10px 0}
+.cmp .fig > svg{position:absolute;left:0;top:50%;transform:translateY(-50%);overflow:visible}
+.cmp .rd{flex:none;margin-top:auto;font-family:var(--serif);font-weight:300;font-variant-numeric:lining-nums tabular-nums;font-optical-sizing:auto;font-size:clamp(26px,min(22vw,14.5vh),40px);line-height:1;letter-spacing:-.015em;white-space:nowrap}
+.cmp .rd .u{font-size:.42em;font-weight:400;color:var(--muted);margin-left:.1em;letter-spacing:0}
+.cmp .rd .u.it{font-style:italic;margin-left:.28em}
+.cmp .cap{flex:none;margin-top:7px;font-family:var(--serif);font-size:clamp(13px,min(9.5vw,6vh),15px);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp .cap.muted{color:var(--muted);font-style:italic}
+.cmp .det{flex:none;margin-top:7px;font:400 10.5px/1.3 var(--mono);letter-spacing:.01em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-height:175px){.cmp .fig{display:none}}
+.cmp .fig > svg.moon{width:auto;height:min(100%,62px);aspect-ratio:1}
+</style>
+</head>
+<body>
+<div class="card">
+  <main class="wrap" id="full"></main>
+  <section class="cmp" id="cmp"></section>
+</div>
+<script>
+/* ============================== CONFIG ==============================
+   Computed locally (Meeus, "Astronomical Algorithms", ch. 48–49). No network.
+   URL overrides: ?south=1 (southern-hemisphere orientation) ?tz=Asia/Karachi&abbr=PKT
+   Testing: ?at=2026-10-20T21:00:00%2B09:00 pins the instant.  */
+const NORTHERN_HEMISPHERE = true;
+const DISPLAY_TZ = { tz: 'Asia/Seoul', abbr: 'KST' };
+/* =================================================================== */
+
+const q = new URLSearchParams(location.search);
+const north = q.get('south') === '1' ? false : NORTHERN_HEMISPHERE;
+const TZ = { tz: q.get('tz') || DISPLAY_TZ.tz, abbr: q.get('abbr') || (q.get('tz') ? '' : DISPLAY_TZ.abbr) };
+const compact = document.documentElement.classList.contains('compact');
+const RAD = Math.PI / 180, SYN = 29.530588861, DT_SEC = 69; // ΔT ≈ TT − UT, 2020s
+
+const toJD = t => t / 86400000 + 2440587.5;
+const fromJD = j => (j - 2440587.5) * 86400000;
+
+/* Meeus ch. 49 — instant of a true new (k integer) or full (k + .5) moon, returned as UT ms */
+function truePhase(k) {
+  const T = k / 1236.85, T2 = T * T, T3 = T2 * T, T4 = T3 * T, s = Math.sin;
+  const JDE = 2451550.09766 + SYN * k + 0.00015437 * T2 - 0.000000150 * T3 + 0.00000000073 * T4;
+  const E = 1 - 0.002516 * T - 0.0000074 * T2;
+  const M = (2.5534 + 29.10535670 * k - 0.0000014 * T2 - 0.00000011 * T3) * RAD;
+  const Mp = (201.5643 + 385.81693528 * k + 0.0107582 * T2 + 0.00001238 * T3 - 0.000000058 * T4) * RAD;
+  const F = (160.7108 + 390.67050284 * k - 0.0016118 * T2 - 0.00000227 * T3 + 0.000000011 * T4) * RAD;
+  const Om = (124.7746 - 1.56375588 * k + 0.0020672 * T2 + 0.00000215 * T3) * RAD;
+  const full = Math.abs(k - Math.floor(k) - .5) < .01;
+  const c = full
+    ? [-0.40614, 0.17302, 0.01614, 0.01043, 0.00734, -0.00515, 0.00209]
+    : [-0.40720, 0.17241, 0.01608, 0.01039, 0.00739, -0.00514, 0.00208];
+  let corr = c[0] * s(Mp) + c[1] * E * s(M) + c[2] * s(2 * Mp) + c[3] * s(2 * F) + c[4] * E * s(Mp - M) + c[5] * E * s(Mp + M) + c[6] * E * E * s(2 * M)
+    - 0.00111 * s(Mp - 2 * F) - 0.00057 * s(Mp + 2 * F) + 0.00056 * E * s(2 * Mp + M) - 0.00042 * s(3 * Mp) + 0.00042 * E * s(M + 2 * F)
+    + 0.00038 * E * s(M - 2 * F) - 0.00024 * E * s(2 * Mp - M) - 0.00017 * s(Om) - 0.00007 * s(Mp + 2 * M) + 0.00004 * s(2 * Mp - 2 * F)
+    + 0.00004 * s(3 * M) + 0.00003 * s(Mp + M - 2 * F) + 0.00003 * s(2 * Mp + 2 * F) - 0.00003 * s(Mp + M + 2 * F) + 0.00003 * s(Mp - M + 2 * F)
+    - 0.00002 * s(Mp - M - 2 * F) - 0.00002 * s(3 * Mp + M) + 0.00002 * s(4 * Mp);
+  const A = [299.77 + 0.107408 * k - 0.009173 * T2, 251.88 + 0.016321 * k, 251.83 + 26.651886 * k, 349.42 + 36.412478 * k, 84.66 + 18.206239 * k,
+    141.74 + 53.303771 * k, 207.14 + 2.453732 * k, 154.84 + 7.306860 * k, 34.52 + 27.261239 * k, 207.19 + 0.121824 * k,
+    291.34 + 1.844379 * k, 161.72 + 24.198154 * k, 239.56 + 25.513099 * k, 331.55 + 3.592518 * k];
+  const W = [325, 165, 164, 126, 110, 62, 60, 56, 47, 42, 40, 37, 35, 23];
+  for (let i = 0; i < 14; i++) corr += W[i] * 1e-6 * s(A[i] * RAD);
+  return fromJD(JDE + corr) - DT_SEC * 1000;
+}
+
+/* Meeus ch. 48 (low precision) — illuminated fraction */
+function illumination(t) {
+  const T = (toJD(t) - 2451545) / 36525, s = x => Math.sin(x * RAD);
+  const D = 297.8501921 + 445267.1114034 * T - 0.0018819 * T * T + T ** 3 / 545868 - T ** 4 / 113065000;
+  const M = 357.5291092 + 35999.0502909 * T - 0.0001536 * T * T + T ** 3 / 24490000;
+  const Mp = 134.9633964 + 477198.8675055 * T + 0.0087414 * T * T + T ** 3 / 69699 - T ** 4 / 14712000;
+  const i = 180 - D - 6.289 * s(Mp) + 2.100 * s(M) - 1.274 * s(2 * D - Mp) - 0.658 * s(2 * D) - 0.214 * s(2 * Mp) - 0.110 * s(D);
+  return (1 + Math.cos(i * RAD)) / 2;
+}
+
+function almanac(t) {
+  let k = Math.floor((toJD(t) - 2451550.09766) / SYN);
+  while (truePhase(k) > t) k--;
+  while (truePhase(k + 1) <= t) k++;
+  const prevNew = truePhase(k), nextNew = truePhase(k + 1);
+  let kf = k + .5; if (truePhase(kf) <= t) kf += 1;
+  const nextFull = truePhase(kf);
+  const p = (t - prevNew) / (nextNew - prevNew);
+  const waxing = p < .5;
+  const names = [[.0339, 'New moon'], [.2161, 'Waxing crescent'], [.2839, 'First quarter'], [.4661, 'Waxing gibbous'], [.5339, 'Full moon'], [.7161, 'Waning gibbous'], [.7839, 'Last quarter'], [.9661, 'Waning crescent'], [1.01, 'New moon']];
+  const name = names.find(([lim]) => p < lim)[1];
+  return { k: illumination(t), waxing, name, age: (t - prevNew) / 86400000, nextNew, nextFull, p };
+}
+
+function diskSVG(k, waxing) {
+  const R = 44, rx = (R * Math.abs(1 - 2 * k)).toFixed(3);
+  let right = waxing; if (!north) right = !right;           // which limb is lit, as seen by the viewer
+  const limbSweep = right ? 1 : 0;
+  const termSweep = right ? (k < .5 ? 0 : 1) : (k < .5 ? 1 : 0);
+  const lit = k < .004 ? '' : k > .996 ? `<circle class="lit" r="${R}"/>`
+    : `<path class="lit" d="M0 ${-R}A${R} ${R} 0 0 ${limbSweep} 0 ${R}A${rx} ${R} 0 0 ${termSweep} 0 ${-R}Z"/>`;
+  const limbD = k > .996 ? null : `M0 ${-R}A${R} ${R} 0 0 ${limbSweep} 0 ${R}`;
+  const glow = k < .004 ? '' : limbD ? `<path class="limb" filter="url(#glow)" d="${limbD}"/>` : `<circle class="limb" r="${R}" filter="url(#glow)"/>`;
+  const fine = k < .004 ? '' : limbD ? `<path class="limb-fine" d="${limbD}"/>` : `<circle class="limb-fine" r="${R}"/>`;
+  return `<svg class="moon" viewBox="-50 -50 100 100" role="img" aria-label="Moon, ${Math.round(k * 100)} percent illuminated">
+    <defs><filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2"/></filter></defs>
+    <circle class="disk-bg" r="${R}"/>${glow}${lit}${fine}</svg>`;
+}
+
+const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: TZ.tz, weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+const fmtDay = new Intl.DateTimeFormat('en-GB', { timeZone: TZ.tz, day: 'numeric', month: 'short' });
+const fmtToday = new Intl.DateTimeFormat('en-GB', { timeZone: TZ.tz, day: 'numeric', month: 'short', year: 'numeric' });
+const when = t => { const p = {}; fmt.formatToParts(new Date(t)).forEach(x => p[x.type] = x.value); return `${p.weekday} ${p.day} ${p.month} · ${p.hour}:${p.minute}${TZ.abbr ? ' ' + TZ.abbr : ''}`; };
+
+// first variant whose laid-out width fits the line (Range width is fractional; scrollWidth rounds)
+function fitText(el, variants) {
+  const r = document.createRange();
+  for (const v of variants) { el.innerHTML = v; r.selectNodeContents(el); if (r.getBoundingClientRect().width <= el.clientWidth - 0.5) return; }
+}
+function render() {
+  const t = q.get('at') ? new Date(q.get('at')).getTime() : Date.now();
+  const a = almanac(t);
+  const pct = Math.round(a.k * 100);
+  if (compact) {
+    const c = document.getElementById('cmp');
+    const fu = `full ${fmtDay.format(new Date(a.nextFull))}`, nw = `new ${fmtDay.format(new Date(a.nextNew))}`;
+    const [x, y] = a.nextFull < a.nextNew ? [fu, nw] : [nw, fu];
+    c.innerHTML = `<div class="top"><span class="label">Moon</span></div>
+      <div class="fig">${diskSVG(a.k, a.waxing)}</div>
+      <div class="rd">${pct}<span class="u">%</span></div>
+      <div class="cap">${a.name}</div>
+      <div class="det" data-det></div>`;
+    fitText(c.querySelector('[data-det]'), [`${x} · ${y}`, x]);
+    return;
+  }
+  document.getElementById('full').innerHTML = `
+    <div class="label">Moon · ${fmtToday.format(new Date(t))}</div>
+    <div class="now">
+      ${diskSVG(a.k, a.waxing)}
+      <div>
+        <div class="name">${a.name}</div>
+        <div class="illum serif">${pct}<small>% lit</small></div>
+        <div class="age">age ${a.age.toFixed(1)} days · ${a.waxing ? 'waxing' : 'waning'}</div>
+      </div>
+    </div>
+    <div class="next">
+      <span class="label">Full</span><span class="v">${when(a.nextFull)}</span>
+      <span class="label">New</span><span class="v">${when(a.nextNew)}</span>
+    </div>`;
+}
+render();
+if (document.fonts) document.fonts.ready.then(render);
+addEventListener('resize', render);
+setInterval(render, 10 * 60000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+</script>
+</body>
+</html>

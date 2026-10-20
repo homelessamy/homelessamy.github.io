@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<title>GPU ledger · Research Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<script>/* theme + mode bootstrap (runs before paint). Edit CONFIG further down, not this. */
+(function(){var q=new URLSearchParams(location.search),d=document.documentElement;d.dataset.theme=q.get('theme')||'ink';if(q.get('card')==='0')d.classList.add('bare');if(q.get('compact')==='1')d.classList.add('compact');})();</script>
+<style>
+:root{
+  --surface:#232220; --line:rgba(236,230,218,.10); --hair:rgba(236,230,218,.09);
+  --text:#ECE6DA; --muted:#A39D90; --accent:#D9A658; --accent-soft:rgba(217,166,88,.16);
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+:root[data-theme="paper"]{--surface:#F6F3EC;--line:rgba(38,35,31,.12);--hair:rgba(38,35,31,.12);--text:#26231F;--muted:#6B655B;--accent:#8F6418;--accent-soft:rgba(143,100,24,.14)}
+@media (prefers-color-scheme: light){:root[data-theme="auto"]{--surface:#F6F3EC;--line:rgba(38,35,31,.12);--hair:rgba(38,35,31,.12);--text:#26231F;--muted:#6B655B;--accent:#8F6418;--accent-soft:rgba(143,100,24,.14)}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:transparent;overflow:hidden}
+body{color:var(--text);font:400 12px/1.45 var(--mono);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.card{position:fixed;inset:0;background:var(--surface);border:1px solid var(--hair);border-radius:14px;overflow:hidden}
+.bare .card{background:transparent;border:0;border-radius:0}
+.label{font:500 10.5px/1.25 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.serif{font-family:var(--serif);font-variant-numeric:lining-nums tabular-nums;font-optical-sizing:auto}
+.tag{display:inline-block;flex:none;font:400 9.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 7px 2px}
+.bar{position:relative;height:2px;background:var(--line);border-radius:2px}
+.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:2px}
+.bar b{position:absolute;top:-4px;width:1px;height:10px;background:var(--text);opacity:.6}
+button{all:unset;cursor:pointer;font:400 11px/1 var(--mono);letter-spacing:.06em;color:var(--muted);padding:5px 2px;border-bottom:1px solid transparent}
+button:hover{color:var(--text)}
+button:focus-visible{color:var(--text);border-bottom-color:var(--line)}
+button.primary{color:var(--text);border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+input,select,textarea{font:400 12px/1.3 var(--mono);color:var(--text);background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:5px 0;min-width:0;outline:none}
+input:focus,select:focus,textarea:focus{border-bottom-color:var(--accent)}
+select option{background:var(--surface);color:var(--text)}
+input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.7);opacity:.6}
+:root[data-theme="paper"] input[type=date]::-webkit-calendar-picker-indicator{filter:none}
+
+.wrap{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding:clamp(16px,4.5vmin,26px) clamp(16px,5vmin,30px);scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.inner{min-height:100%;display:flex;flex-direction:column;justify-content:center}
+.grid{display:grid;grid-template-columns:1fr;gap:18px}
+.head{display:flex;align-items:center;gap:10px;min-width:0}
+.head .per{margin-left:auto;font-size:11px;color:var(--muted);white-space:nowrap}
+.big{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px}
+.left{font-weight:300;font-size:clamp(40px,min(12vw,16vh),64px);line-height:.95;letter-spacing:-.02em}
+.unit{font-family:var(--serif);font-style:italic;font-size:17px;color:var(--muted)}
+.used{font-size:11.5px;color:var(--muted);margin-left:auto}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
+.stats .v{margin-top:3px;font-size:12px}
+.stats .s{font-size:10.5px;color:var(--muted);margin-top:2px}
+.sec{border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:9px}
+.proj{display:grid;grid-template-columns:minmax(80px,auto) 1fr 52px;align-items:center;gap:12px;font-size:11.5px}
+.proj .pb{height:2px;background:var(--line);border-radius:2px;position:relative}
+.proj .pb i{position:absolute;left:0;top:0;bottom:0;border-radius:2px}
+.proj .h{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+form.add{display:grid;grid-template-columns:64px 1fr 1fr;gap:10px 14px;align-items:end}
+form.add .note{grid-column:1 / 3}
+form.add .go{justify-self:end}
+.list{display:flex;flex-direction:column}
+.entry{display:grid;grid-template-columns:52px 1fr auto auto;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--line);font-size:11.5px}
+.entry:last-child{border-bottom:0}
+.entry .d{color:var(--muted)}
+.entry .n{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.entry .p{color:var(--text)}
+.entry .hh{font-variant-numeric:tabular-nums;text-align:right}
+.entry button{padding:0 2px;font-size:13px;line-height:1}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:7px;vertical-align:1px}
+.empty{font-family:var(--serif);font-style:italic;color:var(--muted);font-size:14px}
+.foot{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;font-size:10.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+.foot .grow{flex:1;min-width:150px}
+.undo{font-size:11px;color:var(--muted);min-height:16px}
+.undo button{color:var(--text)}
+@media (min-width:640px){
+  .grid{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px 34px}
+  .colB{border-left:1px solid var(--line);padding-left:34px}
+  .colB .sec:first-child{border-top:0;padding-top:0}
+}
+
+.sheet{position:absolute;inset:0;background:var(--surface);display:none;flex-direction:column;gap:10px;padding:clamp(16px,4.5vmin,26px) clamp(16px,5vmin,30px)}
+.sheet.open{display:flex}
+.sheet textarea{flex:1;resize:none;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:11px}
+.sheet .row{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
+.sheet .msg{font-size:11px;color:var(--muted)}
+
+/* ---- compact (strip cell) grammar: label / figure / reading / caption / detail ----
+   every cell shares these row heights, so readings line up across the strip */
+.cmp{display:none}
+.compact .wrap{display:none}
+.compact .cmp{position:absolute;inset:0;display:flex;flex-direction:column;padding:14px 14px 13px}
+.cmp .top{flex:none;display:flex;align-items:center;gap:8px;min-width:0;height:16px}
+.cmp .top .label{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.cmp .top .tag{margin-left:auto}
+.cmp .fig{flex:1 1 0;min-height:0;position:relative;margin:10px 0}
+.cmp .fig > svg{position:absolute;left:0;top:50%;transform:translateY(-50%);overflow:visible}
+.cmp .rd{flex:none;margin-top:auto;font-family:var(--serif);font-weight:300;font-variant-numeric:lining-nums tabular-nums;font-optical-sizing:auto;font-size:clamp(26px,min(22vw,14.5vh),40px);line-height:1;letter-spacing:-.015em;white-space:nowrap}
+.cmp .rd .u{font-size:.42em;font-weight:400;color:var(--muted);margin-left:.1em;letter-spacing:0}
+.cmp .rd .u.it{font-style:italic;margin-left:.28em}
+.cmp .cap{flex:none;margin-top:7px;font-family:var(--serif);font-size:clamp(13px,min(9.5vw,6vh),15px);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp .cap.muted{color:var(--muted);font-style:italic}
+.cmp .det{flex:none;margin-top:7px;font:400 10.5px/1.3 var(--mono);letter-spacing:.01em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-height:175px){.cmp .fig{display:none}}
+.cmp .fig > svg.meter{right:0;width:100%;height:12px}
+.meter line{vector-effect:non-scaling-stroke}
+.meter .trk{stroke:var(--line);stroke-width:2}
+.meter .used{stroke:var(--accent);stroke-width:2}
+.meter .tick{stroke:var(--text);stroke-width:1;opacity:.6}
+</style>
+</head>
+<body>
+<div class="card">
+  <main class="wrap" id="full"></main>
+  <section class="cmp" id="cmp"></section>
+  <div class="sheet" id="sheet" role="dialog" aria-label="Export or import ledger">
+    <div class="label">Ledger data · JSON</div>
+    <textarea id="json" spellcheck="false"></textarea>
+    <div class="row">
+      <button class="primary" id="dl" type="button">download</button>
+      <button id="cp" type="button">copy</button>
+      <label><button id="pick" type="button">import file…</button><input id="file" type="file" accept="application/json,.json" hidden></label>
+      <button id="loadPasted" type="button">load pasted JSON</button>
+      <button id="closeSheet" type="button" style="margin-left:auto">close</button>
+    </div>
+    <div class="msg" id="msg">Download may be blocked inside Notion; copy works as a fallback.</div>
+  </div>
+</div>
+<script>
+/* ============================== CONFIG ==============================
+   PLACEHOLDER values — set your real allocation. Hours are GPU-hours
+   (1 GPU for 1 h = 1). Data lives in this browser's localStorage only;
+   use export/import to move it between devices.
+   URL overrides: ?budget=2000&from=2026-09-01&to=2026-12-18&period=Fall%202026  */
+const LEDGER = {
+  budget: 2000,                 // PLACEHOLDER
+  unit: 'GPU-h',
+  machine: 'DGX B200',
+  periodLabel: 'Fall 2026',     // PLACEHOLDER
+  periodStart: '2026-09-01',    // PLACEHOLDER
+  periodEnd: '2026-12-18',      // PLACEHOLDER
+  placeholder: true,            // delete this line once the numbers above are real
+  burnWindowDays: 14,
+};
+const PROJECTS = [
+  { name: 'KAI',            tint: '#82A9CA' },
+  { name: 'Zameen',         tint: '#93B48D' },
+  { name: 'AIWeatherQuest', tint: '#AD99CE' },
+  { name: 'TerraKernel',    tint: '#C99A76' },
+  { name: 'GeoCuda',        tint: '#D0908A' },
+  { name: 'Other',          tint: '#A39D90' },
+];
+/* =================================================================== */
+
+const q = new URLSearchParams(location.search);
+const L = {
+  ...LEDGER,
+  budget: +(q.get('budget') || LEDGER.budget),
+  periodStart: q.get('from') || LEDGER.periodStart,
+  periodEnd: q.get('to') || LEDGER.periodEnd,
+  periodLabel: q.get('period') || LEDGER.periodLabel,
+  placeholder: q.has('budget') ? false : LEDGER.placeholder,
+};
+const compact = document.documentElement.classList.contains('compact');
+const KEY = 'rl.gpu.v1';
+const store = {
+  get() { try { return JSON.parse(localStorage.getItem(KEY)) || { entries: [] }; } catch (e) { return { entries: [] }; } },
+  set(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); return true; } catch (e) { return false; } },
+};
+let data = store.get();
+if (!Array.isArray(data.entries)) data = { entries: [] };
+
+const DAY = 86400000;
+const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const todayISO = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
+const d0 = s => { const [y, m, d] = s.split('-').map(Number); return Date.UTC(y, m - 1, d); };
+const short = t => { const d = new Date(t); return d.getUTCDate() + ' ' + MO[d.getUTCMonth()]; };
+const shortY = t => { const d = new Date(t); return d.getUTCDate() + ' ' + MO[d.getUTCMonth()] + ' ' + d.getUTCFullYear(); };
+const nf = v => v.toLocaleString('en-US', { maximumFractionDigits: 1 });
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const tint = p => (PROJECTS.find(x => x.name === p) || PROJECTS[PROJECTS.length - 1]).tint;
+
+function stats() {
+  const t = d0(todayISO()), ps = d0(L.periodStart), pe = d0(L.periodEnd) + DAY;
+  const inPeriod = data.entries.filter(e => { const x = d0(e.date); return x >= ps && x < pe; });
+  const used = inPeriod.reduce((a, e) => a + e.h, 0);
+  const left = L.budget - used;
+  const winStart = t - (L.burnWindowDays - 1) * DAY;
+  const recent = data.entries.filter(e => d0(e.date) >= winStart && d0(e.date) <= t).reduce((a, e) => a + e.h, 0);
+  const burn = recent / L.burnWindowDays;
+  const elapsed = Math.min(1, Math.max(0, (t + DAY - ps) / (pe - ps)));
+  let runout = null, verdict = 'no recent usage';
+  if (left <= 0) verdict = 'budget exhausted';
+  else if (burn > 0) {
+    runout = t + Math.floor(left / burn) * DAY;
+    const diff = Math.round((pe - DAY - runout) / DAY);
+    verdict = diff > 0 ? `${diff} d before period end` : 'outlasts the period';
+  }
+  const byProj = PROJECTS.map(p => ({ ...p, h: inPeriod.filter(e => e.p === p.name).reduce((a, e) => a + e.h, 0) })).filter(p => p.h > 0).sort((a, b) => b.h - a.h);
+  return { used, left, burn, runout, verdict, elapsed, byProj };
+}
+
+let lastDeleted = null, undoTimer = null;
+function render() {
+  const s = stats(), f = Math.min(1, Math.max(0, s.used / L.budget));
+  if (compact) {
+    document.getElementById('cmp').innerHTML = `<div class="top"><span class="label">${L.unit} left</span></div>
+      <div class="fig"><svg class="meter" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true">
+        <line class="trk" x1="0" x2="100" y1="6" y2="6"/><line class="used" x1="0" x2="${(f * 100).toFixed(1)}" y1="6" y2="6"/>
+        <line class="tick" x1="${(s.elapsed * 100).toFixed(1)}" x2="${(s.elapsed * 100).toFixed(1)}" y1="1" y2="11"/></svg></div>
+      <div class="rd">${nf(Math.max(0, s.left))}</div>
+      <div class="cap">${nf(s.burn)} h/day · ${L.burnWindowDays} d</div>
+      <div class="det">${nf(s.used)} of ${nf(L.budget)} used${L.placeholder ? ' · placeholder' : ''}</div>`;
+    return;
+  }
+  const maxP = Math.max(1, ...s.byProj.map(p => p.h));
+  const entries = [...data.entries].sort((a, b) => b.date.localeCompare(a.date) || b.t - a.t).slice(0, 60);
+  document.getElementById('full').innerHTML = `<div class="inner">
+  <div class="grid">
+    <div class="colA" style="display:flex;flex-direction:column;gap:16px;min-width:0">
+      <div class="head"><div class="label">${L.unit} · ${L.machine}</div>${L.placeholder ? '<span class="tag">placeholder</span>' : ''}<span class="per">${esc(L.periodLabel)}</span></div>
+      <div class="big"><span class="left serif">${nf(Math.max(0, s.left))}</span><span class="unit">${s.left < 0 ? 'over budget by ' + nf(-s.left) : 'left'}</span><span class="used">${nf(s.used)} / ${nf(L.budget)} · ${Math.round(f * 100)}%</span></div>
+      <div class="bar" title="brass: used · tick: share of the period elapsed"><i style="width:${(f * 100).toFixed(1)}%"></i><b style="left:calc(${(s.elapsed * 100).toFixed(1)}% - .5px)"></b></div>
+      <div class="stats">
+        <div><div class="label">Burn · ${L.burnWindowDays} d</div><div class="v">${nf(s.burn)} h/day</div><div class="s">${Math.round(s.elapsed * 100)}% of period elapsed</div></div>
+        <div><div class="label">At this pace</div><div class="v">${s.runout ? 'runs out ' + shortY(s.runout) : '—'}</div><div class="s">${s.verdict}</div></div>
+      </div>
+      <div class="sec">
+        <div class="label">By project</div>
+        ${s.byProj.length ? s.byProj.map(p => `<div class="proj"><span><span class="dot" style="background:${p.tint}"></span>${p.name}</span><span class="pb"><i style="width:${(p.h / maxP * 100).toFixed(1)}%;background:${p.tint}"></i></span><span class="h">${nf(p.h)} h</span></div>`).join('') : '<div class="empty">No hours logged this period yet.</div>'}
+      </div>
+    </div>
+    <div class="colB" style="display:flex;flex-direction:column;gap:16px;min-width:0">
+      <div class="sec">
+        <div class="label">Log a run</div>
+        <form class="add" id="add" autocomplete="off">
+          <input name="h" type="number" min="0.1" step="0.1" placeholder="hours" required aria-label="GPU-hours">
+          <select name="p" aria-label="Project">${PROJECTS.map(p => `<option>${p.name}</option>`).join('')}</select>
+          <input name="d" type="date" value="${todayISO()}" aria-label="Date">
+          <input name="n" class="note" type="text" maxlength="80" placeholder="note — e.g. KAI-014, 8×B200, 6 h" aria-label="Note">
+          <button class="primary go" type="submit">add</button>
+        </form>
+        <div class="undo" id="undo"></div>
+      </div>
+      <div class="sec">
+        <div class="label">Recent</div>
+        <div class="list">${entries.length ? entries.map(e => `<div class="entry"><span class="d">${short(d0(e.date))}</span><span class="n"><span class="dot" style="background:${tint(e.p)}"></span><span class="p">${esc(e.p)}</span>${e.n ? ' · ' + esc(e.n) : ''}</span><span class="hh">${nf(e.h)} h</span><button type="button" data-del="${e.t}" aria-label="Delete entry">×</button></div>`).join('') : '<div class="empty">Nothing logged yet.</div>'}</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot" style="margin-top:18px"><span class="grow">stored in this browser only</span><button id="exp" type="button">export</button><button id="imp" type="button">import</button></div></div>`;
+  wire();
+}
+
+function persist(msg) { if (!store.set(data)) flash('could not save — browser storage is blocked here'); else if (msg) flash(msg); }
+function flash(html) { const u = document.getElementById('undo'); if (u) u.innerHTML = html; }
+function wire() {
+  document.getElementById('add').onsubmit = e => {
+    e.preventDefault();
+    const fm = e.target, h = parseFloat(fm.h.value);
+    if (!(h > 0)) return;
+    data.entries.push({ t: Date.now(), date: fm.d.value || todayISO(), h: Math.round(h * 100) / 100, p: fm.p.value, n: fm.n.value.trim() });
+    persist(); const keep = fm.p.value; render();
+    document.querySelector('#add [name=p]').value = keep;
+    flash(`added ${nf(h)} h to ${esc(keep)}`);
+  };
+  document.querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
+    const t = +b.dataset.del, i = data.entries.findIndex(e => e.t === t);
+    if (i < 0) return;
+    lastDeleted = data.entries.splice(i, 1)[0]; persist(); render();
+    flash(`removed ${nf(lastDeleted.h)} h · <button type="button" id="undoBtn">undo</button>`);
+    document.getElementById('undoBtn').onclick = () => { data.entries.push(lastDeleted); lastDeleted = null; persist(); render(); };
+    clearTimeout(undoTimer); undoTimer = setTimeout(() => flash(''), 8000);
+  });
+  document.getElementById('exp').onclick = openSheet;
+  document.getElementById('imp').onclick = openSheet;
+}
+
+/* export / import sheet — download is often sandbox-blocked in Notion, so copy + paste are offered too */
+const sheet = document.getElementById('sheet'), ta = document.getElementById('json'), msg = document.getElementById('msg');
+function openSheet() { ta.value = JSON.stringify({ app: 'research-log-gpu', version: 1, exported: new Date().toISOString(), ...data }, null, 1); sheet.classList.add('open'); ta.focus(); ta.select(); }
+document.getElementById('closeSheet').onclick = () => sheet.classList.remove('open');
+document.getElementById('dl').onclick = () => {
+  try {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([ta.value], { type: 'application/json' }));
+    a.download = `gpu-ledger-${todayISO()}.json`; document.body.appendChild(a); a.click(); a.remove();
+    msg.textContent = 'Download started (if nothing happens, Notion blocked it — use copy).';
+  } catch (e) { msg.textContent = 'Download blocked here — use copy.'; }
+};
+document.getElementById('cp').onclick = async () => {
+  ta.focus(); ta.select();
+  try { await navigator.clipboard.writeText(ta.value); msg.textContent = 'Copied to clipboard.'; }
+  catch (e) { try { document.execCommand('copy'); msg.textContent = 'Copied (or press Ctrl/⌘+C now — text is selected).'; } catch (x) { msg.textContent = 'Press Ctrl/⌘+C — text is selected.'; } }
+};
+function load(text) {
+  try {
+    const o = JSON.parse(text);
+    const entries = (o.entries || []).filter(e => e && typeof e.h === 'number' && /^\d{4}-\d{2}-\d{2}$/.test(e.date));
+    if (!entries.length && (o.entries || []).length) throw new Error('no valid entries');
+    const seen = new Set(data.entries.map(e => e.t));
+    let added = 0; entries.forEach(e => { if (!seen.has(e.t)) { data.entries.push({ t: e.t || Date.now() + added, date: e.date, h: e.h, p: e.p || 'Other', n: e.n || '' }); added++; } });
+    persist(); render(); msg.textContent = `Imported ${added} new entr${added === 1 ? 'y' : 'ies'} (duplicates skipped).`;
+  } catch (e) { msg.textContent = 'That is not a ledger export (' + e.message + ').'; }
+}
+document.getElementById('loadPasted').onclick = () => load(ta.value);
+document.getElementById('pick').onclick = () => document.getElementById('file').click();
+document.getElementById('file').onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(load); e.target.value = ''; };
+
+render();
+setInterval(() => { const a = document.activeElement; if (!(a && /INPUT|SELECT|TEXTAREA/.test(a.tagName))) render(); }, 30 * 60000);
+addEventListener('storage', e => { if (e.key === KEY) { data = store.get(); render(); } });
+</script>
+</body>
+</html>
